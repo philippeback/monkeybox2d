@@ -184,8 +184,7 @@ Class TestCrankGearsPulley Extends Test
         pulleyDef.Initialize(body3, body2, groundAnchor1, groundAnchor2, anchor1, anchor2, 2.0)
         pulleyDef.maxLengthA = 200 / m_physScale
         pulleyDef.maxLengthB = 150 / m_physScale
-        '//m_joint1 = b2PulleyJoint(m_world.CreateJoint(pulleyDef))
-        b2PulleyJoint(m_world.CreateJoint(pulleyDef))
+        m_world.CreateJoint(pulleyDef)
         '// Add a circle to weigh down the pulley
         Local circ :b2CircleShape = New b2CircleShape(40 / m_physScale)
         fixtureDef.shape = circ
