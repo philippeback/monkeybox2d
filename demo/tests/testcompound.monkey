@@ -46,7 +46,7 @@ Class TestCompound Extends Test
         name = "Compound Shapes"
         Local bd :b2BodyDef
         Local body :b2Body
-        Local i :int
+        Local i :Int
         Local x :Float
         
         Local cd1 :b2CircleShape = New b2CircleShape()
@@ -99,7 +99,7 @@ Class TestCompound Extends Test
         b2Math.MulX(xf2, New b2Vec2(0.0, 15.0 / m_physScale))])
         bd = New b2BodyDef()
         bd.type = b2Body.b2_Body
-        bd.fixedRotation = True
+        bd.fixedRotation = False
         For Local i:Int = 0 Until 5
             
             x = 320.0 + b2Math.RandomRange(-3.0, 3.0)
