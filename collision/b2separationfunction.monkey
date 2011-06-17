@@ -41,212 +41,86 @@ Class b2SeparationFunction
     Const e_points:int = $01
     Const e_faceA:int = $02
     Const e_faceB:int = $04
+
+    Field m_proxyA:b2DistanceProxy        
+    Field m_proxyB:b2DistanceProxy
+    Field m_sweepA:b2Sweep        
+    Field m_sweepB:b2Sweep
+    Field m_type:int
+    Field m_localPoint:b2Vec2 = New b2Vec2()
+    Field m_axis:b2Vec2 = New b2Vec2()
+
     Method Initialize : void (cache:b2SimplexCache,
-        proxyA:b2DistanceProxy, transformA:b2Transform,
-        proxyB:b2DistanceProxy, transformB:b2Transform)
+        proxyA:b2DistanceProxy, sweepA:b2Sweep,
+        proxyB:b2DistanceProxy, sweepB:b2Sweep,
+        alpha:Float)
         
         m_proxyA = proxyA
         m_proxyB = proxyB
         Local count :int = cache.count
         b2Settings.B2Assert(0 < count And count < 3)
-        Local localPointA :b2Vec2
-        Local localPointA1 :b2Vec2
-        Local localPointA2 :b2Vec2
-        Local localPointB :b2Vec2
-        Local localPointB1 :b2Vec2
-        Local localPointB2 :b2Vec2
-        Local pointAX :Float
-        Local pointAY :Float
-        Local pointBX :Float
-        Local pointBY :Float
-        Local normalX :Float
-        Local normalY :Float
-        Local tMat :b2Mat22
-        Local tVec :b2Vec2
-        Local s :Float
-        Local sgn :Float
+        
+        m_sweepA = sweepA
+        m_sweepB = sweepB
+        Local xfA := New b2Transform()
+        Local xfB := New b2Transform()
+        m_sweepA.GetTransform(xfA, alpha)
+        m_sweepB.GetTransform(xfB, alpha)
+
         If (count = 1)
-            
             m_type = e_points
-            localPointA = m_proxyA.GetVertex(cache.indexA.Get(0))
-            localPointB = m_proxyB.GetVertex(cache.indexB.Get(0))
-            '//pointA = b2Math.b2MulX(transformA, localPointA)
-            tVec = localPointA
-            tMat = transformA.R
-            pointAX = transformA.position.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
-            pointAY = transformA.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
-            '//pointB = b2Math.b2MulX(transformB, localPointB)
-            tVec = localPointB
-            tMat = transformB.R
-            pointBX = transformB.position.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
-            pointBY = transformB.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
-            '//m_axis = b2Math.SubtractVV(pointB, pointA)
-            m_axis.x = pointBX - pointAX
-            m_axis.y = pointBY - pointAY
+            Local localPointA := m_proxyA.GetVertex(cache.indexA.Get(0))
+            Local localPointB := m_proxyB.GetVertex(cache.indexB.Get(0))
+            Local pointA := b2Math.MulX(xfA, localPointA)
+            Local pointB := b2Math.MulX(xfB, localPointB)
+            m_axis = b2Math.SubtractVV(pointB,pointA)
             m_axis.Normalize()
-        Else  If (cache.indexB.Get(0) = cache.indexB.Get(1))
-            
-            
-            '// Two points on A and one on B
-            m_type = e_faceA
-            localPointA1 = m_proxyA.GetVertex(cache.indexA.Get(0))
-            localPointA2 = m_proxyA.GetVertex(cache.indexA.Get(1))
-            localPointB = m_proxyB.GetVertex(cache.indexB.Get(0))
-            m_localPoint.x = 0.5 * (localPointA1.x + localPointA2.x)
-            m_localPoint.y = 0.5 * (localPointA1.y + localPointA2.y)
-            m_axis = b2Math.CrossVF(b2Math.SubtractVV(localPointA2, localPointA1), 1.0)
-            m_axis.Normalize()
-            '//normal = b2Math.b2MulMV(transformA.R, m_axis)
-            tVec = m_axis
-            tMat = transformA.R
-            normalX = tMat.col1.x * tVec.x + tMat.col2.x * tVec.y
-            normalY = tMat.col1.y * tVec.x + tMat.col2.y * tVec.y
-            '//pointA = b2Math.b2MulX(transformA, m_localPoint)
-            tVec = m_localPoint
-            tMat = transformA.R
-            pointAX = transformA.position.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
-            pointAY = transformA.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
-            '//pointB = b2Math.b2MulX(transformB, localPointB)
-            tVec = localPointB
-            tMat = transformB.R
-            pointBX = transformB.position.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
-            pointBY = transformB.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
-            '//float32 s = b2Dot(pointB - pointA, normal)
-            s = (pointBX - pointAX) * normalX + (pointBY - pointAY) * normalY
-            If (s < 0.0)
-                
-                m_axis.NegativeSelf()
-            End
-            
-        Else  If (cache.indexA.Get(0) = cache.indexA.Get(0))
-            
-            
-            '// Two points on B and one on A
+        Else  If (cache.indexA.Get(0).ToInt() = cache.indexA.Get(1).ToInt())
+            '// Two points on B and one on A.
             m_type = e_faceB
-            localPointB1 = m_proxyB.GetVertex(cache.indexB.Get(0))
-            localPointB2 = m_proxyB.GetVertex(cache.indexB.Get(1))
-            localPointA = m_proxyA.GetVertex(cache.indexA.Get(0))
-            m_localPoint.x = 0.5 * (localPointB1.x + localPointB2.x)
-            m_localPoint.y = 0.5 * (localPointB1.y + localPointB2.y)
+            Local localPointB1 := proxyB.GetVertex(cache.indexB.Get(0))
+            Local localPointB2 := proxyB.GetVertex(cache.indexB.Get(1))
+
             m_axis = b2Math.CrossVF(b2Math.SubtractVV(localPointB2, localPointB1), 1.0)
             m_axis.Normalize()
-            '//normal = b2Math.b2MulMV(transformB.R, m_axis)
-            tVec = m_axis
-            tMat = transformB.R
-            normalX = tMat.col1.x * tVec.x + tMat.col2.x * tVec.y
-            normalY = tMat.col1.y * tVec.x + tMat.col2.y * tVec.y
-            '//pointB = b2Math.b2MulX(transformB, m_localPoint)
-            tVec = m_localPoint
-            tMat = transformB.R
-            pointBX = transformB.position.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
-            pointBY = transformB.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
-            '//pointA = b2Math.b2MulX(transformA, localPointA)
-            tVec = localPointA
-            tMat = transformA.R
-            pointAX = transformA.position.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
-            pointAY = transformA.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
-            '//float32 s = b2Dot(pointA - pointB, normal)
-            s = (pointAX - pointBX) * normalX + (pointAY - pointBY) * normalY
+            Local normal := b2Math.MulMV(xfB.R, m_axis)
+
+            m_localPoint = b2Math.AddVV(localPointB1,localPointB2)
+            m_localPoint.Multiply(0.5)
+            Local pointB := b2Math.MulX(xfB, m_localPoint)
+
+            Local localPointA := proxyA.GetVertex(cache.indexA.Get(0))
+            Local pointA := b2Math.MulX(xfA, localPointA)
+
+            Local s:Float = b2Math.Dot(b2Math.SubtractVV(pointA, pointB), normal)
             If (s < 0.0)
-                
                 m_axis.NegativeSelf()
+                s = -s
             End
-            
+            'return s
         Else
-            
-            
-            '// Two points on B and two points on A.
-            '// The faces are parallel.
-            localPointA1 = m_proxyA.GetVertex(cache.indexA.Get(0))
-            localPointA2 = m_proxyA.GetVertex(cache.indexA.Get(1))
-            localPointB1 = m_proxyB.GetVertex(cache.indexB.Get(0))
-            localPointB2 = m_proxyB.GetVertex(cache.indexB.Get(1))
-            Local pA :b2Vec2 = b2Math.MulX(transformA, localPointA)
-            Local dA :b2Vec2 = b2Math.MulMV(transformA.R, b2Math.SubtractVV(localPointA2, localPointA1))
-            Local pB :b2Vec2 = b2Math.MulX(transformB, localPointB)
-            Local dB :b2Vec2 = b2Math.MulMV(transformB.R, b2Math.SubtractVV(localPointB2, localPointB1))
-            Local a :Float = dA.x * dA.x + dA.y * dA.y
-            Local e :Float = dB.x * dB.x + dB.y * dB.y
-            Local r :b2Vec2 = b2Math.SubtractVV(dB, dA)
-            Local c :Float = dA.x * r.x + dA.y * r.y
-            Local f :Float = dB.x * r.x + dB.y * r.y
-            Local b :Float = dA.x * dB.x + dA.y * dB.y
-            Local denom :Float = a * e-b * b
-            s = 0.0
-            If (denom <> 0.0)
-                
-                s = b2Math.Clamp((b * f - c * e) / denom, 0.0, 1.0)
+            '// Two points on A and one or two points on B.
+            m_type = e_faceA
+            Local localPointA1 := m_proxyA.GetVertex(cache.indexA.Get(0))
+            Local localPointA2 := m_proxyA.GetVertex(cache.indexA.Get(1))
+
+            m_axis = b2Math.CrossVF(b2Math.SubtractVV(localPointA2,localPointA1), 1.0)
+            m_axis.Normalize()
+            Local normal := b2Math.MulMV(xfA.R, m_axis)
+
+            m_localPoint = b2Math.AddVV(localPointA1,localPointA2)
+            m_localPoint.Multiply(0.5)
+            Local pointA := b2Math.MulX(xfA, m_localPoint)
+
+            Local localPointB := m_proxyB.GetVertex(cache.indexB.Get(0))
+            Local pointB := b2Math.MulX(xfB, localPointB)
+
+            Local s := b2Math.Dot(b2Math.SubtractVV(pointB, pointA), normal)
+            If (s < 0.0)
+                m_axis.NegativeSelf()
+                s = -s
             End
-            Local t :Float = (b * s + f) / e
-            If (t < 0.0)
-                
-                t = 0.0
-                s = b2Math.Clamp((b - c) / a, 0.0, 1.0)
-            End
-            '//b2Vec2 localPointA = localPointA1 + s * (localPointA2 - localPointA1)
-            localPointA = New b2Vec2()
-            localPointA.x = localPointA1.x + s * (localPointA2.x - localPointA1.x)
-            localPointA.y = localPointA1.y + s * (localPointA2.y - localPointA1.y)
-            '//b2Vec2 localPointB = localPointB1 + s * (localPointB2 - localPointB1)
-            localPointB = New b2Vec2()
-            localPointB.x = localPointB1.x + s * (localPointB2.x - localPointB1.x)
-            localPointB.y = localPointB1.y + s * (localPointB2.y - localPointB1.y)
-            If (s = 0.0 Or s = 1.0)
-                
-                m_type = e_faceB
-                m_axis = b2Math.CrossVF(b2Math.SubtractVV(localPointB2, localPointB1), 1.0)
-                m_axis.Normalize()
-                m_localPoint = localPointB
-                '//normal = b2Math.b2MulMV(transformB.R, m_axis)
-                tVec = m_axis
-                tMat = transformB.R
-                normalX = tMat.col1.x * tVec.x + tMat.col2.x * tVec.y
-                normalY = tMat.col1.y * tVec.x + tMat.col2.y * tVec.y
-                '//pointB = b2Math.b2MulX(transformB, m_localPoint)
-                tVec = m_localPoint
-                tMat = transformB.R
-                pointBX = transformB.position.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
-                pointBY = transformB.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
-                '//pointA = b2Math.b2MulX(transformA, localPointA)
-                tVec = localPointA
-                tMat = transformA.R
-                pointAX = transformA.position.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
-                pointAY = transformA.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
-                '//float32 sgn = b2Dot(pointA - pointB, normal)
-                sgn = (pointAX - pointBX) * normalX + (pointAY - pointBY) * normalY
-                If (s < 0.0)
-                    
-                    m_axis.NegativeSelf()
-                End
-                
-            Else
-                
-                
-                m_type = e_faceA
-                m_axis = b2Math.CrossVF(b2Math.SubtractVV(localPointA2, localPointA1), 1.0)
-                m_localPoint = localPointA
-                '//normal = b2Math.b2MulMV(transformA.R, m_axis)
-                tVec = m_axis
-                tMat = transformA.R
-                normalX = tMat.col1.x * tVec.x + tMat.col2.x * tVec.y
-                normalY = tMat.col1.y * tVec.x + tMat.col2.y * tVec.y
-                '//pointA = b2Math.b2MulX(transformA, m_localPoint)
-                tVec = m_localPoint
-                tMat = transformA.R
-                pointAX = transformA.position.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
-                pointAY = transformA.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
-                '//pointB = b2Math.b2MulX(transformB, localPointB)
-                tVec = localPointB
-                tMat = transformB.R
-                pointBX = transformB.position.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
-                pointBY = transformB.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
-                '//float32 sgn = b2Dot(pointB - pointA, normal)
-                sgn = (pointBX - pointAX) * normalX + (pointBY - pointAY) * normalY
-                If (s < 0.0)
-                    
-                    m_axis.NegativeSelf()
-                End
-            End
+            'Return s
         End
     End
     Method Evaluate : Float (transformA:b2Transform, transformB:b2Transform)
@@ -300,20 +174,5 @@ Class b2SeparationFunction
                 Return 0.0
             End
         End
-        Field m_proxyA:b2DistanceProxy
-        
-        
-        Field m_proxyB:b2DistanceProxy
-        
-        
-        Field m_type:int
-        
-        
-        Field m_localPoint:b2Vec2 = New b2Vec2()
-        
-        
-        Field m_axis:b2Vec2 = New b2Vec2()
-        
-        
     End
     

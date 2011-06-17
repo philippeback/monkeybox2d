@@ -42,5 +42,4 @@ Import box2d.demo.tests.testragdoll
 Import box2d.demo.tests.testraycast
 Import box2d.demo.tests.teststack
 Import box2d.demo.tests.testtheojansen
-
-
+Import box2d.demo.tests.testdominostack

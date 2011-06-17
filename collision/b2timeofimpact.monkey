@@ -88,7 +88,7 @@ Class b2TimeOfImpact
                 alpha = 1.0
                 Exit
             End
-            s_fcn.Initialize(s_cache, proxyA, s_xfA, proxyB, s_xfB)
+            s_fcn.Initialize(s_cache, proxyA, sweepA, proxyB, sweepB, alpha)
             Local separation :Float = s_fcn.Evaluate(s_xfA, s_xfB)
             If (separation <= 0.0)
                 

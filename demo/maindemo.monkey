@@ -38,7 +38,7 @@ Import box2d.dynamics
 Import box2d.demo.tests
 Import box2d.flash.flashtypes
 Import box2d.demo
-Import box2d.demo.tests.testdominostack
+
 
 Class MainDemo Extends App
     
@@ -51,7 +51,7 @@ Class MainDemo Extends App
     Global m_sprite:FlashSprite
     Global m_aboutText:TextField
     Global m_fpsCounter:FpsCounter
-    Field m_currId :int = 0
+    Field m_currId :Int = 0
     Field m_input :Input
     Field tests : String[]
     
@@ -73,7 +73,7 @@ Class MainDemo Extends App
     Method OnCreate()
         tests = [
         "TestDominoStack", 
-		"TestStack",
+        "TestStack",
         "TestRagdoll",
         "TestCompound",
         "TestCrankGearsPulley",
@@ -116,8 +116,8 @@ Class MainDemo Extends App
         Local ret:Test
         Select(testName)
             Case "TestDominoStack"
-				ret = New TestDominoStack()
-			Case "TestStack"
+                ret = New TestDominoStack()
+            Case "TestStack"
                 ret = New TestStack()
             Case "TestRagdoll"
                 ret = New TestRagdoll()
