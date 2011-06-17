@@ -38,8 +38,8 @@ Import box2d.dynamics.joints
 Import box2d.dynamics.contacts
 Import box2d.common
 Import box2d.common.math
-'//TODO_BORIS: Remove
-'use namespace b2internal
+
+
 Class TestStack Extends Test
     Method New()
         Super.New()

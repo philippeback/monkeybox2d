@@ -37,10 +37,11 @@ Class FpsCounter Extends FlashSprite
     Field textBox :TextField
     Field textBox2 :TextField
 
-    Field mfpsCount :int = 0
-    Field mfpsCount2 :int = 0
-    Field avgCount :int = 30
-    Field avgCount2 :int = 30
+    Field mfpsCount :Int = 0
+    Field mfpsCount2 :Int = 0
+	Const AverageSample:Int = 30
+    Field avgCount :Int = AverageSample
+    Field avgCount2 :Int = AverageSample
     Field oldT :Int
 
     Method New()
@@ -66,8 +67,8 @@ Class FpsCounter Extends FlashSprite
         mfpsCount += f1
         If (avgCount < 1)
             
-            textBox.text = String(Math.Round(1000.0/(Float(mfpsCount)/30.0))+" fps average")
-            avgCount = 30
+            textBox.text = String(Math.Round(1000.0/(Float(mfpsCount)/AverageSample))+" actual updates/sec average")
+            avgCount = AverageSample
             mfpsCount = 0
         End
         
@@ -82,8 +83,8 @@ Class FpsCounter Extends FlashSprite
         mfpsCount2 += f1
         If (avgCount2 < 1)
             
-            textBox2.text = String("Physics timeStep: "+Math.Round(Float(mfpsCount2)/30.0)+" ms (" +Math.Round(1000.0/(Float(mfpsCount2)/30.0))+" fps)")
-            avgCount2 = 30
+            textBox2.text = String("Physics timeStep: "+Math.Round(Float(mfpsCount2)/AverageSample)+" ms (max. " +Math.Round(1000.0/(Float(mfpsCount2)/30.0))+" updates/sec)")
+            avgCount2 = AverageSample
             mfpsCount2 = 0
         End
         

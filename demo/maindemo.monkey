@@ -38,11 +38,14 @@ Import box2d.dynamics
 Import box2d.demo.tests
 Import box2d.flash.flashtypes
 Import box2d.demo
+Import box2d.demo.tests.testdominostack
 
 Class MainDemo Extends App
     
     Const frameRate:Int = 30
-    
+    Const physicsRate:Int = 60
+    Field nextFrame:Int = 0
+
     Global m_display:FlashSprite = New FlashSprite()
     Global m_currTest:Test
     Global m_sprite:FlashSprite
@@ -53,6 +56,14 @@ Class MainDemo Extends App
     Field tests : String[]
     
     Method OnRender()
+		Local ms := Millisecs()
+		
+		If ms < nextFrame
+			Return
+		End
+		
+		nextFrame = ms+1000/frameRate
+		
         If ( m_currTest <> Null)
             m_currTest.OnRender()
         End
@@ -61,7 +72,8 @@ Class MainDemo Extends App
     
     Method OnCreate()
         tests = [
-        "TestStack",
+        "TestDominoStack", 
+		"TestStack",
         "TestRagdoll",
         "TestCompound",
         "TestCrankGearsPulley",
@@ -97,13 +109,15 @@ Class MainDemo Extends App
         m_aboutText.height = 30
         m_display.AddChild(m_aboutText)
         
-        SetUpdateRate(frameRate)
+        SetUpdateRate(physicsRate)
     End
     
     Method InitTest:Test( testName:String )
         Local ret:Test
         Select(testName)
-            Case "TestStack"
+            Case "TestDominoStack"
+				ret = New TestDominoStack()
+			Case "TestStack"
                 ret = New TestStack()
             Case "TestRagdoll"
                 ret = New TestRagdoll()
