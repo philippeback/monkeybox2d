@@ -221,7 +221,7 @@ Class FlashArray<T>
         Local newArr:T[]
         If index > 0
             newArr = arr[..index-1]
-            newArr.Resize(newLength)
+            newArr = newArr.Resize(newLength)
         Else
             index = 0
             newArr = New T[newLength]
