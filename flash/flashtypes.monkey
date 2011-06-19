@@ -129,23 +129,26 @@ End
 Class FlashArray<T>
     
     Private
-    Field arr : T[100]
-    Const lengthInc : Int = 100
+    Const LengthInc : Int = 100
+    Field arr : T[] = New T[LengthInc]
+    Field EmptyArr: T[] = New T[0]
     
     Public
     Field length : Int = 0
     
-    Method Length:Int() Property
+	Method Length:Int() Property
         Return length
     End
     
     Method Length(value:Int) Property
         length = value
+        If length > arr.Length
+            arr = arr.Resize(length)
+        End
     End
     
     Method New( length:Int )
-        arr = arr.Resize(length)
-        Self.length = length
+        Length = length
     End
     
     Method New( vals:T[] )
@@ -157,14 +160,13 @@ Class FlashArray<T>
         If( index >=0 And Length > index )
             Return arr[index]
         Else
-            Return null
+            Return Null
         End
     End
     
     Method Set( index:Int, item:T )
         If( index >= arr.Length )
-            arr = arr.Resize(index+1)
-            length = arr.Length
+            arr = arr.Resize(index+LengthInc)
         End
         arr[index] = item
         If( index >= length )
@@ -174,7 +176,7 @@ Class FlashArray<T>
     
     Method Push( item:T )
         If( length = arr.Length() )
-            arr = arr.Resize(length+lengthInc)
+            arr = arr.Resize(length+LengthInc)
         End
         
         arr[length] = item
@@ -191,30 +193,46 @@ Class FlashArray<T>
     End
     
     Method IndexOf:Int( element:T )
-        
         For Local index := 0 Until Length
             Local check:T = arr[index]
             If check = element
                 Return index
             End
         Next
+        Return -1
     End
     
-    Method Splice( index:Int, deletes:Int, insert:T = Null )
-        Local newLength = Length - deletes
-        Local copyInd = 0
-        If insert <> Null
-            newLength += 1
+    Method Splice( index:Int, deletes:Int = -1)
+        Splice(index,deletes,EmptyArr)
+    End
+
+    Method Splice( index:Int, deletes:Int = -1, insert:T[] )
+        If deletes = -1
+            deletes = Length - index
         End
-        Local newArr:T[] = New T[newLength]
         
-        For copyInd = 0 To index
-            newArr[copyInd] = arr[copyInd]
-        Next
+        Local newLength = Length - deletes
+        If newLength < 0
+            newLength = 0
+        End
         
-        If insert <> Null
-            newArr[copyInd] = insert
-            copyInd += 1
+        newLength += insert.Length
+        
+        Local newArr:T[]
+        If index > 0
+            newArr = arr[..index-1]
+            newArr.Resize(newLength)
+        Else
+            newArr = New T[newLength]
+        End 
+
+        Local copyInd = index
+        
+        If insert
+            For Local val:= Eachin insert
+                newArr[copyInd] = val
+                copyInd += 1
+            End
         End
         
         For Local i := index+deletes Until arr.Length
