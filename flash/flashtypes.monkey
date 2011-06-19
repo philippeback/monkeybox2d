@@ -223,6 +223,7 @@ Class FlashArray<T>
             newArr = arr[..index-1]
             newArr.Resize(newLength)
         Else
+            index = 0
             newArr = New T[newLength]
         End 
 
@@ -235,7 +236,7 @@ Class FlashArray<T>
             End
         End
         
-        For Local i := index+deletes Until arr.Length
+        For Local i := index+deletes Until Length
             newArr[copyInd] = arr[i]
             copyInd += 1
         Next
