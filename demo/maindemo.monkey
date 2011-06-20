@@ -96,7 +96,7 @@ Class MainDemo Extends App
         instructions_text.y = 5
         instructions_text.width = 495
         instructions_text.height = 61
-        instructions_text.text = "Box2DMonkey " + VersionString + " - Left/Right arrows go to previous/next example. R to reset."
+        instructions_text.text = "MonkeyBox2D " + VersionString + " - Left/Right arrows go to previous/next example. R to reset."
         m_display.AddChild(instructions_text)
         Local instructions_text2 :TextField = New TextField()
         instructions_text2.x = 7
