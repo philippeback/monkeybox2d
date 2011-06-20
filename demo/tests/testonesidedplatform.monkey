@@ -43,7 +43,7 @@ Class TestOneSidedPlatform Extends Test
     
     Method New()
         '// Set Text field
-        name = "One Sided Platform\n"
+        name = "One Sided Platform"
         Local bd :b2BodyDef
         Local body :b2Body
         '// Platform

@@ -52,8 +52,10 @@ Class FpsCounter Extends FlashSprite
         textBox2 = New TextField()
         textBox2.text = "..."
         textBox2.width = 150
-        textBox2.y = 15
+        textBox2.x = 230
+        textBox2.y = 0
         
+
         '// set initial lastTime
         oldT = Millisecs()
         AddChild(textBox)
@@ -66,7 +68,6 @@ Class FpsCounter Extends FlashSprite
         Local f1 :Int = newT-oldT
         mfpsCount += f1
         If (avgCount < 1)
-            
             textBox.text = String(Math.Round(1000.0/(Float(mfpsCount)/AverageSample))+" actual updates/sec average")
             avgCount = AverageSample
             mfpsCount = 0
@@ -82,8 +83,13 @@ Class FpsCounter Extends FlashSprite
         Local f1 :Int = newT-oldT2
         mfpsCount2 += f1
         If (avgCount2 < 1)
-            
-            textBox2.text = String("Physics timeStep: "+Math.Round(Float(mfpsCount2)/AverageSample)+" ms (max. " +Math.Round(1000.0/(Float(mfpsCount2)/30.0))+" updates/sec)")
+            Local avgFrameMS:Float = Float(mfpsCount2)/AverageSample
+            Local maxFPS:Int = Math.Round(1000.0/avgFrameMS)
+            If avgFrameMS < 1
+                textBox2.text = String("Avg. Physics timeStep: < 1 ms (max. > 1000 updates/sec)")
+            Else
+                textBox2.text = String("Avg. Physics timeStep: " + Math.Round(avgFrameMS)+" ms (max. " + maxFPS +" updates/sec)")
+            End
             avgCount2 = AverageSample
             mfpsCount2 = 0
         End

@@ -773,15 +773,9 @@ Class b2PolygonShape Extends b2Shape
             End
         End
         '// Local position of the polygon centroid.
-        Field m_centroid:b2Vec2
-        
-        
+        Field m_centroid:b2Vec2        
         Field m_vertices:FlashArray<b2Vec2>
-        
-        
         Field m_normals:FlashArray<b2Vec2>
-        
-        
         Field m_vertexCount:int
         
         #rem

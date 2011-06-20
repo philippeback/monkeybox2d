@@ -41,10 +41,12 @@ Import box2d.demo
 
 
 Class MainDemo Extends App
-    
+    Const VersionString:String = "1.0.5"
+
     Const frameRate:Int = 30
     Const physicsRate:Int = 60
-    Field nextFrame:Int = 0
+    Const physicsFrameMS:Float = 1000.0/physicsRate
+    Field nextFrame:Float = 0.0
 
     Global m_display:FlashSprite = New FlashSprite()
     Global m_currTest:Test
@@ -56,18 +58,13 @@ Class MainDemo Extends App
     Field tests : String[]
     
     Method OnRender()
-		Local ms := Millisecs()
-		
-		If ms < nextFrame
-			Return
-		End
-		
-		nextFrame = ms+1000/frameRate
-		
+        
         If ( m_currTest <> Null)
             m_currTest.OnRender()
+        Else
+            Cls()
         End
-        m_display.OnRender()
+        m_display.OnRender(0,0)
     End
     
     Method OnCreate()
@@ -88,7 +85,7 @@ Class MainDemo Extends App
         
         m_fpsCounter = New FpsCounter()
         m_fpsCounter.x = 7
-        m_fpsCounter.y = 5
+        m_fpsCounter.y = 60
         m_display.AddChildAt(m_fpsCounter, 0)
         m_sprite = New FlashSprite()
         m_display.AddChild(m_sprite)
@@ -96,20 +93,27 @@ Class MainDemo Extends App
         '//Instructions Text
         Local instructions_text :TextField = New TextField()
         instructions_text.x = 7
-        instructions_text.y = 45
+        instructions_text.y = 5
         instructions_text.width = 495
         instructions_text.height = 61
-        instructions_text.text = "Box2DMonkey 0.1\n'Left/Right arrows to go to previous/next example. \nR to reset."
+        instructions_text.text = "Box2DMonkey " + VersionString + " - Left/Right arrows go to previous/next example. R to reset."
         m_display.AddChild(instructions_text)
+        Local instructions_text2 :TextField = New TextField()
+        instructions_text2.x = 7
+        instructions_text2.y = 20
+        instructions_text2.width = 495
+        instructions_text2.height = 61
+        instructions_text2.text = "Use the mouse to grab objects. Press D to delete the object under the pointer."
+        m_display.AddChild(instructions_text2)
         
         m_aboutText = New TextField()
-        m_aboutText.x = 400
-        m_aboutText.y = 5
+        m_aboutText.x = 7
+        m_aboutText.y = 45
         m_aboutText.width = 300
         m_aboutText.height = 30
         m_display.AddChild(m_aboutText)
         
-        SetUpdateRate(physicsRate)
+        SetUpdateRate(frameRate)
     End
     
     Method InitTest:Test( testName:String )
@@ -169,11 +173,19 @@ Class MainDemo Extends App
                 m_currTest = InitTest(tests[m_currId])
                 m_aboutText.text = m_currTest.name
             End
-            '// update current test
-            m_currTest.Update()
             
-            '// update counter
-            m_fpsCounter.Update()
+            Local ms = Millisecs()
+            If nextFrame = 0.0
+                nextFrame = Float(ms)
+            End
+            
+            While nextFrame < ms 
+	            '// update current test
+	            m_currTest.Update()
+	            '// update counter
+	            m_fpsCounter.Update()
+	            nextFrame += physicsFrameMS
+            End
         End
         
         

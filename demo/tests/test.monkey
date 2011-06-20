@@ -68,18 +68,18 @@ Class TestQueryAABBCallback Extends QueryFixtureCallback
     
 End
 
-Class TestRenderer Extends FlashDisplayObject
-    Field m_world:b2World
-    
-    Method New(world:b2World)
-        m_world = world
-    End
-    
-    Method OnRender()
-        '// Render
-        m_world.DrawDebugData()
-    End
-End
+'Class TestRenderer Extends FlashDisplayObject
+'    Field m_world:b2World
+'    
+'    Method New(world:b2World)
+'        m_world = world
+'    End
+'    
+'    Method OnRender()
+'        '// Render
+'        m_world.DrawDebugData()
+'    End
+'End
 
 Class Test
     Field width:Int = 640

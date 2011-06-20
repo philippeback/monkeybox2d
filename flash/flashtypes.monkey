@@ -91,16 +91,16 @@ Class FlashDisplayObject Abstract
     Field width:Int
     Field height:Int
     
-    Method OnRender() Abstract
+    Method OnRender(x:Int, y:Int) Abstract
 End
 
 Class TextField Extends FlashDisplayObject
     Field text:String
     
-    Method OnRender()
+    Method OnRender(x:Int,y:Int)
         Local color:=GetColor()
         SetColor(255,255,255)
-        DrawText(text,x,y)
+        DrawText(text,Self.x+x,Self.y+y)
         SetColor(color[0],color[1],color[2])
     End
     
@@ -119,9 +119,9 @@ Class FlashSprite Extends FlashDisplayObject
         Return child
     End
     
-    Method OnRender()
+    Method OnRender(x:Int,y:Int)
         For Local displayObject:FlashDisplayObject = Eachin displayList
-            displayObject.OnRender()
+            displayObject.OnRender(Self.x+x,Self.y+y)
         Next
     End
 End
