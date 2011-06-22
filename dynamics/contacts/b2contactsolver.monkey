@@ -45,9 +45,14 @@ Import box2d.dynamics.contacts
 #end
 Class b2ContactSolver
     
+    Field m_step:b2TimeStep = New b2TimeStep()
+    Field m_allocator: Object
+    Field m_constraints:FlashArray<b2ContactConstraint> = New FlashArray<b2ContactConstraint> ()
+    Field m_constraintCount:int
+    
     Method New()
-        
     End
+    
     Global s_worldManifold:b2WorldManifold = New b2WorldManifold()
     Method Initialize : void (timeStep:b2TimeStep, contacts:FlashArray<b2Contact>, contactCount:int, allocator: Object)
         
@@ -111,7 +116,7 @@ Class b2ContactSolver
             For Local k:Int = 0 Until cc.pointCount
                 
                 Local cp :b2ManifoldPoint = manifold.m_points.Get( k )
-                Local ccp :b2ContactConstraintPoint = cc.points.Get( k )
+                Local ccp :b2ContactConstraintPoint = cc.points[k]
                 ccp.normalImpulse = cp.m_normalImpulse
                 ccp.tangentImpulse = cp.m_tangentImpulse
                 ccp.localPoint.SetV(cp.m_localPoint)
@@ -163,8 +168,8 @@ Class b2ContactSolver
             '// If we have two points, then prepare the block solver.
             If (cc.pointCount = 2)
                 
-                Local ccp1 :b2ContactConstraintPoint = cc.points.Get(0)
-                Local ccp2 :b2ContactConstraintPoint = cc.points.Get(1)
+                Local ccp1 :b2ContactConstraintPoint = cc.points[0]
+                Local ccp2 :b2ContactConstraintPoint = cc.points[1]
                 Local invMassA :Float = bodyA.m_invMass
                 Local invIA :Float = bodyA.m_invI
                 Local invMassB :Float = bodyB.m_invMass
@@ -230,7 +235,7 @@ Class b2ContactSolver
                 tCount = c.pointCount
                 For Local j:Int = 0 Until tCount
                     
-                    Local ccp :b2ContactConstraintPoint = c.points.Get( j )
+                    Local ccp :b2ContactConstraintPoint = c.points[j]
                     ccp.normalImpulse *= timeStep.dtRatio
                     ccp.tangentImpulse *= timeStep.dtRatio
                     '//b2Vec2 P = ccp->normalImpulse * normal + ccp->tangentImpulse * tangent
@@ -254,7 +259,7 @@ Class b2ContactSolver
                 tCount = c.pointCount
                 For Local j:Int = 0 Until tCount
                     
-                    Local ccp2 :b2ContactConstraintPoint = c.points.Get( j )
+                    Local ccp2 :b2ContactConstraintPoint = c.points[j]
                     ccp2.normalImpulse = 0.0
                     ccp2.tangentImpulse = 0.0
                 End
@@ -312,7 +317,7 @@ Class b2ContactSolver
             '// Solve the tangent constraints
             For Local j:Int = 0 Until c.pointCount
                 
-                ccp = c.points.Get(j)
+                ccp = c.points[j]
                 '// Relative velocity at contact
                 '//b2Vec2 dv = vB + b2Cross(wB, ccp->rB) - vA - b2Cross(wA, ccp->rA)
                 dvX = vB.x - wB * ccp.rB.y - vA.x + wA * ccp.rA.y
@@ -339,7 +344,7 @@ Class b2ContactSolver
             Local tCount :int = c.pointCount
             If (c.pointCount = 1)
                 
-                ccp = c.points.Get( 0 )
+                ccp = c.points[0]
                 '// Relative velocity at contact
                 '//b2Vec2 dv = vB + b2Cross(wB, ccp->rB) - vA - b2Cross(wA, ccp->rA)
                 dvX = vB.x + (wB * -ccp.rB.y) - vA.x - (wA * -ccp.rA.y)
@@ -403,8 +408,8 @@ Class b2ContactSolver
                 '//    = A * x + b - A * a
                 '//    = A * x + b
                 '// b = b - A * a
-                Local cp1 :b2ContactConstraintPoint = c.points.Get( 0 )
-                Local cp2 :b2ContactConstraintPoint = c.points.Get( 1 )
+                Local cp1 :b2ContactConstraintPoint = c.points[0]
+                Local cp2 :b2ContactConstraintPoint = c.points[1]
                 Local aX :Float = cp1.normalImpulse
                 Local aY :Float = cp2.normalImpulse
                 '//b2Settings.B2Assert( aX >= 0.0f And aY >= 0.0f )
@@ -676,7 +681,7 @@ Class b2ContactSolver
             For Local j:Int = 0 Until c.pointCount
                 
                 Local point1 :b2ManifoldPoint = m.m_points.Get(j)
-                Local point2 :b2ContactConstraintPoint = c.points.Get(j)
+                Local point2 :b2ContactConstraintPoint = c.points[j]
                 point1.m_normalImpulse = point2.normalImpulse
                 point1.m_tangentImpulse = point2.tangentImpulse
             End
@@ -804,7 +809,7 @@ Class b2ContactSolver
             '// Solve normal constraints
             For Local j:Int = 0 Until c.pointCount
                 
-                Local ccp :b2ContactConstraintPoint = c.points.Get(j)
+                Local ccp :b2ContactConstraintPoint = c.points[j]
                 Local point :b2Vec2 = s_psm.m_points.Get(j)
                 Local separation :Float = s_psm.m_separations.Get(j)
                 Local rAX :Float = point.x - bodyA.m_sweep.c.x
@@ -844,19 +849,6 @@ Class b2ContactSolver
         '// push the separation above -b2_linearSlop.
         Return minSeparation > -1.5 * b2Settings.b2_linearSlop
     End
-    '//#endif
-    Field m_step:b2TimeStep = New b2TimeStep()
-    
-    
-    Field m_allocator: Object
-    
-    
-    Field m_constraints:FlashArray<b2ContactConstraint> = New FlashArray<b2ContactConstraint> ()
-    
-    
-    Field m_constraintCount:int
-    
-    
 End
 
 

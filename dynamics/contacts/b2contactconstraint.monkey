@@ -45,14 +45,13 @@ Class b2ContactConstraint
     
     Method New()
         
-        points = New FlashArray<b2ContactConstraintPoint>(b2Settings.b2_maxManifoldPoints)
+        points = New b2ContactConstraintPoint[b2Settings.b2_maxManifoldPoints]
         For Local i:Int = 0 Until b2Settings.b2_maxManifoldPoints
-            
-            points.Set( i,  New b2ContactConstraintPoint() )
+            points[i] = New b2ContactConstraintPoint()
         End
     End
     
-    Field points:FlashArray<b2ContactConstraintPoint>
+    Field points:b2ContactConstraintPoint[]
     
     Field localPlaneNormal:b2Vec2 = New b2Vec2()
     

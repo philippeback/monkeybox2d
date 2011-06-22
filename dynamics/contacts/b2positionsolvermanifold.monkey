@@ -73,7 +73,7 @@ Class b2PositionSolverManifold
                 Local pointAY :Float = cc.bodyA.m_xf.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
                 '//var pointB:b2Vec2 = cc.bodyB.GetWorldPoint(cc.points.Get(0).localPoint)
                 tMat = cc.bodyB.m_xf.R
-                tVec = cc.points.Get(0).localPoint
+                tVec = cc.points[0].localPoint
                 Local pointBX :Float = cc.bodyB.m_xf.position.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
                 Local pointBY :Float = cc.bodyB.m_xf.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
                 Local dX :Float = pointBX - pointAX
@@ -111,7 +111,7 @@ Class b2PositionSolverManifold
                 For Local i:Int = 0 Until cc.pointCount
                     
                     '//clipPoint = cc.bodyB.GetWorldPoint(cc.points.Get(i).localPoint)
-                    tVec = cc.points.Get(i).localPoint
+                    tVec = cc.points[i].localPoint
                     clipPointX = cc.bodyB.m_xf.position.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
                     clipPointY = cc.bodyB.m_xf.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
                     m_separations.Set( i,  (clipPointX - planePointX) * m_normal.x + (clipPointY - planePointY) * m_normal.y - cc.radius )
@@ -135,7 +135,7 @@ Class b2PositionSolverManifold
                 For Local i:Int = 0 Until cc.pointCount
                     
                     '//clipPoint = cc.bodyA.GetWorldPoint(cc.points.Get(i).localPoint)
-                    tVec = cc.points.Get(i).localPoint
+                    tVec = cc.points[i].localPoint
                     clipPointX = cc.bodyA.m_xf.position.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
                     clipPointY = cc.bodyA.m_xf.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
                     m_separations.Set( i,  (clipPointX - planePointX) * m_normal.x + (clipPointY - planePointY) * m_normal.y - cc.radius )
