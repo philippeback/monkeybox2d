@@ -163,10 +163,10 @@ Class Test
         MouseDestroy()
         MouseDrag()
         '// Update physics
-        Local physStart :Int = Millisecs()
+        MainDemo.m_fpsCounter.StartPhysics()
         m_world.TimeStep(m_timeStep, m_velocityIterations, m_positionIterations)
         m_world.ClearForces()
-        MainDemo.m_fpsCounter.UpdatePhys(physStart)
+        MainDemo.m_fpsCounter.EndPhysics()
     End
     
     '//===========

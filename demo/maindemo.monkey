@@ -46,6 +46,7 @@ Class MainDemo Extends App
     Const frameRate:Int = 30
     Const physicsRate:Int = 60
     Const physicsFrameMS:Float = 1000.0/physicsRate
+    Const physicsFramesPerRender = Float(physicsRate)/frameRate
     Field nextFrame:Float = 0.0
 
     Global m_display:FlashSprite = New FlashSprite()
@@ -58,12 +59,16 @@ Class MainDemo Extends App
     Field tests : String[]
     
     Method OnRender()
-        
+	    
+        m_fpsCounter.StartRender()
+	    
         If ( m_currTest <> Null)
             m_currTest.OnRender()
         Else
             Cls()
         End
+        m_fpsCounter.EndRender()
+	
         m_display.OnRender(0,0)
     End
     
@@ -175,15 +180,12 @@ Class MainDemo Extends App
             End
             
             Local ms = Millisecs()
-            If nextFrame = 0.0
-                nextFrame = Float(ms)
+            If nextFrame = 0.0 Or (ms - nextFrame) > (physicsFramesPerRender*physicsFrameMS)
+                nextFrame = Float(ms)-physicsFramesPerRender*physicsFrameMS
             End
-            
             While nextFrame < ms 
 	            '// update current test
 	            m_currTest.Update()
-	            '// update counter
-	            m_fpsCounter.Update()
 	            nextFrame += physicsFrameMS
             End
         End

@@ -34,68 +34,99 @@ Import mojo
 
 Class FpsCounter Extends FlashSprite
     
-    Field textBox :TextField
-    Field textBox2 :TextField
+    Field physicsRateTextBox :TextField
+    Field renderRateTextBox :TextField
 
-    Field mfpsCount :Int = 0
-    Field mfpsCount2 :Int = 0
-	Const AverageSample:Int = 30
-    Field avgCount :Int = AverageSample
-    Field avgCount2 :Int = AverageSample
-    Field oldT :Int
+    Const AverageSample:Int = 120
 
     Method New()
-        '// create text field
-        textBox = New TextField()
-        textBox.text = "..."
         
-        textBox2 = New TextField()
-        textBox2.text = "..."
-        textBox2.width = 150
-        textBox2.x = 230
-        textBox2.y = 0
+        physicsRateTextBox = New TextField()
+        physicsRateTextBox.text = "..."
+        physicsRateTextBox.width = 150
+        physicsRateTextBox.x = 0'230
+        physicsRateTextBox.y = 0
         
+        renderRateTextBox = New TextField()
+        renderRateTextBox.text = "..."
+        renderRateTextBox.width = 150
+        renderRateTextBox.x = 0
+        renderRateTextBox.y = 15
 
-        '// set initial lastTime
-        oldT = Millisecs()
-        AddChild(textBox)
-        AddChild(textBox2)
+        AddChild(physicsRateTextBox)
+        AddChild(renderRateTextBox)
     End
 
-    Method Update : void ()
-        
-        Local newT :Int = Millisecs()
-        Local f1 :Int = newT-oldT
-        mfpsCount += f1
-        If (avgCount < 1)
-            textBox.text = String(Math.Round(1000.0/(Float(mfpsCount)/AverageSample))+" actual updates/sec average")
-            avgCount = AverageSample
-            mfpsCount = 0
-        End
-        
-        avgCount -= 1
-        oldT = Millisecs()
+    Method StartPhysics:Void()
+        StartTimer(PhysicsID)
     End
-
-    Method UpdatePhys : void (oldT2:Int)
-        
-        Local newT :Int = Millisecs()
-        Local f1 :Int = newT-oldT2
-        mfpsCount2 += f1
-        If (avgCount2 < 1)
-            Local avgFrameMS:Float = Float(mfpsCount2)/AverageSample
-            Local maxFPS:Int = Math.Round(1000.0/avgFrameMS)
-            If avgFrameMS < 1
-                textBox2.text = String("Avg. Physics timeStep: < 1 ms (max. > 1000 updates/sec)")
-            Else
-                textBox2.text = String("Avg. Physics timeStep: " + Math.Round(avgFrameMS)+" ms (max. " + maxFPS +" updates/sec)")
-            End
-            avgCount2 = AverageSample
-            mfpsCount2 = 0
+    
+    Method EndPhysics:Void()
+        EndTimer(PhysicsID)
+        Local avgFrameMS:Float = GetAverageDuration(PhysicsID)
+        Local maxFPS:Int = Math.Round(1000.0/avgFrameMS)
+        If avgFrameMS < 1
+            physicsRateTextBox.text = String("Actual physics updates/sec: " + Math.Round(GetActualRate(PhysicsID)) + ", Avg: < 1 ms (max. > 1000 updates/sec)")
+        Else
+            physicsRateTextBox.text = String("Actual physics updates/sec: " + Math.Round(GetActualRate(PhysicsID)) + ", Avg update: " + Math.Round(avgFrameMS)+" ms (max. " + maxFPS +" updates/sec)")
         End
+    End
+    
+    Method StartRender:Void()
+        StartTimer(RenderID)
+    End
+    
+    Method EndRender:Void()
+        EndTimer(RenderID)
+        Local avgFrameMS:Float = GetAverageDuration(RenderID)
+        Local maxFPS:Int = Math.Round(1000.0/avgFrameMS)
+        If avgFrameMS < 1
+            renderRateTextBox.text = String("Actual drawn FPS: " + Math.Round(GetActualRate(RenderID)) + ", Avg. Render time: < 1 ms (max. > 1000 frames/sec)")
+        Else
+            renderRateTextBox.text = String("Actual drawn FPS: " + Math.Round(GetActualRate(RenderID)) + ", Avg. Render time: " + Math.Round(avgFrameMS)+" ms (max. " + maxFPS +" frames/sec)")
+        End
+    End
+    
+    Const PhysicsID = 0
+    Const RenderID = 1
+    Const MaxTimings = 2
+    
+    Field startTimes:Int[][] = [New Int[AverageSample],New Int[AverageSample]]
+    Field durations:Int[] = [0,0]
+    Field times:Int[][] = [New Int[AverageSample],New Int[AverageSample]]
+    Field counts:Int[] = [0,0]
+    Field lastFrameIndex:Int[] = [0,0]
+    
+    Method GetActualRate : Float( id:Int )
+        If( startTimes[id][AverageSample-1] > 0 )
+            return Float(AverageSample-1) / (startTimes[id][lastFrameIndex[id]] - startTimes[id][(lastFrameIndex[id]+1) Mod AverageSample]) * 1000
+        Else
+            return Float(counts[id]-1)/(startTimes[id][lastFrameIndex[id]] - startTimes[id][0])*1000
+        End            
+    End
+    
+    Method GetAverageDuration : Float( id:Int )
+        If startTimes[id][AverageSample-1] = 0
+            return Float(durations[id])/counts[id]
+        Else
+            return Float(durations[id])/AverageSample
+        End
+    End
+    
+    Method StartTimer : Void ( id:Int )
+        startTimes[id][counts[id]] = Millisecs()
+    End
+    
+    Method EndTimer : Void ( id:Int )
+        Local newT :Int = Millisecs()
+        Local f1 :Int = newT-startTimes[id][counts[id]]
+        Local nextFrame = (counts[id] + 1) Mod AverageSample
         
-        avgCount2 -= 1
-        
+        durations[id] -= times[id][nextFrame]
+        durations[id] += f1
+        times[id][counts[id]] = f1
+        lastFrameIndex[id] = counts[id]
+        counts[id] = nextFrame
     End
 End
 
