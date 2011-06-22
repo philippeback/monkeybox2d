@@ -157,7 +157,7 @@ Class FlashArray<T>
     End
     
     Method Get:T( index:Int)
-        If( index >=0 And Length > index )
+        If( index >=0 And length > index )
             Return arr[index]
         Else
             Return Null
