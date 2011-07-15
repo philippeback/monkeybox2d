@@ -40,18 +40,19 @@ Import box2d.collision.shapes
 '* @see b2EdgeShape
 '*/
 #end
-Class b2EdgeChainDef Method New()
-    
-    '//type = b2Shape.e_edgeShape
-    vertexCount = 0
-    isALoop = True
-    vertices = []
-End
-'* The vertices in local coordinates.
-Field vertices: Array
-'* The number of vertices in the chain.
-Field vertexCount: int
-'* Whether to create an extra edge between the first and last vertices.
-Field isALoop: Bool
+Class b2EdgeChainDef
+	'* The vertices in local coordinates.
+	Field vertices: Array
+	'* The number of vertices in the chain.
+	Field vertexCount: int
+	'* Whether to create an extra edge between the first and last vertices.
+	Field isALoop: Bool
 
+	Method New()
+		'//type = b2Shape.e_edgeShape
+	    vertexCount = 0
+	    isALoop = True
+	    vertices = []
+	End
+	
 End
