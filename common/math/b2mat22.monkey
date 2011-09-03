@@ -57,8 +57,8 @@ Class b2Mat22
     End
     Method Set : void (angle:Float)
         
-        Local c :Float = Math.Cos(angle)
-        Local s :Float = Math.Sin(angle)
+        Local c :Float = Cosr(angle)
+        Local s :Float = Sinr(angle)
         col1.x = c
         col2.x = -s
         col1.y = s
@@ -105,7 +105,7 @@ Class b2Mat22
     End
     Method GetAngle : Float ()
         
-        Return Math.ATan2(col1.y, col1.x)
+        Return ATan2r(col1.y, col1.x)
     End
     #rem
     '/**

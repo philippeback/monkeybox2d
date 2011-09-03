@@ -52,37 +52,6 @@ Class Math
             Return Ceil(f)
         End
     End
-    
-    Const RadsPerDegree : Float = TWOPI/360.0
-    Const DegreesPerRad : Float = 360.0/TWOPI
-    
-    Function Sin: Float( rads: Float)
-        Return monkey.math.Sin( rads * DegreesPerRad )
-    End
-    
-    Function Cos: Float( rads: Float)
-        Return monkey.math.Cos( rads * DegreesPerRad )
-    End
-    
-    Function ASin: Float( x: Float)
-        Return monkey.math.ASin( x ) * RadsPerDegree
-    End
-    
-    Function ACos: Float( x: Float)
-        Return monkey.math.ACos( x ) * RadsPerDegree
-    End
-    
-    Function Tan: Float( rads: Float)
-        Return monkey.math.Tan( rads * DegreesPerRad )
-    End
-    
-    Function ATan: Float( x: Float)
-        Return monkey.math.ATan( x ) * RadsPerDegree
-    End
-    
-    Function ATan2: Float( x: Float, y: Float)
-        Return monkey.math.ATan2( x, y ) * RadsPerDegree
-    End
 End
 
 Class FlashDisplayObject Abstract
@@ -387,7 +356,7 @@ Class HaxeFastList<T>
     End
     
     Method RemoveEach( value:T )
-        Local node:=_head
+        Local node:HaxeFastCell<T>=_head
         While node<>null
             Local nextnode:=node.nextItem
             If Equals( node.elt,value )

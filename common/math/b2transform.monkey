@@ -82,7 +82,7 @@ Class b2Transform
     #end
     Method GetAngle : Float ()
         
-        Return Math.ATan2(R.col1.y, R.col1.x)
+        Return ATan2r(R.col1.y, R.col1.x)
     End
     Field position:b2Vec2 = New b2Vec2
     

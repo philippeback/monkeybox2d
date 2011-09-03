@@ -740,7 +740,7 @@ Class b2PolygonShape Extends b2Shape
             '// Keep ASinf happy.
             'cross = b2Math.b2Clamp(cross, -1.0, 1.0)
             '// You have consecutive edges that are almost parallel on your polygon.
-            'Local angle :Float = Math.ASin(cross)
+            'Local angle :Float = ASinr(cross)
             '//b2Assert(angle > b2_angularSlop)
             'trace(angle > b2Settings.b2_angularSlop)
             'End

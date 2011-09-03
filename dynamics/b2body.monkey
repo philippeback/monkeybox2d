@@ -56,8 +56,8 @@ End
 Class b2Body
     Method ConnectEdges : Float (s1: b2EdgeShape, s2: b2EdgeShape, angle1:Float)
         
-        Local angle2 :Float = Math.ATan2(s2.GetDirectionVector().y, s2.GetDirectionVector().x)
-        Local coreOffset :Float = Math.Tan((angle2 - angle1) * 0.5)
+        Local angle2 :Float = ATan2r(s2.GetDirectionVector().y, s2.GetDirectionVector().x)
+        Local coreOffset :Float = Tanr((angle2 - angle1) * 0.5)
         Local core : b2Vec2 = b2Math.MulFV(coreOffset, s2.GetDirectionVector())
         core = b2Math.SubtractVV(core, s2.GetNormalVector())
         core = b2Math.MulFV(b2Settings.b2_toiSlop, core)
@@ -129,7 +129,7 @@ Class b2Body
         'if (s1 = null)
         '
         's0 = s2
-        'angle = Math.ATan2(s2.GetDirectionVector().y, s2.GetDirectionVector().x)
+        'angle = ATan2r(s2.GetDirectionVector().y, s2.GetDirectionVector().x)
         'Else
         '
         '

@@ -187,7 +187,7 @@ Class b2CircleShape Extends b2Shape
         '//Magic
         Local r2 :Float = m_radius * m_radius
         Local l2 :Float = l * l
-        Local area :Float = r2 *( Math.ASin(l / m_radius) + Constants.PI / 2) + l * Sqrt( r2 - l2 )
+        Local area :Float = r2 *( ASinr(l / m_radius) + Constants.PI / 2) + l * Sqrt( r2 - l2 )
         Local com :Float = -2 / 3 * Pow(r2 - l2, 1.5) / area
         c.x = p.x + normal.x * com
         c.y = p.y + normal.y * com
