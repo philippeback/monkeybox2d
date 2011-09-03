@@ -46,25 +46,25 @@ Class b2Collision
     Const b2_nullFeature:Int = $000000ff
     '//UCHAR_MAX
     '// Sutherland-Hodgman clipping.
-    Function ClipSegmentToLine : int (vOut:FlashArray<ClipVertex>, vIn:FlashArray<ClipVertex>, normal:b2Vec2, offset:Float)
+    Function ClipSegmentToLine : int (vOut:ClipVertex[], vIn:ClipVertex[], normal:b2Vec2, offset:Float)
         
         Local cv :ClipVertex
         '// Start with no output points
         Local numOut :int = 0
-        cv = vIn.Get(0)
+        cv = vIn[0]
         Local vIn0 :b2Vec2 = cv.v
-        cv = vIn.Get(1)
+        cv = vIn[1]
         Local vIn1 :b2Vec2 = cv.v
         '// Calculate the distance of end points to the line
         Local distance0 :Float = normal.x * vIn0.x + normal.y * vIn0.y - offset
         Local distance1 :Float = normal.x * vIn1.x + normal.y * vIn1.y - offset
         '// If the points are behind the plane
         If (distance0 <= 0.0)
-            vOut.Get(numOut).Set(vIn.Get(0))
+            vOut[numOut].Set(vIn[0])
             numOut += 1
         End
         If (distance1 <= 0.0)
-            vOut.Get(numOut).Set(vIn.Get(1))
+            vOut[numOut].Set(vIn[1])
             numOut += 1
         End
         '// If the points are on different sides of the plane
@@ -74,20 +74,20 @@ Class b2Collision
             Local interp :Float = distance0 / (distance0 - distance1)
             '// expanded for performance
             '// vOut.Get(numOut).v = vIn.Get(0).v + interp * (vIn.Get(1).v - vIn.Get(0).v)
-            cv = vOut.Get(numOut)
+            cv = vOut[numOut]
             Local tVec :b2Vec2 = cv.v
             tVec.x = vIn0.x + interp * (vIn1.x - vIn0.x)
             tVec.y = vIn0.y + interp * (vIn1.y - vIn0.y)
-            cv = vOut.Get(numOut)
+            cv = vOut[numOut]
             Local cv2 : ClipVertex
             If (distance0 > 0.0)
                 
-                cv2 = vIn.Get(0)
+                cv2 = vIn[0]
                 cv.id = cv2.id
             Else
                 
                 
-                cv2 = vIn.Get(1)
+                cv2 = vIn[1]
                 cv.id = cv2.id
             End
             
@@ -152,11 +152,11 @@ Class b2Collision
     
     '// Find the max separation between poly1 and poly2 using edge normals
     '// from poly1.0
-    Function FindMaxSeparation : Float (edgeIndex:FlashArray<IntObject>,
+    Function FindMaxSeparation : Float (edgeIndex:Int[],
         poly1:b2PolygonShape, xf1:b2Transform,
         poly2:b2PolygonShape, xf2:b2Transform)
         
-        Local count1 :int = poly1.m_vertexCount
+        Local count1:Int = poly1.m_vertexCount
         Local normals1:b2Vec2[] = poly1.m_normals
         Local tVec :b2Vec2
         Local tMat :b2Mat22
@@ -189,7 +189,7 @@ Class b2Collision
         '// Get the separation for the edge normal.
         Local s :Float = EdgeSeparation(poly1, xf1, edge, poly2, xf2)
         '// Check the separation for the previous edge normal.
-        Local prevEdge :int =  count1 - 1
+        Local prevEdge:Int =  count1 - 1
         
         If( edge - 1 >= 0  )
             prevEdge =  edge - 1
@@ -219,7 +219,7 @@ Class b2Collision
             bestSeparation = sNext
         Else
             '// pointer out
-            edgeIndex.Set( 0,  edge )
+            edgeIndex[0] = edge
             Return s
         End
         
@@ -250,11 +250,11 @@ Class b2Collision
             End
         End
         '// pointer out
-        edgeIndex.Set( 0,  bestEdge )
+        edgeIndex[0] = bestEdge
         Return bestSeparation
     End
     
-    Function FindIncidentEdge : void (c:FlashArray<ClipVertex>,
+    Function FindIncidentEdge : void (c:ClipVertex[],
         poly1:b2PolygonShape, xf1:b2Transform, edge1:int,
         poly2:b2PolygonShape, xf2:b2Transform)
         
@@ -297,7 +297,7 @@ Class b2Collision
         If( i1 + 1 < count2  )
             i2 =  i1 + 1
         End
-        tClip = c.Get(0)
+        tClip = c[0]
         '//c.Get(0).v = b2Mul(xf2, vertices2.Get(i1))
         tVec = vertices2[i1]
         tMat = xf2.R
@@ -306,7 +306,7 @@ Class b2Collision
         tClip.id.features.ReferenceEdge = edge1
         tClip.id.features.IncidentEdge = i1
         tClip.id.features.IncidentVertex = 0
-        tClip = c.Get(1)
+        tClip = c[1]
         '//c.Get(1).v = b2Mul(xf2, vertices2.Get(i2))
         tVec = vertices2[i2]
         tMat = xf2.R
@@ -317,18 +317,15 @@ Class b2Collision
         tClip.id.features.IncidentVertex = 1
     End
     
-    Function MakeClipPointVector : FlashArray<ClipVertex> ()
-        Local r :FlashArray<ClipVertex> = New FlashArray<ClipVertex>(2)
-        r.Set( 0,  New ClipVertex() )
-        r.Set( 1,  New ClipVertex() )
-        Return r
+    Function MakeClipPointVector : ClipVertex[] ()
+        Return [New ClipVertex(),New ClipVertex()]
     End
     
-    Global s_incidentEdge:FlashArray<ClipVertex> = MakeClipPointVector()
-    Global s_clipPoints1:FlashArray<ClipVertex> = MakeClipPointVector()
-    Global s_clipPoints2:FlashArray<ClipVertex> = MakeClipPointVector()
-    Global s_edgeAO:FlashArray<IntObject> = New FlashArray<IntObject>(1)
-    Global s_edgeBO:FlashArray<IntObject> = New FlashArray<IntObject>(1)
+    Global s_incidentEdge:ClipVertex[] = MakeClipPointVector()
+    Global s_clipPoints1:ClipVertex[] = MakeClipPointVector()
+    Global s_clipPoints2:ClipVertex[] = MakeClipPointVector()
+    Global s_edgeAO:Int[] = New Int[1]
+    Global s_edgeBO:Int[] = New Int[1]
     Global s_localTangent:b2Vec2 = New b2Vec2()
     Global s_localNormal:b2Vec2 = New b2Vec2()
     Global s_planePoint:b2Vec2 = New b2Vec2()
@@ -351,17 +348,17 @@ Class b2Collision
         Local cv : ClipVertex
         manifold.m_pointCount = 0
         Local totalRadius :Float = polyA.m_radius + polyB.m_radius
-        Local edgeA :int = 0
-        s_edgeAO.Set( 0,  edgeA )
+        Local edgeA:Int = 0
+        s_edgeAO[0] = edgeA
         Local separationA :Float = FindMaxSeparation(s_edgeAO, polyA, xfA, polyB, xfB)
-        edgeA = s_edgeAO.Get(0)
+        edgeA = s_edgeAO[0]
         If (separationA > totalRadius)
             Return
         End
-        Local edgeB :int = 0
-        s_edgeBO.Set( 0,  edgeB )
+        Local edgeB:Int = 0
+        s_edgeBO[0] = edgeB
         Local separationB :Float = FindMaxSeparation(s_edgeBO, polyB, xfB, polyA, xfA)
-        edgeB = s_edgeBO.Get(0)
+        edgeB = s_edgeBO[0]
         If (separationB > totalRadius)
             Return
         End
@@ -378,7 +375,6 @@ Class b2Collision
         const k_absoluteTol:Float = 0.001
         Local tMat :b2Mat22
         If (separationB > k_relativeTol * separationA + k_absoluteTol)
-            
             poly1 = polyB
             poly2 = polyA
             xf1 = xfB
@@ -387,8 +383,6 @@ Class b2Collision
             manifold.m_type = b2Manifold.e_faceB
             flip = 1
         Else
-            
-            
             poly1 = polyA
             poly2 = polyB
             xf1 = xfA
@@ -397,7 +391,8 @@ Class b2Collision
             manifold.m_type = b2Manifold.e_faceA
             flip = 0
         End
-        Local incidentEdge :FlashArray<ClipVertex> = s_incidentEdge
+        
+        Local incidentEdge:ClipVertex[] = s_incidentEdge
         FindIncidentEdge(incidentEdge, poly1, xf1, edge1, poly2, xf2)
         Local count1 :int = poly1.m_vertexCount
         Local vertices1:b2Vec2[] = poly1.m_vertices
@@ -443,8 +438,8 @@ Class b2Collision
         Local sideOffset1 :Float = -tangent.x * v11.x - tangent.y * v11.y + totalRadius
         Local sideOffset2 :Float = tangent.x * v12.x + tangent.y * v12.y + totalRadius
         '// Clip incident edge against extruded edge1 side edges.
-        Local clipPoints1 :FlashArray<ClipVertex> = s_clipPoints1
-        Local clipPoints2 :FlashArray<ClipVertex> = s_clipPoints2
+        Local clipPoints1:ClipVertex[] = s_clipPoints1
+        Local clipPoints2:ClipVertex[] = s_clipPoints2
         Local np :int
         '// Clip to box side 1
         '//np = ClipSegmentToLine(clipPoints1, incidentEdge, -tangent, sideOffset1)
@@ -460,10 +455,10 @@ Class b2Collision
         '// Now clipPoints2 contains the clipped points.
         manifold.m_localPlaneNormal.SetV(localNormal)
         manifold.m_localPoint.SetV(planePoint)
-        Local pointCount :int = 0
+        Local pointCount:Int = 0
         
         For Local i:Int = 0 Until b2Settings.b2_maxManifoldPoints
-            cv = clipPoints2.Get(i)
+            cv = clipPoints2[i]
             Local separation :Float = normal.x * cv.v.x + normal.y * cv.v.y - frontOffset
             If (separation <= totalRadius)
                 Local cp :b2ManifoldPoint = manifold.m_points.Get( pointCount )
