@@ -395,19 +395,20 @@ Class b2Island
         
         Report(contactSolver.m_constraints)
     End
+    
     Global s_impulse:b2ContactImpulse = New b2ContactImpulse()
-    Method Report : void (constraints:FlashArray<b2ContactConstraint>)
+
+    Method Report : void (constraints:b2ContactConstraint[])
         
         If (m_listener = null)
-            
             Return
         End
+        
         For Local i:Int = 0 Until m_contactCount
-            
             Local c :b2Contact = m_contacts.Get(i)
-            Local cc :b2ContactConstraint = constraints.Get( i )
-            For Local j:Int = 0 Until cc.pointCount
-                
+            Local cc :b2ContactConstraint = constraints[i]
+ 
+            For Local j:Int = 0 Until cc.pointCount                
                 s_impulse.normalImpulses.Set( j,  cc.points[j].normalImpulse )
                 s_impulse.tangentImpulses.Set( j,  cc.points[j].tangentImpulse )
             End
@@ -415,6 +416,7 @@ Class b2Island
             m_listener.PostSolve(c, s_impulse)
         End
     End
+    
     Method AddBody : void (body:b2Body)
         
         '//b2Settings.B2Assert(m_bodyCount < m_bodyCapacity)

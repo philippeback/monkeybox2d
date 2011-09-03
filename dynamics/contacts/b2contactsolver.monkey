@@ -47,7 +47,7 @@ Class b2ContactSolver
     
     Field m_step:b2TimeStep = New b2TimeStep()
     Field m_allocator: Object
-    Field m_constraints:FlashArray<b2ContactConstraint> = New FlashArray<b2ContactConstraint> ()
+    Field m_constraints:b2ContactConstraint[]
     Field m_constraintCount:int
     
     Method New()
@@ -64,9 +64,10 @@ Class b2ContactSolver
         Local tMat :b2Mat22
         m_constraintCount = contactCount
         '// fill vector to hold enough constraints
-        While (m_constraints.Length < m_constraintCount)
-            
-            m_constraints.Set( m_constraints.Length,  New b2ContactConstraint() )
+        m_constraints = New b2ContactConstraint[m_constraintCount]
+        
+        For Local i:Int = 0 Until m_constraintCount
+            m_constraints[i] =  New b2ContactConstraint()
         End
         For Local i:Int = 0 Until contactCount
             
@@ -94,7 +95,7 @@ Class b2ContactSolver
             s_worldManifold.Initialize(manifold, bodyA.m_xf, radiusA, bodyB.m_xf, radiusB)
             Local normalX :Float = s_worldManifold.m_normal.x
             Local normalY :Float = s_worldManifold.m_normal.y
-            Local cc :b2ContactConstraint = m_constraints.Get( i )
+            Local cc :b2ContactConstraint = m_constraints[i] 
             cc.bodyA = bodyA
             '//p
             cc.bodyB = bodyB
@@ -214,7 +215,7 @@ Class b2ContactSolver
         '// Warm start.
         For Local i:Int = 0 Until m_constraintCount
             
-            Local c :b2ContactConstraint = m_constraints.Get( i )
+            Local c :b2ContactConstraint = m_constraints[i]
             Local bodyA :b2Body = c.bodyA
             Local bodyB :b2Body = c.bodyB
             Local invMassA :Float = bodyA.m_invMass
@@ -294,7 +295,7 @@ Class b2ContactSolver
         Local tVec :b2Vec2
         For Local i:Int = 0 Until m_constraintCount
             
-            Local c :b2ContactConstraint = m_constraints.Get( i )
+            Local c :b2ContactConstraint = m_constraints[i]
             Local bodyA :b2Body = c.bodyA
             Local bodyB :b2Body = c.bodyB
             Local wA :Float = bodyA.m_angularVelocity
@@ -676,7 +677,7 @@ Class b2ContactSolver
         
         For Local i:Int = 0 Until m_constraintCount
             
-            Local c :b2ContactConstraint = m_constraints.Get( i )
+            Local c :b2ContactConstraint = m_constraints[i]
             Local m :b2Manifold = c.manifold
             For Local j:Int = 0 Until c.pointCount
                 
@@ -697,7 +698,7 @@ Class b2ContactSolver
     '//
     '//		For Local i:Int = 0 Until m_constraintCount
     '//		{
-    '//			var c:b2ContactConstraint = m_constraints.Get( i )
+    '//			var c:b2ContactConstraint = m_constraints[i]
     '//			var bodyA:b2Body = c.bodyA
     '//			var bodyB:b2Body = c.bodyB
     '//			var bA_sweep_c:b2Vec2 = bodyA.m_sweep.c
@@ -797,7 +798,7 @@ Class b2ContactSolver
         Local minSeparation :Float = 0.0
         For Local i:Int = 0 Until m_constraintCount
             
-            Local c :b2ContactConstraint = m_constraints.Get(i)
+            Local c :b2ContactConstraint = m_constraints[i]
             Local bodyA :b2Body = c.bodyA
             Local bodyB :b2Body = c.bodyB
             Local invMassA :Float = bodyA.m_mass * bodyA.m_invMass
