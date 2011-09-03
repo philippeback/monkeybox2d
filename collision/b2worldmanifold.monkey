@@ -43,10 +43,9 @@ Class b2WorldManifold
     
     Method New()
         
-        m_points = New FlashArray<b2Vec2>(b2Settings.b2_maxManifoldPoints)
+        m_points = New b2Vec2[b2Settings.b2_maxManifoldPoints]
         For Local i:Int = 0 Until b2Settings.b2_maxManifoldPoints
-            
-            m_points.Set( i,  New b2Vec2() )
+            m_points[i] = New b2Vec2()
         End
     End
     #rem
@@ -62,9 +61,9 @@ Class b2WorldManifold
         xfB:b2Transform, radiusB:Float)
         
         If (manifold.m_pointCount = 0)
-            
             Return
         End
+        
         Local i :int
         Local tVec :b2Vec2
         Local tMat :b2Mat22
@@ -74,6 +73,7 @@ Class b2WorldManifold
         Local planePointY :Float
         Local clipPointX :Float
         Local clipPointY :Float
+        
         Select(manifold.m_type)
             
             Case b2Manifold.e_circles
@@ -85,31 +85,29 @@ Class b2WorldManifold
                 Local pointAY :Float = xfA.position.y + tMat.col1.y * tVec.x + tMat.col2.y * tVec.y
                 '//var pointB:b2Vec2 = b2Math.b2MulX(xfB, manifold.m_points.Get(0).m_localPoint)
                 tMat = xfB.R
-                tVec = manifold.m_points.Get(0).m_localPoint
+                tVec = manifold.m_points[0].m_localPoint
                 Local pointBX :Float = xfB.position.x + tMat.col1.x * tVec.x + tMat.col2.x * tVec.y
                 Local pointBY :Float = xfB.position.y + tMat.col1.y * tVec.x + tMat.col2.y * tVec.y
                 Local dX :Float = pointBX - pointAX
                 Local dY :Float = pointBY - pointAY
                 Local d2 :Float = dX * dX + dY * dY
                 If (d2 > Constants.EPSILON * Constants.EPSILON)
-                    
                     Local d :Float = Sqrt(d2)
                     m_normal.x = dX/d
                     m_normal.y = dY/d
                 Else
-                    
-                    
                     m_normal.x = 1
                     m_normal.y = 0
                 End
+                
                 '//b2Vec2 cA = pointA + radiusA * m_normal
                 Local cAX :Float = pointAX + radiusA * m_normal.x
                 Local cAY :Float = pointAY + radiusA * m_normal.y
                 '//b2Vec2 cB = pointB - radiusB * m_normal
                 Local cBX :Float = pointBX - radiusB * m_normal.x
                 Local cBY :Float = pointBY - radiusB * m_normal.y
-                m_points.Get(0).x = 0.5 * (cAX + cBX)
-                m_points.Get(0).y = 0.5 * (cAY + cBY)
+                m_points[0].x = 0.5 * (cAX + cBX)
+                m_points[0].y = 0.5 * (cAY + cBY)
                 
             Case b2Manifold.e_faceA
                 
@@ -130,14 +128,14 @@ Class b2WorldManifold
                     
                     '//clipPoint = b2Math.b2MulX(xfB, manifold.m_points.Get(i).m_localPoint)
                     tMat = xfB.R
-                    tVec = manifold.m_points.Get(i).m_localPoint
+                    tVec = manifold.m_points[i].m_localPoint
                     clipPointX = xfB.position.x + tMat.col1.x * tVec.x + tMat.col2.x * tVec.y
                     clipPointY = xfB.position.y + tMat.col1.y * tVec.x + tMat.col2.y * tVec.y
                     '//b2Vec2 cA = clipPoint + (radiusA - b2Dot(clipPoint - planePoint, normal)) * normal
                     '//b2Vec2 cB = clipPoint - radiusB * normal
                     '//m_points.Set( i,  0.5f * (cA + cB) )
-                    m_points.Get(i).x = clipPointX + 0.5 * (radiusA - (clipPointX - planePointX) * normalX - (clipPointY - planePointY) * normalY - radiusB ) * normalX
-                    m_points.Get(i).y = clipPointY + 0.5 * (radiusA - (clipPointX - planePointX) * normalX - (clipPointY - planePointY) * normalY - radiusB ) * normalY
+                    m_points[i].x = clipPointX + 0.5 * (radiusA - (clipPointX - planePointX) * normalX - (clipPointY - planePointY) * normalY - radiusB ) * normalX
+                    m_points[i].y = clipPointY + 0.5 * (radiusA - (clipPointX - planePointX) * normalX - (clipPointY - planePointY) * normalY - radiusB ) * normalY
                 End
             Case b2Manifold.e_faceB
                 
@@ -158,14 +156,14 @@ Class b2WorldManifold
                     
                     '//clipPoint = b2Math.b2MulX(xfA, manifold.m_points.Get(i).m_localPoint)
                     tMat = xfA.R
-                    tVec = manifold.m_points.Get(i).m_localPoint
+                    tVec = manifold.m_points[i].m_localPoint
                     clipPointX = xfA.position.x + tMat.col1.x * tVec.x + tMat.col2.x * tVec.y
                     clipPointY = xfA.position.y + tMat.col1.y * tVec.x + tMat.col2.y * tVec.y
                     '//b2Vec2 cA = clipPoint - radiusA * normal
                     '//b2Vec2 cB = clipPoint + (radiusB - b2Dot(clipPoint - planePoint, normal)) * normal
                     '//m_points.Set( i,  0.5f * (cA + cB) )
-                    m_points.Get(i).x = clipPointX + 0.5 * (radiusB - (clipPointX - planePointX) * normalX - (clipPointY - planePointY) * normalY - radiusA ) * normalX
-                    m_points.Get(i).y = clipPointY + 0.5 * (radiusB - (clipPointX - planePointX) * normalX - (clipPointY - planePointY) * normalY - radiusA ) * normalY
+                    m_points[i].x = clipPointX + 0.5 * (radiusB - (clipPointX - planePointX) * normalX - (clipPointY - planePointY) * normalY - radiusA ) * normalX
+                    m_points[i].y = clipPointY + 0.5 * (radiusB - (clipPointX - planePointX) * normalX - (clipPointY - planePointY) * normalY - radiusA ) * normalY
                 End
             End
         End
@@ -181,7 +179,7 @@ Class b2WorldManifold
         '* world contact point (point of intersection)
         '*/
         #end
-        Field m_points:FlashArray<b2Vec2>
+        Field m_points:b2Vec2[]
         
     End
     

@@ -57,53 +57,8 @@ Import box2d.common
 #end
 Class b2Manifold
     
-    Method New()
-        
-        m_points = New FlashArray<b2ManifoldPoint>(b2Settings.b2_maxManifoldPoints)
-        For Local i:Int = 0 Until b2Settings.b2_maxManifoldPoints
-            
-            m_points.Set( i,  New b2ManifoldPoint() )
-        End
-        
-        m_localPlaneNormal = New b2Vec2()
-        m_localPoint = New b2Vec2()
-    End
-    
-    Method Reset : void ()
-        
-        For Local i:Int = 0 Until b2Settings.b2_maxManifoldPoints
-            
-            b2ManifoldPoint((m_points.Get(i))).Reset()
-        End
-        
-        m_localPlaneNormal.SetZero()
-        m_localPoint.SetZero()
-        m_type = 0
-        m_pointCount = 0
-    End
-    
-    Method Set : void (m:b2Manifold)
-        
-        m_pointCount = m.m_pointCount
-        For Local i:Int = 0 Until b2Settings.b2_maxManifoldPoints
-            
-            b2ManifoldPoint((m_points.Get(i))).Set(m.m_points.Get(i))
-        End
-        
-        m_localPlaneNormal.SetV(m.m_localPlaneNormal)
-        m_localPoint.SetV(m.m_localPoint)
-        m_type = m.m_type
-    End
-    
-    Method Copy : b2Manifold ()
-        
-        Local copy :b2Manifold = New b2Manifold()
-        copy.Set(Self)
-        Return copy
-    End
-    
     '* The points of contact
-    Field m_points:FlashArray<b2ManifoldPoint>
+    Field m_points:b2ManifoldPoint[]
     
     '* Not used for Type e_points
     Field m_localPlaneNormal:b2Vec2
@@ -119,4 +74,48 @@ Class b2Manifold
     Const e_circles:int = $0001
     Const e_faceA:int = $0002
     Const e_faceB:int = $0004
+        
+    Method New()
+        
+        m_points = New b2ManifoldPoint[b2Settings.b2_maxManifoldPoints]
+        
+        For Local i:Int = 0 Until b2Settings.b2_maxManifoldPoints
+            m_points[i] = New b2ManifoldPoint()
+        End
+        
+        m_localPlaneNormal = New b2Vec2()
+        m_localPoint = New b2Vec2()
+    End
+    
+    Method Reset : void ()
+        
+        For Local i:Int = 0 Until b2Settings.b2_maxManifoldPoints
+            b2ManifoldPoint(m_points[i]).Reset()
+        End
+        
+        m_localPlaneNormal.SetZero()
+        m_localPoint.SetZero()
+        m_type = 0
+        m_pointCount = 0
+    End
+    
+    Method Set : void (m:b2Manifold)
+        
+        m_pointCount = m.m_pointCount
+        For Local i:Int = 0 Until b2Settings.b2_maxManifoldPoints
+            b2ManifoldPoint(m_points[i]).Set(m.m_points[i])
+        End
+        
+        m_localPlaneNormal.SetV(m.m_localPlaneNormal)
+        m_localPoint.SetV(m.m_localPoint)
+        m_type = m.m_type
+    End
+    
+    Method Copy : b2Manifold ()
+        
+        Local copy :b2Manifold = New b2Manifold()
+        copy.Set(Self)
+        Return copy
+    End
+
 End

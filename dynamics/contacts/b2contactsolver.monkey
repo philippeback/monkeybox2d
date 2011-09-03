@@ -116,18 +116,18 @@ Class b2ContactSolver
             cc.type = manifold.m_type
             For Local k:Int = 0 Until cc.pointCount
                 
-                Local cp :b2ManifoldPoint = manifold.m_points.Get( k )
+                Local cp :b2ManifoldPoint = manifold.m_points[k]
                 Local ccp :b2ContactConstraintPoint = cc.points[k]
                 ccp.normalImpulse = cp.m_normalImpulse
                 ccp.tangentImpulse = cp.m_tangentImpulse
                 ccp.localPoint.SetV(cp.m_localPoint)
-                ccp.rA.x = s_worldManifold.m_points.Get(k).x - bodyA.m_sweep.c.x
+                ccp.rA.x = s_worldManifold.m_points[k].x - bodyA.m_sweep.c.x
                 Local rAX :Float = ccp.rA.x
-                ccp.rA.y = s_worldManifold.m_points.Get(k).y - bodyA.m_sweep.c.y
+                ccp.rA.y = s_worldManifold.m_points[k].y - bodyA.m_sweep.c.y
                 Local rAY :Float = ccp.rA.y
-                ccp.rB.x = s_worldManifold.m_points.Get(k).x - bodyB.m_sweep.c.x
+                ccp.rB.x = s_worldManifold.m_points[k].x - bodyB.m_sweep.c.x
                 Local rBX :Float = ccp.rB.x
-                ccp.rB.y = s_worldManifold.m_points.Get(k).y - bodyB.m_sweep.c.y
+                ccp.rB.y = s_worldManifold.m_points[k].y - bodyB.m_sweep.c.y
                 Local rBY :Float = ccp.rB.y
                 Local rnA :Float = rAX * normalY - rAY * normalX
                 '//b2Math.b2Cross(r1, normal)
@@ -162,13 +162,12 @@ Class b2ContactSolver
                 '//var vRel:Float = b2Dot(cc.normal, t)
                 Local vRel :Float = cc.normal.x*tX + cc.normal.y*tY
                 If (vRel < -b2Settings.b2_velocityThreshold)
-                    
                     ccp.velocityBias += -cc.restitution * vRel
                 End
             End
+            
             '// If we have two points, then prepare the block solver.
             If (cc.pointCount = 2)
-                
                 Local ccp1 :b2ContactConstraintPoint = cc.points[0]
                 Local ccp2 :b2ContactConstraintPoint = cc.points[1]
                 Local invMassA :Float = bodyA.m_invMass
@@ -189,14 +188,11 @@ Class b2ContactSolver
                 '// Ensure a reasonable condition number.
                 Local k_maxConditionNumber :Float = 100.0
                 If ( k11 * k11 < k_maxConditionNumber * (k11 * k22 - k12 * k12))
-                    
                     '// safe(K) to invert.
                     cc.K.col1.Set(k11, k12)
                     cc.K.col2.Set(k12, k22)
                     cc.K.GetInverse(cc.normalMass)
                 Else
-                    
-                    
                     '// The constraints are redundant, just use one.
                     '// TODO_ERIN use deepest?
                     cc.pointCount = 1
@@ -679,9 +675,9 @@ Class b2ContactSolver
             
             Local c :b2ContactConstraint = m_constraints[i]
             Local m :b2Manifold = c.manifold
+            
             For Local j:Int = 0 Until c.pointCount
-                
-                Local point1 :b2ManifoldPoint = m.m_points.Get(j)
+                Local point1 :b2ManifoldPoint = m.m_points[j]
                 Local point2 :b2ContactConstraintPoint = c.points[j]
                 point1.m_normalImpulse = point2.normalImpulse
                 point1.m_tangentImpulse = point2.tangentImpulse

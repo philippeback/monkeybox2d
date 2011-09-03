@@ -461,7 +461,7 @@ Class b2Collision
             cv = clipPoints2[i]
             Local separation :Float = normal.x * cv.v.x + normal.y * cv.v.y - frontOffset
             If (separation <= totalRadius)
-                Local cp :b2ManifoldPoint = manifold.m_points.Get( pointCount )
+                Local cp :b2ManifoldPoint = manifold.m_points[ pointCount ]
                 '//cp.m_localPoint = b2Math.b2MulXT(xf2, cv.v)
                 tMat = xf2.R
                 Local tX :Float = cv.v.x - xf2.position.x
@@ -502,7 +502,6 @@ Class b2Collision
         Local distSqr :Float = dX * dX + dY * dY
         Local radius :Float = circle1.m_radius + circle2.m_radius
         If (distSqr > radius * radius)
-            
             Return
         End
         
@@ -510,9 +509,10 @@ Class b2Collision
         manifold.m_localPoint.SetV(circle1.m_p)
         manifold.m_localPlaneNormal.SetZero()
         manifold.m_pointCount = 1
-        manifold.m_points.Get(0).m_localPoint.SetV(circle2.m_p)
-        manifold.m_points.Get(0).m_id.Key = 0
+        manifold.m_points[0].m_localPoint.SetV(circle2.m_p)
+        manifold.m_points[0].m_id.Key = 0
     End
+    
     Function CollidePolygonAndCircle : void (
         manifold:b2Manifold,
         polygon:b2PolygonShape, xf1:b2Transform,
@@ -554,13 +554,13 @@ Class b2Collision
             dY = cLocalY-tVec.y
             tVec = normals[i]
             Local s :Float = tVec.x * dX + tVec.y * dY
+    
             If (s > radius)
-                
                 '// Early out.
                 Return
             End
+    
             If (s > separation)
-                
                 separation = s
                 normalIndex = i
             End
@@ -571,29 +571,28 @@ Class b2Collision
         Local vertIndex2 :int = 0
         
         If( vertIndex1 + 1 < vertexCount )
-            
             vertIndex2 = vertIndex1 + 1
         End
         
         Local v1 :b2Vec2 = vertices[vertIndex1]
         Local v2 :b2Vec2 = vertices[vertIndex2]
+    
         '// If the inside(center) the polygon ...
         If (separation < Constants.EPSILON)
-            
             manifold.m_pointCount = 1
             manifold.m_type = b2Manifold.e_faceA
             manifold.m_localPlaneNormal.SetV(normals[normalIndex])
             manifold.m_localPoint.x = 0.5 * (v1.x + v2.x)
             manifold.m_localPoint.y = 0.5 * (v1.y + v2.y)
-            manifold.m_points.Get(0).m_localPoint.SetV(circle.m_p)
-            manifold.m_points.Get(0).m_id.Key = 0
+            manifold.m_points[0].m_localPoint.SetV(circle.m_p)
+            manifold.m_points[0].m_id.Key = 0
             Return
         End
         '// Project the circle center onto the edge segment.
         Local u1 :Float = (cLocalX - v1.x) * (v2.x - v1.x) + (cLocalY - v1.y) * (v2.y - v1.y)
         Local u2 :Float = (cLocalX - v2.x) * (v1.x - v2.x) + (cLocalY - v2.y) * (v1.y - v2.y)
+        
         If (u1 <= 0.0)
-            
             If ((cLocalX-v1.x)*(cLocalX-v1.x)+(cLocalY-v1.y)*(cLocalY-v1.y) > radius * radius)
                 Return
             End
@@ -603,11 +602,9 @@ Class b2Collision
             manifold.m_localPlaneNormal.y = cLocalY - v1.y
             manifold.m_localPlaneNormal.Normalize()
             manifold.m_localPoint.SetV(v1)
-            manifold.m_points.Get(0).m_localPoint.SetV(circle.m_p)
-            manifold.m_points.Get(0).m_id.Key = 0
+            manifold.m_points[0].m_localPoint.SetV(circle.m_p)
+            manifold.m_points[0].m_id.Key = 0
         Else  If (u2 <= 0)
-            
-            
             If ((cLocalX-v2.x)*(cLocalX-v2.x)+(cLocalY-v2.y)*(cLocalY-v2.y) > radius * radius)
                 Return
             End
@@ -617,11 +614,9 @@ Class b2Collision
             manifold.m_localPlaneNormal.y = cLocalY - v2.y
             manifold.m_localPlaneNormal.Normalize()
             manifold.m_localPoint.SetV(v2)
-            manifold.m_points.Get(0).m_localPoint.SetV(circle.m_p)
-            manifold.m_points.Get(0).m_id.Key = 0
+            manifold.m_points[0].m_localPoint.SetV(circle.m_p)
+            manifold.m_points[0].m_id.Key = 0
         Else
-            
-            
             Local faceCenterX :Float = 0.5 * (v1.x + v2.x)
             Local faceCenterY :Float = 0.5 * (v1.y + v2.y)
             separation = (cLocalX - faceCenterX) * normals[vertIndex1].x + (cLocalY - faceCenterY) * normals[vertIndex1].y
@@ -634,12 +629,12 @@ Class b2Collision
             manifold.m_localPlaneNormal.y = normals[vertIndex1].y
             manifold.m_localPlaneNormal.Normalize()
             manifold.m_localPoint.Set(faceCenterX,faceCenterY)
-            manifold.m_points.Get(0).m_localPoint.SetV(circle.m_p)
-            manifold.m_points.Get(0).m_id.Key = 0
+            manifold.m_points[0].m_localPoint.SetV(circle.m_p)
+            manifold.m_points[0].m_id.Key = 0
         End
     End
+    
     Function TestOverlap : Bool (a:b2AABB, b:b2AABB)
-        
         Local t1 :b2Vec2 = b.lowerBound
         Local t2 :b2Vec2 = a.upperBound
         '//d1 = b2Math.SubtractVV(b.lowerBound, a.upperBound)

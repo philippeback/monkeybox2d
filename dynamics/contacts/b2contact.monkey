@@ -54,6 +54,26 @@ Class ContactTypeFactory Abstract
 End
 
 Class b2Contact
+    Global s_input:b2TOIInput = New b2TOIInput()
+    
+    Field m_flags:Int
+    
+    '// World pool and list pointers.
+    Field m_prev:b2Contact
+    Field m_next:b2Contact
+    
+    '// Nodes for connecting bodies.
+    Field m_nodeA:b2ContactEdge = New b2ContactEdge()
+    Field m_nodeB:b2ContactEdge = New b2ContactEdge()
+    
+    Field m_fixtureA:b2Fixture
+    Field m_fixtureB:b2Fixture
+    
+    Field m_manifold:b2Manifold = New b2Manifold()
+    Field m_oldManifold:b2Manifold = New b2Manifold()
+    
+    Field m_toi:Float
+    
     #rem
     '/**
     '* Get the contact manifold. Do not modify the manifold unless you understand the
@@ -288,8 +308,6 @@ Class b2Contact
             '// Sensors dont generate manifolds
             m_manifold.m_pointCount = 0
         Else
-            
-            
             '// Slow contacts dont generate TOI events.
             If (bodyA.GetType() <> b2Body.b2_Body Or bodyA.IsBullet() Or bodyB.GetType() <> b2Body.b2_Body Or bodyB.IsBullet())
                 
@@ -307,60 +325,54 @@ Class b2Contact
                 '// stored impulses to warm start the solver.
                 For Local i:Int = 0 Until m_manifold.m_pointCount
                     
-                    Local mp2 :b2ManifoldPoint = m_manifold.m_points.Get(i)
+                    Local mp2 :b2ManifoldPoint = m_manifold.m_points[i]
                     mp2.m_normalImpulse = 0.0
                     mp2.m_tangentImpulse = 0.0
                     Local id2 :b2ContactID = mp2.m_id
                     For Local j:Int = 0 Until m_oldManifold.m_pointCount
-                        
-                        Local mp1 :b2ManifoldPoint = m_oldManifold.m_points.Get(j)
+                        Local mp1 :b2ManifoldPoint = m_oldManifold.m_points[j]
+        
                         If (mp1.m_id.Key = id2.Key)
-                            
                             mp2.m_normalImpulse = mp1.m_normalImpulse
                             mp2.m_tangentImpulse = mp1.m_tangentImpulse
                             Exit
                         End
+        
                     End
                 End
             Else
-                
-                
                 m_manifold.m_pointCount = 0
             End
             
             If (touching <> wasTouching)
-                
                 bodyA.SetAwake(True)
                 bodyB.SetAwake(True)
             End
         End
+        
         If (touching)
-            
             m_flags |= e_touchingFlag
         Else
-            
-            
             m_flags &= ~e_touchingFlag
         End
+        
         If (wasTouching = False And touching = True)
-            
             listener.BeginContact(Self)
         End
+        
         If (wasTouching = True And touching = False)
-            
             listener.EndContact(Self)
         End
+        
         If ((m_flags & e_sensorFlag) = 0)
-            
             listener.PreSolve(Self, m_oldManifold)
         End
     End
     '// ~b2Contact() {}
     Method Evaluate : void ()
     End
-    Global s_input:b2TOIInput = New b2TOIInput()
+    
     Method ComputeTOI : Float (sweepA:b2Sweep, sweepB:b2Sweep)
-        
         s_input.proxyA.Set(m_fixtureA.GetShape())
         s_input.proxyB.Set(m_fixtureB.GetShape())
         s_input.sweepA = sweepA
@@ -368,35 +380,6 @@ Class b2Contact
         s_input.tolerance = b2Settings.b2_linearSlop
         Return b2TimeOfImpact.TimeOfImpact(s_input)
     End
-    
-    Field m_flags:Int
-    
-    '// World pool and list pointers.
-    Field m_prev:b2Contact
-    
-    
-    Field m_next:b2Contact
-    
-    '// Nodes for connecting bodies.
-    Field m_nodeA:b2ContactEdge = New b2ContactEdge()
-    
-    
-    Field m_nodeB:b2ContactEdge = New b2ContactEdge()
-    
-    
-    Field m_fixtureA:b2Fixture
-    
-    
-    Field m_fixtureB:b2Fixture
-    
-    
-    Field m_manifold:b2Manifold = New b2Manifold()
-    
-    
-    Field m_oldManifold:b2Manifold = New b2Manifold()
-    
-    
-    Field m_toi:Float
     
     
 End

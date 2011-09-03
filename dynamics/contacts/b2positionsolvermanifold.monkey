@@ -76,6 +76,7 @@ Class b2PositionSolverManifold
         
                 Local pointAX :Float = cc.bodyA.m_xf.position.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
                 Local pointAY :Float = cc.bodyA.m_xf.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
+                
                 '//var pointB:b2Vec2 = cc.bodyB.GetWorldPoint(cc.points.Get(0).localPoint)
                 tMat = cc.bodyB.m_xf.R
                 tVec = cc.points[0].localPoint

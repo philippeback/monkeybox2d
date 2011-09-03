@@ -1322,7 +1322,6 @@ Class b2Body
     End
     
     Method SynchronizeTransform : void ()
-        
         m_xf.R.Set(m_sweep.a)
         '//m_xf.position = m_sweep.c - b2Mul(m_xf.R, m_sweep.localCenter)
         Local tMat :b2Mat22 = m_xf.R
@@ -1330,10 +1329,10 @@ Class b2Body
         m_xf.position.x = m_sweep.c.x - (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
         m_xf.position.y = m_sweep.c.y - (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
     End
+    
     '// used(This) to prevent connected bodies from colliding.
     '// It may lie, depending on the collideConnected flag.
     Method ShouldCollide : Bool (other:b2Body)
-        
         '// At least one body should be
         If (m_type <> b2_Body And other.m_type <> b2_Body )
             
