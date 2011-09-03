@@ -31,13 +31,14 @@
 #end
 
 
-Class Constants
-    
-    Const PI := 3.14159265
-    Const NaN : Float  = 3.402e38'Sqrt(-1)
-    Const FMAX  := 3.4e38'single precision float?
-    Const FMIN  := -FMAX
-    Global EPSILON  := 1e-15'Machine Epsilon
+Class Constants    
+
+    Const PI:Float = 3.14159265
+    Const NaN:Float = 3.402e38
+    Const FMAX:Float = 3.4e38 'single precision float limit?
+    Const FMIN:Float = -FMAX
+    Const EPSILON:Float = 1e-15 'Machine Epsilon
+
 End
 
 
