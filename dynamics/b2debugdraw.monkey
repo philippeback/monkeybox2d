@@ -213,14 +213,9 @@ Class b2DebugDraw
     '* Draw a solid closed polygon provided in CCW order.
     '*/
     #end
-    Method DrawSolidPolygon : void (vertices:FlashArray<b2Vec2>, vertexCount:int, color:b2Color)
-        Local verts2 := New b2Vec2[vertices.Length]
-        
-        For Local i := 0 Until verts2.Length
-            verts2[i] = vertices.Get(i)
-        Next
+    Method DrawSolidPolygon : void (vertices:b2Vec2[], vertexCount:int, color:b2Color)
         'punt on the fill
-        DrawPolygon(verts2, vertexCount, color)
+        DrawPolygon(vertices, vertexCount, color)
     End
     #rem
     '/**

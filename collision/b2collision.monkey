@@ -101,17 +101,17 @@ Class b2Collision
         poly2:b2PolygonShape, xf2:b2Transform)
         
         Local count1 :int = poly1.m_vertexCount
-        Local vertices1 :FlashArray<b2Vec2> = poly1.m_vertices
-        Local normals1 :FlashArray<b2Vec2> = poly1.m_normals
-        Local count2 :int = poly2.m_vertexCount
-        Local vertices2 :FlashArray<b2Vec2> = poly2.m_vertices
+        Local vertices1:b2Vec2[] = poly1.m_vertices
+        Local normals1:b2Vec2[] = poly1.m_normals
+        Local count2 :Int = poly2.m_vertexCount
+        Local vertices2:b2Vec2[] = poly2.m_vertices
         '//b2Assert(0 <= edge1 And edge1 < count1)
         Local tMat :b2Mat22
         Local tVec :b2Vec2
         '// Convert normal from poly1s frame into poly2s frame.
         '//b2Vec2 normal1World = b2Mul(xf1.R, normals1.Get(edge1))
         tMat = xf1.R
-        tVec = normals1.Get(edge1)
+        tVec = normals1[edge1]
         Local normal1WorldX :Float = (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
         Local normal1WorldY :Float = (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
         '//b2Vec2 normal1 = b2MulT(xf2.R, normal1World)
@@ -121,24 +121,24 @@ Class b2Collision
         '// Find support vertex on poly2 for -normal.
         Local index :int = 0
         Local minDot :Float = Constants.FMAX
+        
         For Local i:Int = 0 Until count2
-            
             '//float32 dot = b2Dot(poly2->m_vertices.Get(i), normal1)
-            tVec = vertices2.Get(i)
+            tVec = vertices2[i]
             Local dot :Float = tVec.x * normal1X + tVec.y * normal1Y
+        
             If (dot < minDot)
-                
                 minDot = dot
                 index = i
             End
         End
         '//b2Vec2 v1 = b2Mul(xf1, vertices1.Get(edge1))
-        tVec = vertices1.Get(edge1)
+        tVec = vertices1[edge1]
         tMat = xf1.R
         Local v1X :Float = xf1.position.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
         Local v1Y :Float = xf1.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
         '//b2Vec2 v2 = b2Mul(xf2, vertices2.Get(index))
-        tVec = vertices2.Get(index)
+        tVec = vertices2[index]
         tMat = xf2.R
         Local v2X :Float = xf2.position.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
         Local v2Y :Float = xf2.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
@@ -149,6 +149,7 @@ Class b2Collision
         Local separation :Float = v2X * normal1WorldX + v2Y * normal1WorldY
         Return separation
     End
+    
     '// Find the max separation between poly1 and poly2 using edge normals
     '// from poly1.0
     Function FindMaxSeparation : Float (edgeIndex:FlashArray<IntObject>,
@@ -156,7 +157,7 @@ Class b2Collision
         poly2:b2PolygonShape, xf2:b2Transform)
         
         Local count1 :int = poly1.m_vertexCount
-        Local normals1 :FlashArray<b2Vec2> = poly1.m_normals
+        Local normals1:b2Vec2[] = poly1.m_normals
         Local tVec :b2Vec2
         Local tMat :b2Mat22
         '// Vector pointing from the centroid of poly1 to the centroid of poly2.0
@@ -175,13 +176,12 @@ Class b2Collision
         '// Get support a(vertex) hint for our search
         Local edge :int = 0
         Local maxDot :Float = -Constants.FMAX
+        
         For Local i:Int = 0 Until count1
-            
             '//var dot:Float = b2Math.b2Dot(normals1.Get(i), dLocal1)
-            tVec = normals1.Get(i)
+            tVec = normals1[i]
             Local dot :Float = (tVec.x * dLocal1X + tVec.y * dLocal1Y)
             If (dot > maxDot)
-                
                 maxDot = dot
                 edge = i
             End
@@ -192,7 +192,6 @@ Class b2Collision
         Local prevEdge :int =  count1 - 1
         
         If( edge - 1 >= 0  )
-            
             prevEdge =  edge - 1
         End
         
@@ -201,7 +200,6 @@ Class b2Collision
         Local nextEdge :int =  0
         
         If( edge + 1 < count1  )
-            
             nextEdge =  edge + 1
         End
         
@@ -210,24 +208,21 @@ Class b2Collision
         Local bestEdge :int
         Local bestSeparation :Float
         Local increment :int
+        
         If (sPrev > s And sPrev > sNext)
-            
             increment = -1
             bestEdge = prevEdge
             bestSeparation = sPrev
         Else  If (sNext > s)
-            
-            
             increment = 1
             bestEdge = nextEdge
             bestSeparation = sNext
         Else
-            
-            
             '// pointer out
             edgeIndex.Set( 0,  edge )
             Return s
         End
+        
         '// Perform a local search for the best edge normal.
         While (True)
             If (increment = -1)
@@ -258,22 +253,23 @@ Class b2Collision
         edgeIndex.Set( 0,  bestEdge )
         Return bestSeparation
     End
+    
     Function FindIncidentEdge : void (c:FlashArray<ClipVertex>,
         poly1:b2PolygonShape, xf1:b2Transform, edge1:int,
         poly2:b2PolygonShape, xf2:b2Transform)
         
-        Local count1 :int = poly1.m_vertexCount
-        Local normals1 :FlashArray<b2Vec2> = poly1.m_normals
-        Local count2 :int = poly2.m_vertexCount
-        Local vertices2 :FlashArray<b2Vec2> = poly2.m_vertices
-        Local normals2 :FlashArray<b2Vec2> = poly2.m_normals
+        Local count1:Int = poly1.m_vertexCount
+        Local normals1:b2Vec2[] = poly1.m_normals
+        Local count2:Int = poly2.m_vertexCount
+        Local vertices2:b2Vec2[] = poly2.m_vertices
+        Local normals2:b2Vec2[] = poly2.m_normals
         '//b2Assert(0 <= edge1 And edge1 < count1)
         Local tMat :b2Mat22
         Local tVec :b2Vec2
         '// Get the normal of the reference edge in poly2s frame.
         '//b2Vec2 normal1 = b2MulT(xf2.R, b2Mul(xf1.R, normals1.Get(edge1)))
         tMat = xf1.R
-        tVec = normals1.Get(edge1)
+        tVec = normals1[edge1]
         Local normal1X :Float = (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
         Local normal1Y :Float = (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
         tMat = xf2.R
@@ -283,13 +279,12 @@ Class b2Collision
         '// Find the incident edge on poly2.0
         Local index :int = 0
         Local minDot :Float = Constants.FMAX
+        
         For Local i:Int = 0 Until count2
-            
             '//var dot:Float = b2Dot(normal1, normals2.Get(i))
-            tVec = normals2.Get(i)
+            tVec = normals2[i]
             Local dot :Float = (normal1X * tVec.x + normal1Y * tVec.y)
             If (dot < minDot)
-                
                 minDot = dot
                 index = i
             End
@@ -300,12 +295,11 @@ Class b2Collision
         Local i2 :int =  0
         
         If( i1 + 1 < count2  )
-            
             i2 =  i1 + 1
         End
         tClip = c.Get(0)
         '//c.Get(0).v = b2Mul(xf2, vertices2.Get(i1))
-        tVec = vertices2.Get(i1)
+        tVec = vertices2[i1]
         tMat = xf2.R
         tClip.v.x = xf2.position.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
         tClip.v.y = xf2.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
@@ -314,7 +308,7 @@ Class b2Collision
         tClip.id.features.IncidentVertex = 0
         tClip = c.Get(1)
         '//c.Get(1).v = b2Mul(xf2, vertices2.Get(i2))
-        tVec = vertices2.Get(i2)
+        tVec = vertices2[i2]
         tMat = xf2.R
         tClip.v.x = xf2.position.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
         tClip.v.y = xf2.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
@@ -322,8 +316,8 @@ Class b2Collision
         tClip.id.features.IncidentEdge = i2
         tClip.id.features.IncidentVertex = 1
     End
+    
     Function MakeClipPointVector : FlashArray<ClipVertex> ()
-        
         Local r :FlashArray<ClipVertex> = New FlashArray<ClipVertex>(2)
         r.Set( 0,  New ClipVertex() )
         r.Set( 1,  New ClipVertex() )
@@ -406,17 +400,16 @@ Class b2Collision
         Local incidentEdge :FlashArray<ClipVertex> = s_incidentEdge
         FindIncidentEdge(incidentEdge, poly1, xf1, edge1, poly2, xf2)
         Local count1 :int = poly1.m_vertexCount
-        Local vertices1 :FlashArray<b2Vec2> = poly1.m_vertices
-        Local local_v11 :b2Vec2 = vertices1.Get(edge1)
+        Local vertices1:b2Vec2[] = poly1.m_vertices
+        Local local_v11 :b2Vec2 = vertices1[edge1]
         Local local_v12 :b2Vec2
+        
         If (edge1 + 1 < count1)
-            
-            local_v12 = vertices1.Get(int(edge1+1))
+            local_v12 = vertices1[edge1+1]
         Else
-            
-            
-            local_v12 = vertices1.Get(0)
+            local_v12 = vertices1[0]
         End
+        
         Local localTangent :b2Vec2 = s_localTangent
         localTangent.Set(local_v12.x - local_v11.x, local_v12.y - local_v11.y)
         localTangent.Normalize()
@@ -468,12 +461,11 @@ Class b2Collision
         manifold.m_localPlaneNormal.SetV(localNormal)
         manifold.m_localPoint.SetV(planePoint)
         Local pointCount :int = 0
+        
         For Local i:Int = 0 Until b2Settings.b2_maxManifoldPoints
-            
             cv = clipPoints2.Get(i)
             Local separation :Float = normal.x * cv.v.x + normal.y * cv.v.y - frontOffset
             If (separation <= totalRadius)
-                
                 Local cp :b2ManifoldPoint = manifold.m_points.Get( pointCount )
                 '//cp.m_localPoint = b2Math.b2MulXT(xf2, cv.v)
                 tMat = xf2.R
@@ -489,6 +481,7 @@ Class b2Collision
         End
         manifold.m_pointCount = pointCount
     End
+    
     Function CollideCircles : void (
         manifold:b2Manifold,
         circle1:b2CircleShape, xf1:b2Transform,
@@ -556,15 +549,15 @@ Class b2Collision
         Local separation :Float = -Constants.FMAX
         Local radius :Float = polygon.m_radius + circle.m_radius
         Local vertexCount :int = polygon.m_vertexCount
-        Local vertices :FlashArray<b2Vec2> = polygon.m_vertices
-        Local normals :FlashArray<b2Vec2> = polygon.m_normals
+        Local vertices:b2Vec2[] = polygon.m_vertices
+        Local normals:b2Vec2[] = polygon.m_normals
+        
         For Local i:Int = 0 Until vertexCount
-            
             '//float32 s = b2Dot(normals.Get(i), cLocal - vertices.Get(i))
-            tVec = vertices.Get(i)
+            tVec = vertices[i]
             dX = cLocalX-tVec.x
             dY = cLocalY-tVec.y
-            tVec = normals.Get(i)
+            tVec = normals[i]
             Local s :Float = tVec.x * dX + tVec.y * dY
             If (s > radius)
                 
@@ -587,14 +580,14 @@ Class b2Collision
             vertIndex2 = vertIndex1 + 1
         End
         
-        Local v1 :b2Vec2 = vertices.Get(vertIndex1)
-        Local v2 :b2Vec2 = vertices.Get(vertIndex2)
+        Local v1 :b2Vec2 = vertices[vertIndex1]
+        Local v2 :b2Vec2 = vertices[vertIndex2]
         '// If the inside(center) the polygon ...
         If (separation < Constants.EPSILON)
             
             manifold.m_pointCount = 1
             manifold.m_type = b2Manifold.e_faceA
-            manifold.m_localPlaneNormal.SetV(normals.Get(normalIndex))
+            manifold.m_localPlaneNormal.SetV(normals[normalIndex])
             manifold.m_localPoint.x = 0.5 * (v1.x + v2.x)
             manifold.m_localPoint.y = 0.5 * (v1.y + v2.y)
             manifold.m_points.Get(0).m_localPoint.SetV(circle.m_p)
@@ -636,14 +629,14 @@ Class b2Collision
             
             Local faceCenterX :Float = 0.5 * (v1.x + v2.x)
             Local faceCenterY :Float = 0.5 * (v1.y + v2.y)
-            separation = (cLocalX - faceCenterX) * normals.Get(vertIndex1).x + (cLocalY - faceCenterY) * normals.Get(vertIndex1).y
+            separation = (cLocalX - faceCenterX) * normals[vertIndex1].x + (cLocalY - faceCenterY) * normals[vertIndex1].y
             If (separation > radius)
                 Return
             End
             manifold.m_pointCount = 1
             manifold.m_type = b2Manifold.e_faceA
-            manifold.m_localPlaneNormal.x = normals.Get(vertIndex1).x
-            manifold.m_localPlaneNormal.y = normals.Get(vertIndex1).y
+            manifold.m_localPlaneNormal.x = normals[vertIndex1].x
+            manifold.m_localPlaneNormal.y = normals[vertIndex1].y
             manifold.m_localPlaneNormal.Normalize()
             manifold.m_localPoint.Set(faceCenterX,faceCenterY)
             manifold.m_points.Get(0).m_localPoint.SetV(circle.m_p)

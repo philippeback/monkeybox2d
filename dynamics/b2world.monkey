@@ -171,6 +171,40 @@ Class WorldQueryPointCallback Extends WorldQueryCallback
 End
 
 Class b2World
+    Field m_flags:int
+    Field m_contactManager:b2ContactManager = New b2ContactManager()
+    
+    '// These two are stored purely for efficiency purposes, they dont maintain
+    '// any data outside of a call to TimeStep
+    Field m_contactSolver:b2ContactSolver = New b2ContactSolver()
+    Field m_island:b2Island = New b2Island()
+    Field m_bodyList:b2Body
+    Field m_jointList:b2Joint
+    Field m_contactList:b2Contact
+    Field m_bodyCount:int
+    Field m_contactCount:int
+    Field m_jointCount:int
+    Field m_controllerList:b2Controller
+    Field m_controllerCount:int
+    Field m_gravity:b2Vec2
+    Field m_allowSleep:Bool
+    Field m_groundBody:b2Body
+    Field m_destructionListener:b2DestructionListener
+    Field m_debugDraw:b2DebugDraw
+    
+    '// used(This) to compute the time timeStep ratio to support a variable time timeStep.
+    Field m_inv_dt0:Float
+    
+    '// for(This)
+    'debugging the solver.
+    Global m_warmStarting:Bool
+    '// for(This)
+    'debugging the solver.
+    Global m_continuousPhysics:Bool
+    '// m_flags
+    Const e_newFixture:int = $0001
+    Const e_locked:int = $0002
+
     '// Construct a world object.
     #rem
     '/**
@@ -1406,235 +1440,174 @@ Class b2World
                 If (b2 <> m_groundBody)
                     m_debugDraw.DrawSegment(x2, p2, color)
                 End
-            End
         End
-        
-        Method DrawShape : void (shape:b2Shape, xf:b2Transform, color:b2Color)
-            Select (shape.m_type)
+    End
+    
+    Method DrawShape : void (shape:b2Shape, xf:b2Transform, color:b2Color)
+        Select (shape.m_type)
+            
+            Case b2Shape.e_circleShape
+                Local circle :b2CircleShape = b2CircleShape((shape))
+                Local center :b2Vec2 = b2Math.MulX(xf, circle.m_p)
+                Local radius :Float = circle.m_radius
+                Local axis :b2Vec2 = xf.R.col1
+                m_debugDraw.DrawSolidCircle(center, radius, axis, color)
+            
+            Case b2Shape.e_polygonShape
+                Local i:Int
+                Local poly :b2PolygonShape = b2PolygonShape((shape))
+                Local vertexCount:Int = poly.GetVertexCount()
+                Local localVertices:b2Vec2[] = poly.GetVertices()
+                Local vertices:b2Vec2[] = New b2Vec2[vertexCount]
                 
-                Case b2Shape.e_circleShape
-                    
-                    Local circle :b2CircleShape = b2CircleShape((shape))
-                    Local center :b2Vec2 = b2Math.MulX(xf, circle.m_p)
-                    Local radius :Float = circle.m_radius
-                    Local axis :b2Vec2 = xf.R.col1
-                    m_debugDraw.DrawSolidCircle(center, radius, axis, color)
-                Case b2Shape.e_polygonShape
-                    
-                    Local i :int
-                    Local poly :b2PolygonShape = b2PolygonShape((shape))
-                    Local vertexCount :int = poly.GetVertexCount()
-                    Local localVertices :FlashArray<b2Vec2> = poly.GetVertices()
-                    Local vertices :FlashArray<b2Vec2> = New FlashArray<b2Vec2>(vertexCount)
-                    For Local i:Int = 0 Until vertexCount
-                        
-                        vertices.Set( i,  b2Math.MulX(xf, localVertices.Get(i)) )
-                    End
-                    m_debugDraw.DrawSolidPolygon(vertices, vertexCount, color)
-                Case b2Shape.e_edgeShape
-                    
-                    Local edge : b2EdgeShape = b2EdgeShape(shape)
-                    m_debugDraw.DrawSegment(b2Math.MulX(xf, edge.GetVertex1()), b2Math.MulX(xf, edge.GetVertex2()), color)
+                For Local i:Int = 0 Until vertexCount
+                    vertices[i] = b2Math.MulX(xf, localVertices[i])
                 End
-            End
+                m_debugDraw.DrawSolidPolygon(vertices, vertexCount, color)
             
-            #rem
-            '/**
-            '* Call this to draw shapes and other debug draw data.
-            '*/
-            #end
-            Method DrawDebugData : void ()
-                If (m_debugDraw = null)
-                    
-                    Return
-                End
-                m_debugDraw.Clear()
-                Local flags :Int = m_debugDraw.GetFlags()
-                Local i :int
-                Local b :b2Body
-                Local f :b2Fixture
-                Local s :b2Shape
-                Local j :b2Joint
-                Local bp :IBroadPhase
-                Local invQ :b2Vec2 = New b2Vec2
-                Local x1 :b2Vec2 = New b2Vec2
-                Local x2 :b2Vec2 = New b2Vec2
-                Local xf :b2Transform
-                Local b1 :b2AABB = New b2AABB()
-                Local b2 :b2AABB = New b2AABB()
-                Local vs :b2Vec2[] = [New b2Vec2(), New b2Vec2(), New b2Vec2(), New b2Vec2()]
-                '// Store color here and reuse, to reduce allocations
-                Local color :b2Color = New b2Color(0.0, 0.0, 0.0)
-                If (flags & b2DebugDraw.e_shapeBit)
-                    
-                    b = m_bodyList
-                    While( b <> Null )
-                        
-                        xf = b.m_xf
-                        
-                        f = b.GetFixtureList()
-                        While ( f <> Null )
-                            s = f.GetShape()
-                            If (b.IsActive() = False)
-                                
-                                color.Set(0.5, 0.5, 0.3)
-                                DrawShape(s, xf, color)
-                            Else  If (b.GetType() = b2Body.b2_staticBody)
-                                
-                                
-                                color.Set(0.5, 0.9, 0.5)
-                                DrawShape(s, xf, color)
-                            Else  If (b.GetType() = b2Body.b2_kinematicBody)
-                                
-                                
-                                color.Set(0.5, 0.5, 0.9)
-                                DrawShape(s, xf, color)
-                            Else  If (b.IsAwake() = False)
-                                
-                                
-                                color.Set(0.6, 0.6, 0.6)
-                                DrawShape(s, xf, color)
-                            Else
-                                
-                                
-                                color.Set(0.9, 0.7, 0.7)
-                                DrawShape(s, xf, color)
-                            End
-                            f = f.m_next
-                        End
-                        b = b.m_next
-                    End
-                End
-                If (flags & b2DebugDraw.e_jointBit)
-                    
-                    j = m_jointList
-                    While ( j <> Null )
-                        DrawJoint(j)
-                        j = j.m_next
-                    End
-                End
-                If (flags & b2DebugDraw.e_controllerBit)
-                    
-                    Local c:b2Controller = m_controllerList
-                    While ( c <> Null )
-                        c.Draw(m_debugDraw)
-                        c = c.m_next
-                    End
-                End
-                If (flags & b2DebugDraw.e_pairBit)
-                    
-                    color.Set(0.3, 0.9, 0.9)
-                    Local contact:b2Contact = m_contactList
-                    While ( contact <> Null )
-                        If b2PolyAndCircleContact(contact)
-                            Local fixtureA :b2Fixture = contact.GetFixtureA()
-                            Local fixtureB :b2Fixture = contact.GetFixtureB()
-                            Local cA :b2Vec2 = fixtureA.GetAABB().GetCenter()
-                            Local cB :b2Vec2 = fixtureB.GetAABB().GetCenter()
-                            m_debugDraw.DrawSegment(cA, cB, color)
-                        End
-                        contact = contact.GetNext()
-                    End
-                End
-                If (flags & b2DebugDraw.e_aabbBit)
-                    
-                    bp = m_contactManager.m_broadPhase
-                    vs = [New b2Vec2(),New b2Vec2(),New b2Vec2(),New b2Vec2()]
-                    b = m_bodyList
-                    While ( b <> Null )
-                        If (b.IsActive() = False)
-                            b = b.GetNext()
-                            Continue
-                        End
-                        
-                        f = b.GetFixtureList()
-                        While ( f <> Null )
-                            Local aabb :b2AABB = bp.GetFatAABB(f.m_proxy)
-                            vs[0].Set(aabb.lowerBound.x, aabb.lowerBound.y)
-                            vs[1].Set(aabb.upperBound.x, aabb.lowerBound.y)
-                            vs[2].Set(aabb.upperBound.x, aabb.upperBound.y)
-                            vs[3].Set(aabb.lowerBound.x, aabb.upperBound.y)
-                            m_debugDraw.DrawPolygon(vs, 4, color)
-                            f = f.GetNext()
-                        End
-                        b = b.GetNext()
-                    End
-                End
-                If (flags & b2DebugDraw.e_centerOfMassBit)
-                    
-                    b = m_bodyList
-                    While( b <> Null )
-                        xf = s_xf
-                        xf.R = b.m_xf.R
-                        xf.position = b.GetWorldCenter()
-                        m_debugDraw.DrawTransform(xf)
-                        b = b.m_next
-                    End
-                End
-            End
-            Field m_flags:int
-            
-            
-            Field m_contactManager:b2ContactManager = New b2ContactManager()
-            
-            '// These two are stored purely for efficiency purposes, they dont maintain
-            '// any data outside of a call to TimeStep
-            Field m_contactSolver:b2ContactSolver = New b2ContactSolver()
-            
-            
-            Field m_island:b2Island = New b2Island()
-            
-            
-            Field m_bodyList:b2Body
-            
-            
-            Field m_jointList:b2Joint
-            
-            
-            Field m_contactList:b2Contact
-            
-            Field m_bodyCount:int
-            
-            
-            Field m_contactCount:int
-            
-            
-            Field m_jointCount:int
-            
-            
-            Field m_controllerList:b2Controller
-            
-            
-            Field m_controllerCount:int
-            
-            Field m_gravity:b2Vec2
-            
-            
-            Field m_allowSleep:Bool
-            
-            
-            Field m_groundBody:b2Body
-            
-            Field m_destructionListener:b2DestructionListener
-            
-            
-            Field m_debugDraw:b2DebugDraw
-            
-            '// used(This) to compute the time timeStep ratio to support a variable time timeStep.
-            Field m_inv_dt0:Float
-            
-            '// for(This)
-            'debugging the solver.
-            Global m_warmStarting:Bool
-            '// for(This)
-            'debugging the solver.
-            Global m_continuousPhysics:Bool
-            '// m_flags
-            Const e_newFixture:int = $0001
-            Const e_locked:int = $0002
+            Case b2Shape.e_edgeShape
+                Local edge : b2EdgeShape = b2EdgeShape(shape)
+                m_debugDraw.DrawSegment(b2Math.MulX(xf, edge.GetVertex1()), b2Math.MulX(xf, edge.GetVertex2()), color)
         End
+    End
         
-        
+    #rem
+    '/**
+    '* Call this to draw shapes and other debug draw data.
+    '*/
+    #end
+    Method DrawDebugData : void ()
+        If (m_debugDraw = null)
+            
+            Return
+        End
+        m_debugDraw.Clear()
+        Local flags :Int = m_debugDraw.GetFlags()
+        Local i :int
+        Local b :b2Body
+        Local f :b2Fixture
+        Local s :b2Shape
+        Local j :b2Joint
+        Local bp :IBroadPhase
+        Local invQ :b2Vec2 = New b2Vec2
+        Local x1 :b2Vec2 = New b2Vec2
+        Local x2 :b2Vec2 = New b2Vec2
+        Local xf :b2Transform
+        Local b1 :b2AABB = New b2AABB()
+        Local b2 :b2AABB = New b2AABB()
+        Local vs :b2Vec2[] = [New b2Vec2(), New b2Vec2(), New b2Vec2(), New b2Vec2()]
+        '// Store color here and reuse, to reduce allocations
+        Local color :b2Color = New b2Color(0.0, 0.0, 0.0)
+        If (flags & b2DebugDraw.e_shapeBit)
+            
+            b = m_bodyList
+            While( b <> Null )
+                
+                xf = b.m_xf
+                
+                f = b.GetFixtureList()
+                While ( f <> Null )
+                    s = f.GetShape()
+                    If (b.IsActive() = False)
+                        
+                        color.Set(0.5, 0.5, 0.3)
+                        DrawShape(s, xf, color)
+                    Else  If (b.GetType() = b2Body.b2_staticBody)
+                        
+                        
+                        color.Set(0.5, 0.9, 0.5)
+                        DrawShape(s, xf, color)
+                    Else  If (b.GetType() = b2Body.b2_kinematicBody)
+                        
+                        
+                        color.Set(0.5, 0.5, 0.9)
+                        DrawShape(s, xf, color)
+                    Else  If (b.IsAwake() = False)
+                        
+                        
+                        color.Set(0.6, 0.6, 0.6)
+                        DrawShape(s, xf, color)
+                    Else
+                        
+                        
+                        color.Set(0.9, 0.7, 0.7)
+                        DrawShape(s, xf, color)
+                    End
+                    f = f.m_next
+                End
+                b = b.m_next
+            End
+        End
+        If (flags & b2DebugDraw.e_jointBit)
+            
+            j = m_jointList
+            While ( j <> Null )
+                DrawJoint(j)
+                j = j.m_next
+            End
+        End
+        If (flags & b2DebugDraw.e_controllerBit)
+            
+            Local c:b2Controller = m_controllerList
+            While ( c <> Null )
+                c.Draw(m_debugDraw)
+                c = c.m_next
+            End
+        End
+        If (flags & b2DebugDraw.e_pairBit)
+            
+            color.Set(0.3, 0.9, 0.9)
+            Local contact:b2Contact = m_contactList
+            While ( contact <> Null )
+                If b2PolyAndCircleContact(contact)
+                    Local fixtureA :b2Fixture = contact.GetFixtureA()
+                    Local fixtureB :b2Fixture = contact.GetFixtureB()
+                    Local cA :b2Vec2 = fixtureA.GetAABB().GetCenter()
+                    Local cB :b2Vec2 = fixtureB.GetAABB().GetCenter()
+                    m_debugDraw.DrawSegment(cA, cB, color)
+                End
+                contact = contact.GetNext()
+            End
+        End
+        If (flags & b2DebugDraw.e_aabbBit)
+            
+            bp = m_contactManager.m_broadPhase
+            vs = [New b2Vec2(),New b2Vec2(),New b2Vec2(),New b2Vec2()]
+            b = m_bodyList
+            While ( b <> Null )
+                If (b.IsActive() = False)
+                    b = b.GetNext()
+                    Continue
+                End
+                
+                f = b.GetFixtureList()
+                While ( f <> Null )
+                    Local aabb :b2AABB = bp.GetFatAABB(f.m_proxy)
+                    vs[0].Set(aabb.lowerBound.x, aabb.lowerBound.y)
+                    vs[1].Set(aabb.upperBound.x, aabb.lowerBound.y)
+                    vs[2].Set(aabb.upperBound.x, aabb.upperBound.y)
+                    vs[3].Set(aabb.lowerBound.x, aabb.upperBound.y)
+                    m_debugDraw.DrawPolygon(vs, 4, color)
+                    f = f.GetNext()
+                End
+                b = b.GetNext()
+            End
+        End
+        If (flags & b2DebugDraw.e_centerOfMassBit)
+            
+            b = m_bodyList
+            While( b <> Null )
+                xf = s_xf
+                xf.R = b.m_xf.R
+                xf.position = b.GetWorldCenter()
+                m_debugDraw.DrawTransform(xf)
+                b = b.m_next
+            End
+        End
+    End
+End
+    
+    
         
         
         

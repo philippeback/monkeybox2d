@@ -46,25 +46,30 @@ Import box2d.collision
 #end
 Class b2PolygonShape Extends b2Shape
     
-    Method Copy : b2Shape ()
+'// Local position of the polygon centroid.
+    Field m_centroid:b2Vec2        
+    Field m_vertices:b2Vec2[]
+    Field m_normals:b2Vec2[]
+    Field m_vertexCount:Int
         
+    Method Copy : b2Shape ()
         Local s :b2PolygonShape = New b2PolygonShape()
         s.Set(Self)
         Return s
     End
+
     Method Set : void (other:b2Shape)
-        
         Super.Set(other)
+
         If b2PolygonShape((other))
-            
             Local other2 :b2PolygonShape = b2PolygonShape(other)
             m_centroid.SetV(other2.m_centroid)
             m_vertexCount = other2.m_vertexCount
             Reserve(m_vertexCount)
+
             For Local i:Int = 0 Until m_vertexCount
-                
-                m_vertices.Get(i).SetV(other2.m_vertices.Get(i))
-                m_normals.Get(i).SetV(other2.m_normals.Get(i))
+                m_vertices[i].SetV(other2.m_vertices[i])
+                m_normals[i].SetV(other2.m_normals[i])
             End
         End
     End
@@ -75,17 +80,16 @@ Class b2PolygonShape Extends b2Shape
     '*/
     #end
     Method SetAsArray : void (vertices:b2Vec2[], vertexCount:Float = 0)
-        
         Local v :FlashArray<b2Vec2> = New FlashArray<b2Vec2>()
+        
         For Local tVec:b2Vec2 = Eachin vertices
-            
             v.Push(tVec)
         End
         
         SetAsVector(v, vertexCount)
     End
+    
     Function AsArray : b2PolygonShape (vertices:b2Vec2[], vertexCount:Float)
-        
         Local polygonShape :b2PolygonShape = New b2PolygonShape()
         polygonShape.SetAsArray(vertices, vertexCount)
         Return polygonShape
@@ -111,8 +115,7 @@ Class b2PolygonShape Extends b2Shape
         Local i :int
         '// Copy vertices
         For Local i:Int = 0 Until m_vertexCount
-            
-            m_vertices.Get(i).SetV(vertices.Get(i))
+            m_vertices[i].SetV(vertices.Get(i))
         End
         '// Compute normals. Ensure the edges have non-zero length.
         For Local i:Int = 0 Until m_vertexCount
@@ -121,14 +124,13 @@ Class b2PolygonShape Extends b2Shape
             Local i2 :int =  0
             
             If( i + 1 < m_vertexCount  )
-                
                 i2 =  i + 1
             End
             
-            Local edge :b2Vec2 = b2Math.SubtractVV(m_vertices.Get(i2), m_vertices.Get(i1))
+            Local edge :b2Vec2 = b2Math.SubtractVV(m_vertices[i2], m_vertices[i1])
             b2Settings.B2Assert(edge.LengthSquared() > Constants.EPSILON )
-            m_normals.Get(i).SetV(b2Math.CrossVF(edge, 1.0))
-            m_normals.Get(i).Normalize()
+            m_normals[i].SetV(b2Math.CrossVF(edge, 1.0))
+            m_normals[i].Normalize()
         End
         '//#ifdef _DEBUG
         '// Ensure the convex(polygon) and the interior
@@ -157,12 +159,13 @@ Class b2PolygonShape Extends b2Shape
         '// Compute the polygon centroid
         m_centroid = ComputeCentroid(m_vertices, m_vertexCount)
     End
+    
     Function AsVector : b2PolygonShape (vertices:FlashArray<b2Vec2>, vertexCount:Float)
-        
         Local polygonShape :b2PolygonShape = New b2PolygonShape()
         polygonShape.SetAsVector(vertices, vertexCount)
         Return polygonShape
     End
+    
     #rem
     '/**
     '* Build vertices to represent an axis-aligned box.
@@ -171,21 +174,20 @@ Class b2PolygonShape Extends b2Shape
     '*/
     #end
     Method SetAsBox : void (hx:Float, hy:Float)
-        
         m_vertexCount = 4
         Reserve(4)
-        m_vertices.Get(0).Set(-hx, -hy)
-        m_vertices.Get(1).Set( hx, -hy)
-        m_vertices.Get(2).Set( hx,  hy)
-        m_vertices.Get(3).Set(-hx,  hy)
-        m_normals.Get(0).Set(0.0, -1.0)
-        m_normals.Get(1).Set(1.0, 0.0)
-        m_normals.Get(2).Set(0.0, 1.0)
-        m_normals.Get(3).Set(-1.0, 0.0)
+        m_vertices[0].Set(-hx, -hy)
+        m_vertices[1].Set( hx, -hy)
+        m_vertices[2].Set( hx,  hy)
+        m_vertices[3].Set(-hx,  hy)
+        m_normals[0].Set(0.0, -1.0)
+        m_normals[1].Set(1.0, 0.0)
+        m_normals[2].Set(0.0, 1.0)
+        m_normals[3].Set(-1.0, 0.0)
         m_centroid.SetZero()
     End
+    
     Function AsBox : b2PolygonShape (hx:Float, hy:Float)
-        
         Local polygonShape :b2PolygonShape = New b2PolygonShape()
         polygonShape.SetAsBox(hx, hy)
         Return polygonShape
@@ -204,48 +206,47 @@ Class b2PolygonShape Extends b2Shape
         
         m_vertexCount = 4
         Reserve(4)
-        m_vertices.Get(0).Set(-hx, -hy)
-        m_vertices.Get(1).Set( hx, -hy)
-        m_vertices.Get(2).Set( hx,  hy)
-        m_vertices.Get(3).Set(-hx,  hy)
-        m_normals.Get(0).Set(0.0, -1.0)
-        m_normals.Get(1).Set(1.0, 0.0)
-        m_normals.Get(2).Set(0.0, 1.0)
-        m_normals.Get(3).Set(-1.0, 0.0)
+        m_vertices[0].Set(-hx, -hy)
+        m_vertices[1].Set( hx, -hy)
+        m_vertices[2].Set( hx,  hy)
+        m_vertices[3].Set(-hx,  hy)
+        m_normals[0].Set(0.0, -1.0)
+        m_normals[1].Set(1.0, 0.0)
+        m_normals[2].Set(0.0, 1.0)
+        m_normals[3].Set(-1.0, 0.0)
         m_centroid = center
         Local xf :b2Transform = New b2Transform()
         xf.position = center
         xf.R.Set(angle)
         '// Transform vertices and normals.
         For Local i:Int = 0 Until m_vertexCount
-            
-            m_vertices.Set(i, b2Math.MulX(xf, m_vertices.Get(i)))
-            m_normals.Set(i, b2Math.MulMV(xf.R, m_normals.Get(i)))
+            m_vertices[i] = b2Math.MulX(xf, m_vertices[i])
+            m_normals[i] = b2Math.MulMV(xf.R, m_normals[i])
         End
     End
+    
     Function AsOrientedBox : b2PolygonShape (hx:Float, hy:Float, center:b2Vec2 = null, angle:Float = 0.0)
-        
         Local polygonShape :b2PolygonShape = New b2PolygonShape()
         polygonShape.SetAsOrientedBox(hx, hy, center, angle)
         Return polygonShape
     End
+    
     #rem
     '/**
     '* Set a(this) single edge.
     '*/
     #end
     Method SetAsEdge : void (v1:b2Vec2, v2:b2Vec2)
-        
         m_vertexCount = 2
         Reserve(2)
-        m_vertices.Get(0).SetV(v1)
-        m_vertices.Get(1).SetV(v2)
+        m_vertices[0].SetV(v1)
+        m_vertices[1].SetV(v2)
         m_centroid.x = 0.5 * (v1.x + v2.x)
         m_centroid.y = 0.5 * (v1.y + v2.y)
-        m_normals.Set( 0,  b2Math.CrossVF(b2Math.SubtractVV(v2, v1), 1.0) )
-        m_normals.Get(0).Normalize()
-        m_normals.Get(1).x = -m_normals.Get(0).x
-        m_normals.Get(1).y = -m_normals.Get(0).y
+        m_normals[0] = b2Math.CrossVF(b2Math.SubtractVV(v2, v1), 1.0)
+        m_normals[0].Normalize()
+        m_normals[1].x = -m_normals[0].x
+        m_normals[1].y = -m_normals[0].y
     End
     #rem
     '/**
@@ -275,10 +276,10 @@ Class b2PolygonShape Extends b2Shape
         For Local i:Int = 0 Until m_vertexCount
             
             '//float32 dot = b2Dot(m_normals.Get(i), pLocal - m_vertices.Get(i))
-            tVec = m_vertices.Get(i)
+            tVec = m_vertices[i]
             tX = pLocalX - tVec.x
             tY = pLocalY - tVec.y
-            tVec = m_normals.Get(i)
+            tVec = m_normals[i]
             Local dot :Float = (tVec.x * tX + tVec.y * tY)
             If (dot > 0.0)
                 
@@ -323,10 +324,10 @@ Class b2PolygonShape Extends b2Shape
             '// dot(normal, p - v) = 0
             '// dot(normal, p1 - v) + a * dot(normal, d) = 0
             '//float32 numerator = b2Dot(m_normals.Get(i), m_vertices.Get(i) - p1)
-            tVec = m_vertices.Get(i)
+            tVec = m_vertices[i]
             tX = tVec.x - p1X
             tY = tVec.y - p1Y
-            tVec = m_normals.Get(i)
+            tVec = m_normals[i]
             Local numerator :Float = (tVec.x*tX + tVec.y*tY)
             '//float32 denominator = b2Dot(m_normals.Get(i), d)
             Local denominator :Float = (tVec.x * dX + tVec.y * dY)
@@ -369,7 +370,7 @@ Class b2PolygonShape Extends b2Shape
             output.fraction = lower
             '//output.normal = b2Mul(transform.R, m_normals.Get(index))
             tMat = transform.R
-            tVec = m_normals.Get(index)
+            tVec = m_normals[index]
             output.normal.x = (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
             output.normal.y = (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
             Return True
@@ -385,14 +386,14 @@ Class b2PolygonShape Extends b2Shape
         
         '//var lower:b2Vec2 = b2Math.MulX(xf, m_vertices.Get(0))
         Local tMat :b2Mat22 = xf.R
-        Local tVec :b2Vec2 = m_vertices.Get(0)
+        Local tVec :b2Vec2 = m_vertices[0]
         Local lowerX :Float = xf.position.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
         Local lowerY :Float = xf.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
         Local upperX :Float = lowerX
         Local upperY :Float = lowerY
         For Local i:Int = 1 Until m_vertexCount
             
-            tVec = m_vertices.Get(i)
+            tVec = m_vertices[i]
             Local vX :Float = xf.position.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
             Local vY :Float = xf.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
             If( lowerX > vX  )
@@ -450,8 +451,8 @@ Class b2PolygonShape Extends b2Shape
         '// A line segment has zero mass.
         If (m_vertexCount = 2)
             
-            massData.center.x = 0.5 * (m_vertices.Get(0).x + m_vertices.Get(1).x)
-            massData.center.y = 0.5 * (m_vertices.Get(0).y + m_vertices.Get(1).y)
+            massData.center.x = 0.5 * (m_vertices[0].x + m_vertices[1].x)
+            massData.center.y = 0.5 * (m_vertices[0].y + m_vertices[1].y)
             massData.mass = 0.0
             massData.I = 0.0
             Return
@@ -486,13 +487,12 @@ Class b2PolygonShape Extends b2Shape
             '//b2Vec2 p1 = pRef
             '//
             '//b2Vec2 p2 = m_vertices.Get(i)
-            Local p2 :b2Vec2 = m_vertices.Get(i)
+            Local p2 :b2Vec2 = m_vertices[i]
             '//b2Vec2 p3 = i + 1 < m_vertexCount ? m_vertices.Get(i+1) : m_vertices.Get(0)
-            Local p3 :b2Vec2 =  m_vertices.Get(0)
+            Local p3 :b2Vec2 =  m_vertices[0]
             
             If( i + 1 < m_vertexCount  )
-                
-                p3 =  m_vertices.Get(int(i+1))
+                p3 =  m_vertices[i+1]
             End
             '//b2Vec2 e1 = p2 - p1
             Local e1X :Float = p2.x - p1X
@@ -550,35 +550,26 @@ Class b2PolygonShape Extends b2Shape
         '// Transform plane into shape co-ordinates
         Local normalL :b2Vec2 = b2Math.MulTMV(xf.R, normal)
         Local offsetL :Float = offset - b2Math.Dot(normal, xf.position)
-        Local depths :FlashArray<FloatObject> = New FlashArray<FloatObject>()
+        Local depths:Float[] = New Float[m_vertexCount]
         Local diveCount :int = 0
         Local intoIndex :int = -1
         Local outoIndex :int = -1
         Local lastSubmerged :Bool = False
-        Local i :int
+        
         For Local i:Int = 0 Until m_vertexCount
+            depths[i] = b2Math.Dot(normalL, m_vertices[i]) - offsetL
+            Local isSubmerged :Bool = depths[i] < -Constants.EPSILON
             
-            depths.Set( i,  b2Math.Dot(normalL, m_vertices.Get(i)) - offsetL )
-            Local isSubmerged :Bool = depths.Get(i) < -Constants.EPSILON
             If (i > 0)
-                
                 If (isSubmerged)
-                    
                     If (Not(lastSubmerged))
-                        
                         intoIndex = i - 1
                         diveCount += 1
-                        
                     End
-                    
                 Else
-                    
-                    
                     If (lastSubmerged)
-                        
                         outoIndex = i - 1
                         diveCount += 1
-                        
                     End
                 End
             End
@@ -608,28 +599,28 @@ Class b2PolygonShape Extends b2Shape
                 End
             End
             
-            Local intoIndex2 :int = (intoIndex + 1) Mod m_vertexCount
-            Local outoIndex2 :int = (outoIndex + 1) Mod m_vertexCount
-            Local intoLamdda :Float = (0 - depths.Get(intoIndex).ToFloat()) / (depths.Get(intoIndex2).ToFloat() - depths.Get(intoIndex).ToFloat())
-            Local outoLamdda :Float = (0 - depths.Get(outoIndex).ToFloat()) / (depths.Get(outoIndex2).ToFloat() - depths.Get(outoIndex).ToFloat())
-            Local intoVec :b2Vec2 = New b2Vec2(m_vertices.Get(intoIndex).x * (1 - intoLamdda) + m_vertices.Get(intoIndex2).x * intoLamdda,
-            m_vertices.Get(intoIndex).y * (1 - intoLamdda) + m_vertices.Get(intoIndex2).y * intoLamdda)
-            Local outoVec :b2Vec2 = New b2Vec2(m_vertices.Get(outoIndex).x * (1 - outoLamdda) + m_vertices.Get(outoIndex2).x * outoLamdda,
-            m_vertices.Get(outoIndex).y * (1 - outoLamdda) + m_vertices.Get(outoIndex2).y * outoLamdda)
+            Local intoIndex2 :Int = (intoIndex + 1) Mod m_vertexCount
+            Local outoIndex2 :Int = (outoIndex + 1) Mod m_vertexCount
+            Local intoLamdda :Float = (0 - depths[intoIndex]) / (depths[intoIndex2] - depths[intoIndex])
+            Local outoLamdda :Float = (0 - depths[outoIndex]) / (depths[outoIndex2] - depths[outoIndex])
+            Local intoVec :b2Vec2 = New b2Vec2(m_vertices[intoIndex].x * (1 - intoLamdda) + m_vertices[intoIndex2].x * intoLamdda,
+            m_vertices[intoIndex].y * (1 - intoLamdda) + m_vertices[intoIndex2].y * intoLamdda)
+            Local outoVec :b2Vec2 = New b2Vec2(m_vertices[outoIndex].x * (1 - outoLamdda) + m_vertices[outoIndex2].x * outoLamdda,
+            m_vertices[outoIndex].y * (1 - outoLamdda) + m_vertices[outoIndex2].y * outoLamdda)
             '// Initialize accumulator
             Local area :Float = 0
             Local center :b2Vec2 = New b2Vec2()
-            Local p2 :b2Vec2 = m_vertices.Get(intoIndex2)
+            Local p2 :b2Vec2 = m_vertices[intoIndex2]
             Local p3 :b2Vec2
             '// An awkward loop from intoIndex2+1 to outIndex2
-            i = intoIndex2
+            Local i:Int = intoIndex2
             While (i <> outoIndex2)
                 
                 i = (i + 1) Mod m_vertexCount
                 If(i = outoIndex2)
                     p3 = outoVec
                 Else
-                    p3 = m_vertices.Get(i)
+                    p3 = m_vertices[i]
                 End
                 Local triangleArea :Float = 0.5 * ( (p2.x - intoVec.x) * (p3.y - intoVec.y) - (p2.y - intoVec.y) * (p3.x - intoVec.x) )
                 area += triangleArea
@@ -657,7 +648,7 @@ Class b2PolygonShape Extends b2Shape
         '* Get the vertices in local coordinates.
         '*/
         #end
-        Method GetVertices : FlashArray<b2Vec2> ()
+        Method GetVertices : b2Vec2[] ()
             
             Return m_vertices
         End
@@ -666,7 +657,7 @@ Class b2PolygonShape Extends b2Shape
         '* Get the edge normal vectors. one(There) for each vertex.
         '*/
         #end
-        Method GetNormals : FlashArray<b2Vec2> ()
+        Method GetNormals : b2Vec2[] ()
             
             Return m_normals
         End
@@ -678,10 +669,10 @@ Class b2PolygonShape Extends b2Shape
         Method GetSupport : int (d:b2Vec2)
             
             Local bestIndex :int = 0
-            Local bestValue :Float = m_vertices.Get(0).x * d.x + m_vertices.Get(0).y * d.y
+            Local bestValue :Float = m_vertices[0].x * d.x + m_vertices[0].y * d.y
             For Local i:Int = 1 Until m_vertexCount
                 
-                Local value :Float = m_vertices.Get(i).x * d.x + m_vertices.Get(i).y * d.y
+                Local value :Float = m_vertices[i].x * d.x + m_vertices[i].y * d.y
                 If (value > bestValue)
                     
                     bestIndex = i
@@ -694,10 +685,10 @@ Class b2PolygonShape Extends b2Shape
         Method GetSupportVertex : b2Vec2 (d:b2Vec2)
             
             Local bestIndex :int = 0
-            Local bestValue :Float = m_vertices.Get(0).x * d.x + m_vertices.Get(0).y * d.y
+            Local bestValue :Float = m_vertices[0].x * d.x + m_vertices[0].y * d.y
             For Local i:Int = 1 Until m_vertexCount
                 
-                Local value :Float = m_vertices.Get(i).x * d.x + m_vertices.Get(i).y * d.y
+                Local value :Float = m_vertices[i].x * d.x + m_vertices[i].y * d.y
                 If (value > bestValue)
                     
                     bestIndex = i
@@ -705,7 +696,7 @@ Class b2PolygonShape Extends b2Shape
                 End
             End
             
-            Return m_vertices.Get(bestIndex)
+            Return m_vertices[bestIndex]
         End
         '// TODO: Expose this
         Method Validate : Bool ()
@@ -761,22 +752,23 @@ Class b2PolygonShape Extends b2Shape
             '//b2Settings.B2Assert(def.type = e_polygonShape)
             m_type = e_polygonShape
             m_centroid = New b2Vec2()
-            m_vertices = New FlashArray<b2Vec2>()
-            m_normals = New FlashArray<b2Vec2>()
+            Reserve(4)
         End
+        
         Method Reserve : void (count:int)
-            
-            For Local i:Int = m_vertices.Length Until count
+            If m_vertices.Length < count
+                Local startLength:Int = m_vertices.Length 
                 
-                m_vertices.Set(i, New b2Vec2())
-                m_normals.Set(i, New b2Vec2())
-            End
+                m_vertices = m_vertices.Resize(count)
+                m_normals = m_normals.Resize(count)
+                
+                For Local i:Int = startLength Until count
+                    m_vertices[i] = New b2Vec2()
+                    m_normals[i] = New b2Vec2()
+                End
+            End            
         End
-        '// Local position of the polygon centroid.
-        Field m_centroid:b2Vec2        
-        Field m_vertices:FlashArray<b2Vec2>
-        Field m_normals:FlashArray<b2Vec2>
-        Field m_vertexCount:int
+        
         
         #rem
         '/**
@@ -786,7 +778,7 @@ Class b2PolygonShape Extends b2Shape
         '* @return the polygon centroid
         '*/
         #end
-        Function ComputeCentroid : b2Vec2 (vs:FlashArray<b2Vec2>, count:Int)
+        Function ComputeCentroid : b2Vec2 (vs:b2Vec2[], count:Int)
             
             '//b2Settings.B2Assert(count >= 3)
             '//b2Vec2 c; c.Set(0.0f, 0.0f)
@@ -817,13 +809,12 @@ Class b2PolygonShape Extends b2Shape
                 '//b2Vec2 p1 = pRef
                 '// 0.0, 0.0
                 '//b2Vec2 p2 = vs.Get(i)
-                Local p2 :b2Vec2 = vs.Get(i)
+                Local p2 :b2Vec2 = vs[i]
                 '//b2Vec2 p3 = i + 1 < count ? vs.Get(i+1) : vs.Get(0)
-                Local p3 :b2Vec2 =  vs.Get(0)
+                Local p3 :b2Vec2 =  vs[0]
                 
                 If( i + 1 < count  )
-                    
-                    p3 =  vs.Get(int(i+1))
+                    p3 = vs[i+1]
                 End
                 '//b2Vec2 e1 = p2 - p1
                 Local e1X :Float = p2.x - p1X
@@ -854,22 +845,21 @@ Class b2PolygonShape Extends b2Shape
         '* @see http://www.geometrictools.com/Documentation/MinimumAreaRectangle.pdf
         '*/
         #end
-        Function ComputeOBB : void (obb:b2OBB, vs:FlashArray<b2Vec2>, count:int)
+        Function ComputeOBB : void (obb:b2OBB, vs:b2Vec2[], count:int)
             Local i :int
-            Local p :FlashArray<b2Vec2> = New FlashArray<b2Vec2>(count + 1)
+            Local p :b2Vec2[] = New b2Vec2[count + 1]
             For Local i:Int = 0 Until count
-                
-                p.Set( i,  vs.Get(i) )
+                p[i] = vs[i]
             End
             
-            p.Set( count,  p.Get(0) )
+            p[count] = p[0]
             Local minArea :Float = Constants.FMAX
             For Local i:Int = 1 Until count
                 
-                Local root :b2Vec2 = p.Get(int(i-1))
+                Local root :b2Vec2 = p[i-1]
                 '//b2Vec2 ux = p.Get(i) - root
-                Local uxX :Float = p.Get(i).x - root.x
-                Local uxY :Float = p.Get(i).y - root.y
+                Local uxX :Float = p[i].x - root.x
+                Local uxY :Float = p[i].y - root.y
                 '//var length:Float = ux.Normalize()
                 Local length :Float = Sqrt(uxX*uxX + uxY*uxY)
                 uxX /= length
@@ -887,8 +877,8 @@ Class b2PolygonShape Extends b2Shape
                 For Local j:Int = 0 Until count
                     
                     '//b2Vec2 d = p.Get(j) - root
-                    Local dX :Float = p.Get(j).x - root.x
-                    Local dY :Float = p.Get(j).y - root.y
+                    Local dX :Float = p[j].x - root.x
+                    Local dY :Float = p[j].y - root.y
                     '//b2Vec2 r
                     '//var rX:Float = b2Dot(ux, d)
                     Local rX :Float = (uxX*dX + uxY*dY)
