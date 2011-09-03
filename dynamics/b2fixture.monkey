@@ -399,8 +399,8 @@ Class b2Fixture
     
     Field m_filter:b2FilterData = New b2FilterData()
     
+	Private
     Field m_isSensor:Bool
-    
     Field m_userData: Object
     
 End
