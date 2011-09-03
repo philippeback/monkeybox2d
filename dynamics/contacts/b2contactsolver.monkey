@@ -811,20 +811,17 @@ Class b2ContactSolver
             For Local j:Int = 0 Until c.pointCount
                 
                 Local ccp :b2ContactConstraintPoint = c.points[j]
-                Local point :b2Vec2 = s_psm.m_points.Get(j)
-                Local separation :Float = s_psm.m_separations.Get(j)
+                Local point :b2Vec2 = s_psm.m_points[j]
+                Local separation :Float = s_psm.m_separations[j]
                 Local rAX :Float = point.x - bodyA.m_sweep.c.x
                 Local rAY :Float = point.y - bodyA.m_sweep.c.y
                 Local rBX :Float = point.x - bodyB.m_sweep.c.x
                 Local rBY :Float = point.y - bodyB.m_sweep.c.y
                 '// Track max constraint error.
                 If( minSeparation < separation )
-                    minSeparation =minSeparation
+                    minSeparation = minSeparation
                 Else
-                    
-                    
-                    minSeparation =separation
-                    
+                    minSeparation = separation
                 End
                 '// Prevent large corrections and allow slop.
                 Local C :Float = b2Math.Clamp(baumgarte * (separation + b2Settings.b2_linearSlop), -b2Settings.b2_maxLinearCorrection, 0.0)

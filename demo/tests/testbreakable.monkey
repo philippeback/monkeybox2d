@@ -135,12 +135,12 @@ Class ContactListener Extends b2ContactListener
         '// Should the body  Exit?
         Local count :int = contact.GetManifold().m_pointCount
         Local maxImpulse :Float = 0.0
+        
         For Local i:Int = 0 Until count
-            
-            maxImpulse = b2Math.Max(maxImpulse, impulse.normalImpulses.Get(i))
+            maxImpulse = b2Math.Max(maxImpulse, impulse.normalImpulses[i])
         End
+        
         If (maxImpulse > 50)
-            
             test.m_break = True
         End
     End

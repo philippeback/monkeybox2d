@@ -409,8 +409,8 @@ Class b2Island
             Local cc :b2ContactConstraint = constraints[i]
  
             For Local j:Int = 0 Until cc.pointCount                
-                s_impulse.normalImpulses.Set( j,  cc.points[j].normalImpulse )
-                s_impulse.tangentImpulses.Set( j,  cc.points[j].tangentImpulse )
+                s_impulse.normalImpulses[j] = cc.points[j].normalImpulse
+                s_impulse.tangentImpulses[j] = cc.points[j].tangentImpulse
             End
             
             m_listener.PostSolve(c, s_impulse)

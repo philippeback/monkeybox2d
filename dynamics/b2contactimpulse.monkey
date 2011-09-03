@@ -40,7 +40,7 @@ Import box2d.common.b2settings
 #end
 Class b2ContactImpulse
     
-    Field normalImpulses:FlashArray<FloatObject> = New FlashArray<FloatObject>(b2Settings.b2_maxManifoldPoints)
-    Field tangentImpulses:FlashArray<FloatObject> = New FlashArray<FloatObject>(b2Settings.b2_maxManifoldPoints)
+    Field normalImpulses:Float[] = New Float[b2Settings.b2_maxManifoldPoints]
+    Field tangentImpulses:Float[] = New Float[b2Settings.b2_maxManifoldPoints]
 End
 
