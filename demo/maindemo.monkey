@@ -57,7 +57,9 @@ Class MainDemo Extends App
     Field m_currId :Int = 0
     Field m_input :Input
     Field tests : String[]
-    
+    Field changeAreaHeight:Int
+    Field changeAreaWidth:Int
+            
     Method OnRender()
 	    
         m_fpsCounter.StartRender()
@@ -86,7 +88,9 @@ Class MainDemo Extends App
         "TestOneSidedPlatform",
         "TestBreakable",
         "TestRaycast"]
-        
+
+        changeAreaHeight = DeviceHeight()/6
+        changeAreaWidth = DeviceWidth()/6        
         
         m_fpsCounter = New FpsCounter()
         m_fpsCounter.x = 7
@@ -101,7 +105,7 @@ Class MainDemo Extends App
         instructions_text.y = 5
         instructions_text.width = 495
         instructions_text.height = 61
-        instructions_text.text = "MonkeyBox2D " + VersionString + " - Left/Right arrows go to previous/next example. R to reset."
+        instructions_text.text = "MonkeyBox2D " + VersionString + " - Left/Right arrow or click/tap upper corners to change example. R=reset"
         m_display.AddChild(instructions_text)
         Local instructions_text2 :TextField = New TextField()
         instructions_text2.x = 7
@@ -152,12 +156,17 @@ Class MainDemo Extends App
             Return ret
         End
         Method OnUpdate ()
+            ' Quit App
+    		If KeyHit(KEY_ESCAPE)
+    			Error ""
+            End
+            
             '// toggle between tests
-            If ( KeyHit(39))
-                '// Right Arrow
+            If (MouseHit() And MouseY < changeAreaHeight And MouseX() > DeviceWidth()-changeAreaWidth) Or KeyHit(39)
+                '// tap, click or right arrow
                 m_currId += 1
                 m_currTest = null
-            Else If ( KeyHit(37))
+            Else If (MouseHit() And MouseY < changeAreaHeight And MouseX() < changeAreaWidth) Or KeyHit(37)
                 '// Left Arrow
                 m_currId -= 1
                 m_currTest = null
