@@ -60,20 +60,18 @@ Import box2d.dynamics
 Class b2RevoluteJoint Extends b2Joint
     
     '* @inheritDoc
-    Method GetAnchorA : b2Vec2 ()
-        
-        Return m_bodyA.GetWorldPoint(m_localAnchor1)
+    Method GetAnchorA:Void (out:b2Vec2)
+        m_bodyA.GetWorldPoint(m_localAnchor1,out)
     End
     
     '* @inheritDoc
-    Method GetAnchorB : b2Vec2 ()
-        
-        Return m_bodyB.GetWorldPoint(m_localAnchor2)
+    Method GetAnchorB:Void (out:b2Vec2)
+        m_bodyB.GetWorldPoint(m_localAnchor2,out)
     End
+    
     '* @inheritDoc
-    Method GetReactionForce : b2Vec2 (inv_dt:Float)
-        
-        Return New b2Vec2(inv_dt * m_impulse.x, inv_dt * m_impulse.y)
+    Method GetReactionForce:Void (inv_dt:Float, out:b2Vec2)
+        out.Set(inv_dt * m_impulse.x, inv_dt * m_impulse.y)
     End
     
     '* @inheritDoc

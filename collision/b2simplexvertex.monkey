@@ -46,34 +46,25 @@ Class b2SimplexVertex
         indexA = other.indexA
         indexB = other.indexB
     End
-    Field wA:b2Vec2
+    
+    Field wA:b2Vec2 = New b2Vec2()
+    
     '// support point in proxyA
-    
-    
-    Field wB:b2Vec2
+    Field wB:b2Vec2 = New b2Vec2()
     
     '// support point in proxyB
-    
-    
-    Field w:b2Vec2
+    Field w:b2Vec2 = New b2Vec2()
     
     '// wB - wA
-    
-    
     Field a:Float
     
     '// barycentric coordinate for closest point
-    
-    
     Field indexA:int
     
     '// wA index
-    
-    
     Field indexB:int
     
     '// wB index
-    
     
 End
 

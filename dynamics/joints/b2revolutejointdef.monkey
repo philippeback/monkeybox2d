@@ -65,6 +65,7 @@ Class b2RevoluteJointDef Extends b2JointDef
         enableLimit = False
         enableMotor = False
     End
+    
     #rem
     '/**
     '* Initialize the bodies, anchors, and reference angle using the world
@@ -72,11 +73,10 @@ Class b2RevoluteJointDef Extends b2JointDef
     '*/
     #end
     Method Initialize : void (bA:b2Body, bB:b2Body, anchor:b2Vec2)
-        
         bodyA = bA
         bodyB = bB
-        localAnchorA = bodyA.GetLocalPoint(anchor)
-        localAnchorB = bodyB.GetLocalPoint(anchor)
+        bodyA.GetLocalPoint(anchor,localAnchorA)
+        bodyB.GetLocalPoint(anchor,localAnchorB)
         referenceAngle = bodyB.GetAngle() - bodyA.GetAngle()
     End
     #rem

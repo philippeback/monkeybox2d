@@ -1413,8 +1413,10 @@ Class b2World
         Local xf2 :b2Transform = b2.m_xf
         Local x1 :b2Vec2 = xf1.position
         Local x2 :b2Vec2 = xf2.position
-        Local p1 :b2Vec2 = joint.GetAnchorA()
-        Local p2 :b2Vec2 = joint.GetAnchorB()
+        Local p1 :b2Vec2 = New b2Vec2()
+        joint.GetAnchorA(p1)
+        Local p2 :b2Vec2 = New b2Vec2()
+        joint.GetAnchorB(p2)
         '//b2Color color(0.5f, 0.8f, 0.8f)
         Local color :b2Color = s_jointColor
         Select (joint.m_type)
@@ -1424,8 +1426,10 @@ Class b2World
             Case b2Joint.e_pulleyJoint
                 
                 Local pulley :b2PulleyJoint = b2PulleyJoint((joint))
-                Local s1 :b2Vec2 = pulley.GetGroundAnchorA()
-                Local s2 :b2Vec2 = pulley.GetGroundAnchorB()
+                Local s1 :b2Vec2 = New b2Vec2()
+                pulley.GetGroundAnchorA(s1)
+                Local s2 :b2Vec2 = New b2Vec2()
+                pulley.GetGroundAnchorB(s2)
                 m_debugDraw.DrawSegment(s1, p1, color)
                 m_debugDraw.DrawSegment(s2, p2, color)
                 m_debugDraw.DrawSegment(s1, s2, color)
@@ -1448,7 +1452,8 @@ Class b2World
             
             Case b2Shape.e_circleShape
                 Local circle :b2CircleShape = b2CircleShape((shape))
-                Local center :b2Vec2 = b2Math.MulX(xf, circle.m_p)
+                Local center :b2Vec2 = New b2Vec2()
+                b2Math.MulX(xf, circle.m_p, center)
                 Local radius :Float = circle.m_radius
                 Local axis :b2Vec2 = xf.R.col1
                 m_debugDraw.DrawSolidCircle(center, radius, axis, color)
@@ -1461,13 +1466,18 @@ Class b2World
                 Local vertices:b2Vec2[] = New b2Vec2[vertexCount]
                 
                 For Local i:Int = 0 Until vertexCount
-                    vertices[i] = b2Math.MulX(xf, localVertices[i])
+                    vertices[i] = New b2Vec2()
+                    b2Math.MulX(xf, localVertices[i],vertices[i])
                 End
                 m_debugDraw.DrawSolidPolygon(vertices, vertexCount, color)
             
             Case b2Shape.e_edgeShape
                 Local edge : b2EdgeShape = b2EdgeShape(shape)
-                m_debugDraw.DrawSegment(b2Math.MulX(xf, edge.GetVertex1()), b2Math.MulX(xf, edge.GetVertex2()), color)
+                Local e1:b2Vec2 = New b2Vec2()
+                Local e2:b2Vec2 = New b2Vec2()
+                b2Math.MulX(xf, edge.GetVertex1(),e1)
+                b2Math.MulX(xf, edge.GetVertex2(),e2)
+                m_debugDraw.DrawSegment(e1, e2, color)
         End
     End
         

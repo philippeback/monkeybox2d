@@ -155,11 +155,13 @@ Class b2BuoyancyController Extends b2Controller
                 Continue
             End
             '//Buoyancy
-            Local buoyancyForce :b2Vec2 = gravity.GetNegative()
+            Local buoyancyForce:b2Vec2 = New b2Vec2()
+            gravity.GetNegative(buoyancyForce)
             buoyancyForce.Multiply(density*area)
             body.ApplyForce(buoyancyForce,massc)
             '//Linear drag
-            Local dragForce :b2Vec2 = body.GetLinearVelocityFromWorldPoint(areac)
+            Local dragForce:b2Vec2 = New b2Vec2()
+            body.GetLinearVelocityFromWorldPoint(areac,dragForce)
             dragForce.Subtract(velocity)
             dragForce.Multiply(-linearDrag*area)
             body.ApplyForce(dragForce,areac)
@@ -169,6 +171,7 @@ Class b2BuoyancyController Extends b2Controller
             i=i.nextBody
         End
     End
+    
     Method Draw : void (debugDraw:b2DebugDraw)
         
         Local r :Float = 1000

@@ -164,13 +164,10 @@ Class b2CircleShape Extends b2Shape
     '* @inheritDoc
     '*/
     #end
-    Method ComputeSubmergedArea : Float (
-        normal:b2Vec2,
-        offset:Float,
-        xf:b2Transform,
-        c:b2Vec2)
+    Method ComputeSubmergedArea:Float( normal:b2Vec2, offset:Float, xf:b2Transform, c:b2Vec2)
         
-        Local p :b2Vec2 = b2Math.MulX(xf, m_p)
+        Local p :b2Vec2 = New b2Vec2()
+        b2Math.MulX(xf, m_p, p)
         Local l :Float = -(b2Math.Dot(normal, p) - offset)
         If (l < -m_radius + Constants.EPSILON)
             

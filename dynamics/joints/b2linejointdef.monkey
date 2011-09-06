@@ -61,13 +61,13 @@ Class b2LineJointDef Extends b2JointDef
         maxMotorForce = 0.0
         motorSpeed = 0.0
     End
+    
     Method Initialize : void (bA:b2Body, bB:b2Body, anchor:b2Vec2, axis:b2Vec2)
-        
         bodyA = bA
         bodyB = bB
-        localAnchorA = bodyA.GetLocalPoint(anchor)
-        localAnchorB = bodyB.GetLocalPoint(anchor)
-        localAxisA = bodyA.GetLocalVector(axis)
+        bodyA.GetLocalPoint(anchor,localAnchorA)
+        bodyB.GetLocalPoint(anchor,localAnchorB)
+        bodyA.GetLocalVector(axis,localAxisA)
     End
     #rem
     '/**

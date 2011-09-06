@@ -49,60 +49,56 @@ Import box2d.dynamics
 Class b2PulleyJoint Extends b2Joint
     
     '* @inheritDoc
-    Method GetAnchorA : b2Vec2 ()
-        
-        Return m_bodyA.GetWorldPoint(m_localAnchor1)
+    Method GetAnchorA:Void(out:b2Vec2)
+        m_bodyA.GetWorldPoint(m_localAnchor1, out)
     End
     
     '* @inheritDoc
-    Method GetAnchorB : b2Vec2 ()
-        
-        Return m_bodyB.GetWorldPoint(m_localAnchor2)
+    Method GetAnchorB:Void (out:b2Vec2)
+        m_bodyB.GetWorldPoint(m_localAnchor2,out)
     End
+    
     '* @inheritDoc
-    Method GetReactionForce : b2Vec2 (inv_dt:Float)
-        
+    Method GetReactionForce:Void (inv_dt:Float, out:b2Vec2)
         '//b2Vec2 P = m_impulse * m_u2
         '//return inv_dt * P
-        Return New b2Vec2(inv_dt * m_impulse * m_u2.x, inv_dt * m_impulse * m_u2.y)
+        out.Set(inv_dt * m_impulse * m_u2.x, inv_dt * m_impulse * m_u2.y)
     End
+    
     '* @inheritDoc
     Method GetReactionTorque : Float (inv_dt:Float)
-        
         '//B2_NOT_USED(inv_dt)
         Return 0.0
     End
+    
     #rem
     '/**
     '* Get the first ground anchor.
     '*/
     #end
-    Method GetGroundAnchorA : b2Vec2 ()
-        
+    Method GetGroundAnchorA:Void (out:b2Vec2)
         '//return m_ground.m_xf.position + m_groundAnchor1
-        Local a :b2Vec2 = m_ground.m_xf.position.Copy()
-        a.Add(m_groundAnchor1)
-        Return a
+        out.SetV(m_ground.m_xf.position)
+        out.Add(m_groundAnchor1)
     End
+    
     #rem
     '/**
     '* Get the second ground anchor.
     '*/
     #end
-    Method GetGroundAnchorB : b2Vec2 ()
-        
+    Method GetGroundAnchorB:Void (out:b2Vec2)
         '//return m_ground.m_xf.position + m_groundAnchor2
-        Local a :b2Vec2 = m_ground.m_xf.position.Copy()
-        a.Add(m_groundAnchor2)
-        Return a
+        out.SetV( m_ground.m_xf.position)
+        out.Add(m_groundAnchor2)
     End
+    
     #rem
     '/**
     '* Get the current length of the segment attached to body1.0
     '*/
     #end
     Method GetLength1 : Float ()
-        
         Local p :b2Vec2 = m_bodyA.GetWorldPoint(m_localAnchor1)
         '//b2Vec2 s = m_ground->m_xf.position + m_groundAnchor1
         Local sX :Float = m_ground.m_xf.position.x + m_groundAnchor1.x
@@ -113,6 +109,7 @@ Class b2PulleyJoint Extends b2Joint
         '//return d.Length()
         Return Sqrt(dX*dX + dY*dY)
     End
+    
     #rem
     '/**
     '* Get the current length of the segment attached to body2.0
@@ -130,6 +127,7 @@ Class b2PulleyJoint Extends b2Joint
         '//return d.Length()
         Return Sqrt(dX*dX + dY*dY)
     End
+    
     #rem
     '/**
     '* Get the pulley ratio.
@@ -139,6 +137,7 @@ Class b2PulleyJoint Extends b2Joint
         
         Return m_ratio
     End
+    
     '//--------------- Internals Below -------------------
     '* @
     Method New(def:b2PulleyJointDef)

@@ -284,9 +284,9 @@ Class b2Fixture
     '*/
     #end
     Method GetAABB : b2AABB ()
-        
         Return m_aabb
     End
+    
     #rem
     '/**
     '* @
@@ -304,6 +304,7 @@ Class b2Fixture
         m_friction = 0.0
         m_restitution = 0.0
     End
+    
     #rem
     '/**
     'C += 1
@@ -323,6 +324,7 @@ Class b2Fixture
         m_shape = def.shape.Copy()
         m_density = def.density
     End
+    
     #rem
     '/**
     'C += 1
@@ -337,6 +339,7 @@ Class b2Fixture
         '// Free the child shape
         m_shape = null
     End
+    
     #rem
     '/**
     '* This supports body activation/deactivation.
@@ -349,6 +352,7 @@ Class b2Fixture
         m_shape.ComputeAABB(m_aabb, xf)
         m_proxy = broadPhase.CreateProxy(m_aabb, Self)
     End
+    
     #rem
     '/**
     '* This supports body activation/deactivation.
@@ -365,6 +369,7 @@ Class b2Fixture
         m_proxy = null
     End
     
+    Field tmpVec:b2Vec2 = New b2Vec2()
     Method Synchronize : void (broadPhase:IBroadPhase, transform1:b2Transform, transform2:b2Transform)
         
         If (Not(m_proxy))
@@ -376,27 +381,19 @@ Class b2Fixture
         m_shape.ComputeAABB(aabb1, transform1)
         m_shape.ComputeAABB(aabb2, transform2)
         m_aabb.Combine(aabb1, aabb2)
-        Local displacement :b2Vec2 = b2Math.SubtractVV(transform2.position, transform1.position)
-        broadPhase.MoveProxy(m_proxy, m_aabb, displacement)
+        b2Math.SubtractVV(transform2.position, transform1.position, tmpVec)
+        broadPhase.MoveProxy(m_proxy, m_aabb, tmpVec)
     End
+    
     Field m_massData:b2MassData
-    
     Field m_aabb:b2AABB
-    
     Field m_density:Float
-    
     Field m_next:b2Fixture
-    
     Field m_body:b2Body
-    
     Field m_shape:b2Shape
-    
     Field m_friction:Float
-    
     Field m_restitution:Float
-    
     Field m_proxy: Object
-    
     Field m_filter:b2FilterData = New b2FilterData()
     
 	Private

@@ -47,8 +47,11 @@ Class b2Distance
     Global b2_gjkIters:int
     Global b2_gjkMaxIters:int
     Global s_simplex:b2Simplex = New b2Simplex()
-    Global s_saveA:FlashArray<IntObject> = New FlashArray<IntObject>(3)
-    Global s_saveB:FlashArray<IntObject> = New FlashArray<IntObject>(3)
+    Global s_saveA:Int[] = New Int[3]
+    Global s_saveB:Int[] = New Int[3]
+    Global tmpVec1:b2Vec2 = New b2Vec2()
+    Global tmpVec2:b2Vec2 = New b2Vec2()
+    
     Function Distance : void (output:b2DistanceOutput, cache:b2SimplexCache, input:b2DistanceInput)
         
         b2_gjkCalls += 1
@@ -61,12 +64,12 @@ Class b2Distance
         Local simplex :b2Simplex = s_simplex
         simplex.ReadCache(cache, proxyA, transformA, proxyB, transformB)
         '// Get simplex an(vertices) vector.
-        Local vertices :FlashArray<b2SimplexVertex> = simplex.m_vertices
+        Local vertices:b2SimplexVertex[] = simplex.m_vertices
         const k_maxIters:int = 20
         '// These store the vertices of the last simplex so that we
         '// can check for duplicates and preven cycling
-        Local saveA :FlashArray<IntObject> = s_saveA
-        Local saveB :FlashArray<IntObject> = s_saveB
+        Local saveA:Int[] = s_saveA
+        Local saveB:Int[] = s_saveB
         Local saveCount :int = 0
         Local closestPoint :b2Vec2 = simplex.GetClosestPoint()
         Local distanceSqr1 :Float = closestPoint.LengthSquared()
@@ -80,10 +83,10 @@ Class b2Distance
             '// Copy the simplex so that we can identify duplicates
             saveCount = simplex.m_count
             For Local i:Int = 0 Until saveCount
-                
-                saveA.Set( i,  vertices.Get(i).indexA )
-                saveB.Set( i,  vertices.Get(i).indexB )
+                saveA[i] = vertices[i].indexA
+                saveB[i] = vertices[i].indexB
             End
+            
             Select(simplex.m_count)
                 
                 Case 1
@@ -113,7 +116,8 @@ Class b2Distance
                 
                 distanceSqr1 = distanceSqr2
                 '// Get search direction.
-                Local d :b2Vec2 = simplex.GetSearchDirection()
+                simplex.GetSearchDirection(tmpVec1)
+                Local d:b2Vec2 = tmpVec1
                 '// Ensure the search numerically(direction) fit.
                 If (d.LengthSquared() < Constants.EPSILON * Constants.EPSILON)
                     
@@ -125,12 +129,15 @@ Class b2Distance
                     Exit
                 End
                 '// Compute a tentative New simplex vertex using support points
-                Local vertex :b2SimplexVertex = vertices.Get(simplex.m_count)
-                vertex.indexA = proxyA.GetSupport(b2Math.MulTMV(transformA.R, d.GetNegative()))
-                vertex.wA = b2Math.MulX(transformA, proxyA.GetVertex(vertex.indexA))
-                vertex.indexB = proxyB.GetSupport(b2Math.MulTMV(transformB.R, d))
-                vertex.wB = b2Math.MulX(transformB, proxyB.GetVertex(vertex.indexB))
-                vertex.w = b2Math.SubtractVV(vertex.wB, vertex.wA)
+                Local vertex:b2SimplexVertex = vertices[simplex.m_count]
+                d.GetNegative(tmpVec2)
+                b2Math.MulTMV(transformA.R, tmpVec2 ,tmpVec2)
+                vertex.indexA = proxyA.GetSupport(tmpVec2)
+                b2Math.MulX(transformA, proxyA.GetVertex(vertex.indexA), vertex.wA)
+                b2Math.MulTMV(transformB.R, d, tmpVec2)
+                vertex.indexB = proxyB.GetSupport(tmpVec2)
+                b2Math.MulX(transformB, proxyB.GetVertex(vertex.indexB), vertex.wB)
+                b2Math.SubtractVV(vertex.wB, vertex.wA, vertex.w)
                 '// Iteration equated(count) to the number of support point calls.
                 iter += 1
                 b2_gjkIters += 1
@@ -139,7 +146,7 @@ Class b2Distance
                 Local duplicate :Bool = False
                 For Local i:Int = 0 Until saveCount
                     
-                    If (vertex.indexA = saveA.Get(i) And vertex.indexB = saveB.Get(i))
+                    If (vertex.indexA = saveA[i] And vertex.indexB = saveB[i])
                         
                         duplicate = True
                         Exit
@@ -157,7 +164,8 @@ Class b2Distance
             b2_gjkMaxIters = b2Math.Max(b2_gjkMaxIters, iter)
             '// Prepare output
             simplex.GetWitnessPoints(output.pointA, output.pointB)
-            output.distance = b2Math.SubtractVV(output.pointA, output.pointB).Length()
+            b2Math.SubtractVV(output.pointA, output.pointB,tmpVec2)
+            output.distance = tmpVec2.Length()
             output.iterations = iter
             '// Cache the simplex
             simplex.WriteCache(cache)
@@ -171,7 +179,8 @@ Class b2Distance
                     '// Shapes are still not overlapped.
                     '// Move the witness points to the outer surface.
                     output.distance -= rA + rB
-                    Local normal :b2Vec2 = b2Math.SubtractVV(output.pointB, output.pointA)
+                    Local normal:b2Vec2 = tmpVec2
+                    b2Math.SubtractVV(output.pointB, output.pointA, normal)
                     normal.Normalize()
                     output.pointA.x += rA * normal.x
                     output.pointA.y += rA * normal.y
@@ -179,10 +188,9 @@ Class b2Distance
                     output.pointB.y -= rB * normal.y
                 Else
                     
-                    
                     '// Shapes are overlapped when radii are considered.
                     '// Move the witness points to the middle.
-                    p = New b2Vec2()
+                    p = tmpVec2
                     p.x = 0.5 * (output.pointA.x + output.pointB.x)
                     p.y = 0.5 * (output.pointA.y + output.pointB.y)
                     output.pointA.x = p.x

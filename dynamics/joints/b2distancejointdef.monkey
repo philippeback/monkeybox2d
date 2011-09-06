@@ -68,8 +68,8 @@ Class b2DistanceJointDef Extends b2JointDef
         
         bodyA = bA
         bodyB = bB
-        localAnchorA.SetV( bodyA.GetLocalPoint(anchorA))
-        localAnchorB.SetV( bodyB.GetLocalPoint(anchorB))
+        bodyA.GetLocalPoint(anchorA,localAnchorA)
+        bodyB.GetLocalPoint(anchorB,localAnchorB)
         Local dX :Float = anchorB.x - anchorA.x
         Local dY :Float = anchorB.y - anchorA.y
         Length = Sqrt(dX*dX + dY*dY)

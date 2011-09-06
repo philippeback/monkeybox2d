@@ -85,7 +85,7 @@ Class TestTheoJansen Extends Test
         bd = New b2BodyDef()
         bd.type = b2Body.b2_Body
         '//bd.position = pivot + m_offset
-        bd.position = b2Math.AddVV(pivot, m_offset)
+        b2Math.AddVV(pivot, m_offset, bd.position)
         m_chassis = m_world.CreateBody(bd)
         m_chassis.CreateFixture(fd)
         'End
@@ -98,7 +98,7 @@ Class TestTheoJansen Extends Test
         bd = New b2BodyDef()
         bd.type = b2Body.b2_Body
         '//bd.position = pivot + m_offset
-        bd.position = b2Math.AddVV(pivot, m_offset)
+        b2Math.AddVV(pivot, m_offset, bd.position)
         m_wheel = m_world.CreateBody(bd)
         m_wheel.CreateFixture(fd)
         
@@ -134,6 +134,9 @@ Class TestTheoJansen Extends Test
         Local p4 :b2Vec2 = New b2Vec2( 93 * s/tScale, -24  /tScale)
         Local p5 :b2Vec2 = New b2Vec2(180 * s/tScale, -45  /tScale)
         Local p6 :b2Vec2 = New b2Vec2( 75 * s/tScale, -111 /tScale)
+        Local tmp1 :b2Vec2 = New b2Vec2()
+        Local tmp2 :b2Vec2 = New b2Vec2()
+        Local tmp3 :b2Vec2 = New b2Vec2()
         '//b2PolygonDef sd1, sd2
         Local sd1 :b2PolygonShape = New b2PolygonShape()
         Local sd2 :b2PolygonShape = New b2PolygonShape()
@@ -146,18 +149,15 @@ Class TestTheoJansen Extends Test
         fd1.density = 1.0
         fd2.density = 1.0
         If (s > 0.0)
-            
             sd1.SetAsArray([p3, p2, p1])
-            sd2.SetAsArray([b2Math.SubtractVV(p6, p4),
-            b2Math.SubtractVV(p5, p4),
-            New b2Vec2()])
+            b2Math.SubtractVV(p6, p4, tmp1)
+            b2Math.SubtractVV(p5, p4, tmp2) 
+            sd2.SetAsArray([tmp1, tmp2, New b2Vec2()])
         Else
-            
-            
             sd1.SetAsArray([p2, p3, p1])
-            sd2.SetAsArray([b2Math.SubtractVV(p5, p4),
-            b2Math.SubtractVV(p6, p4),
-            New b2Vec2()])
+            b2Math.SubtractVV(p5, p4, tmp1)
+            b2Math.SubtractVV(p6, p4, tmp2)
+            sd2.SetAsArray([tmp1, tmp2, New b2Vec2()])
         End
         '//b2BodyDef bd1, bd2
         Local bd1 :b2BodyDef = New b2BodyDef()
@@ -165,7 +165,7 @@ Class TestTheoJansen Extends Test
         Local bd2 :b2BodyDef = New b2BodyDef()
         bd2.type = b2Body.b2_Body
         bd1.position.SetV(m_offset)
-        bd2.position = b2Math.AddVV(p4, m_offset)
+        b2Math.AddVV(p4, m_offset, bd2.position)
         bd1.angularDamping = 10.0
         bd2.angularDamping = 10.0
         Local body1 :b2Body = m_world.CreateBody(bd1)
@@ -178,16 +178,25 @@ Class TestTheoJansen Extends Test
         '// acting like a suspension system.
         djd.dampingRatio = 0.5
         djd.frequencyHz = 10.0
-        djd.Initialize(body1, body2, b2Math.AddVV(p2, m_offset), b2Math.AddVV(p5, m_offset))
+        b2Math.AddVV(p2, m_offset, tmp1)
+        b2Math.AddVV(p5, m_offset, tmp2)
+        djd.Initialize(body1, body2, tmp1, tmp2 )
         m_world.CreateJoint(djd)
-        djd.Initialize(body1, body2, b2Math.AddVV(p3, m_offset), b2Math.AddVV(p4, m_offset))
+        b2Math.AddVV(p3, m_offset, tmp1)
+        b2Math.AddVV(p4, m_offset, tmp2)
+        djd.Initialize(body1, body2, tmp1, tmp2)
         m_world.CreateJoint(djd)
-        djd.Initialize(body1, m_wheel, b2Math.AddVV(p3, m_offset), b2Math.AddVV(wheelAnchor, m_offset))
+        b2Math.AddVV(p3, m_offset, tmp1)
+        b2Math.AddVV(wheelAnchor, m_offset, tmp2)
+        djd.Initialize(body1, m_wheel, tmp1, tmp2 )
         m_world.CreateJoint(djd)
-        djd.Initialize(body2, m_wheel, b2Math.AddVV(p6, m_offset), b2Math.AddVV(wheelAnchor, m_offset))
+        b2Math.AddVV(p6, m_offset, tmp1)
+        b2Math.AddVV(wheelAnchor, m_offset, tmp2)
+        djd.Initialize(body2, m_wheel, tmp1, tmp2)
         m_world.CreateJoint(djd)
         Local rjd :b2RevoluteJointDef = New b2RevoluteJointDef()
-        rjd.Initialize(body2, m_chassis, b2Math.AddVV(p4, m_offset))
+        b2Math.AddVV(p4, m_offset, tmp1)
+        rjd.Initialize(body2, m_chassis, tmp1)
         m_world.CreateJoint(rjd)
     End
     

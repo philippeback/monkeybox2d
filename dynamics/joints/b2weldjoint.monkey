@@ -54,20 +54,18 @@ Import box2d.dynamics
 Class b2WeldJoint Extends b2Joint
     
     '* @inheritDoc
-    Method GetAnchorA : b2Vec2 ()
-        
-        Return m_bodyA.GetWorldPoint(m_localAnchorA)
+    Method GetAnchorA:Void (out:b2Vec2)
+        m_bodyA.GetWorldPoint(m_localAnchorA,out)
     End
     
     '* @inheritDoc
-    Method GetAnchorB : b2Vec2 ()
-        
-        Return m_bodyB.GetWorldPoint(m_localAnchorB)
+    Method GetAnchorB:Void (out:b2Vec2)
+        m_bodyB.GetWorldPoint(m_localAnchorB,out)
     End
     '* @inheritDoc
-    Method GetReactionForce : b2Vec2 (inv_dt:Float)
+    Method GetReactionForce:Void (inv_dt:Float, out:b2Vec2)
         
-        Return New b2Vec2(inv_dt * m_impulse.x, inv_dt * m_impulse.y)
+        out.Set(inv_dt * m_impulse.x, inv_dt * m_impulse.y)
     End
     '* @inheritDoc
     Method GetReactionTorque : Float (inv_dt:Float)

@@ -157,8 +157,10 @@ Class b2EdgeShape Extends b2Shape
         '// We are relying on v0 being consistent between multiple edges of the same body
         '//b2Vec2 v0 = offset * normal
         Local v0 :b2Vec2 = New b2Vec2(normal.x * offset, normal.y * offset)
-        Local v1 :b2Vec2 = b2Math.MulX(xf, m_v1)
-        Local v2 :b2Vec2 = b2Math.MulX(xf, m_v2)
+        Local v1 :b2Vec2 = New b2Vec2()
+        b2Math.MulX(xf, m_v1, v1)
+        Local v2 :b2Vec2 = New b2Vec2()
+        b2Math.MulX(xf, m_v2, v1)
         Local d1 :Float = b2Math.Dot(normal, v1) - offset
         Local d2 :Float = b2Math.Dot(normal, v2) - offset
         If (d1 > 0)

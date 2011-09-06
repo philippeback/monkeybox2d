@@ -61,8 +61,8 @@ Class b2WeldJointDef Extends b2JointDef
         
         bodyA = bA
         bodyB = bB
-        localAnchorA.SetV( bodyA.GetLocalPoint(anchor))
-        localAnchorB.SetV( bodyB.GetLocalPoint(anchor))
+        bodyA.GetLocalPoint(anchor,localAnchorA)
+        bodyB.GetLocalPoint(anchor,localAnchorB)
         referenceAngle = bodyB.GetAngle() - bodyA.GetAngle()
     End
     #rem

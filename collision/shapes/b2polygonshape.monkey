@@ -80,31 +80,6 @@ Class b2PolygonShape Extends b2Shape
     '*/
     #end
     Method SetAsArray : void (vertices:b2Vec2[], vertexCount:Float = 0)
-        Local v :FlashArray<b2Vec2> = New FlashArray<b2Vec2>()
-        
-        For Local tVec:b2Vec2 = Eachin vertices
-            v.Push(tVec)
-        End
-        
-        SetAsVector(v, vertexCount)
-    End
-    
-    Function AsArray : b2PolygonShape (vertices:b2Vec2[], vertexCount:Float)
-        Local polygonShape :b2PolygonShape = New b2PolygonShape()
-        polygonShape.SetAsArray(vertices, vertexCount)
-        Return polygonShape
-    End
-    
-    Method SetAsArray : void (vertices:FlashArray<b2Vec2>, vertexCount:Float = 0)
-        SetAsVector( vertices, vertexCount )
-    End
-    #rem
-    '/**
-    '* Copy vertices. This assumes the vertices define a convex polygon.
-    '* assumed(It) that the the(exterior) the right of each edge.
-    '*/
-    #end
-    Method SetAsVector : void (vertices:FlashArray<b2Vec2>, vertexCount:Float = 0)
         
         If (vertexCount = 0)
             vertexCount = vertices.Length
@@ -115,11 +90,11 @@ Class b2PolygonShape Extends b2Shape
         Local i :int
         '// Copy vertices
         For Local i:Int = 0 Until m_vertexCount
-            m_vertices[i].SetV(vertices.Get(i))
+            m_vertices[i].SetV(vertices[i])
         End
+        
         '// Compute normals. Ensure the edges have non-zero length.
         For Local i:Int = 0 Until m_vertexCount
-            
             Local i1 :int = i
             Local i2 :int =  0
             
@@ -127,45 +102,68 @@ Class b2PolygonShape Extends b2Shape
                 i2 =  i + 1
             End
             
-            Local edge :b2Vec2 = b2Math.SubtractVV(m_vertices[i2], m_vertices[i1])
+            Local edge:b2Vec2 = New b2Vec2()
+            b2Math.SubtractVV(m_vertices[i2], m_vertices[i1],edge)
             b2Settings.B2Assert(edge.LengthSquared() > Constants.EPSILON )
-            m_normals[i].SetV(b2Math.CrossVF(edge, 1.0))
+            b2Math.CrossVF(edge, 1.0, m_normals[i])
             m_normals[i].Normalize()
         End
-        '//#ifdef _DEBUG
-        '// Ensure the convex(polygon) and the interior
-        '// is to the left of each edge.
-        '//for (int32 i = 0; i < m_vertexCount; ++i)
-        '//{
-        '//int32 i1 = i
-        '//int32 i2 = i + 1 < m_vertexCount ? i + 1 : 0
-        '//b2Vec2 edge = m_vertices.Get(i2) - m_vertices.Get(i1)
-        '//for (int32 j = 0; j < m_vertexCount; ++j)
-        '//{
-        '// Dont check vertices on the current edge.
-        '//if (j = i1 Or j = i2)
-        '//{
-        '//continue
-        '//}
-        '//
-        '//b2Vec2 r = m_vertices.Get(j) - m_vertices.Get(i1)
-        '// Your non(polygon)-convex (it has an indentation) or
-        '// has colinear edges.
-        '//float32 s = b2Cross(edge, r)
-        '//b2Assert(s > 0.0f)
-        '//}
-        '//}
-        '//#endif
+        
         '// Compute the polygon centroid
         m_centroid = ComputeCentroid(m_vertices, m_vertexCount)
     End
     
-    Function AsVector : b2PolygonShape (vertices:FlashArray<b2Vec2>, vertexCount:Float)
+    Function AsArray : b2PolygonShape (vertices:b2Vec2[], vertexCount:Float)
         Local polygonShape :b2PolygonShape = New b2PolygonShape()
-        polygonShape.SetAsVector(vertices, vertexCount)
+        polygonShape.SetAsArray(vertices, vertexCount)
         Return polygonShape
     End
     
+'    #rem
+'    '/**
+'    '* Copy vertices. This assumes the vertices define a convex polygon.
+'    '* assumed(It) that the the(exterior) the right of each edge.
+'    '*/
+'    #end
+'    Method SetAsVector : void (vertices:FlashArray<b2Vec2>, vertexCount:Float = 0)
+'        
+'        If (vertexCount = 0)
+'            vertexCount = vertices.Length
+'        End
+'        b2Settings.B2Assert(2 <= vertexCount)
+'        m_vertexCount = vertexCount
+'        Reserve(vertexCount)
+'        Local i :int
+'        '// Copy vertices
+'        For Local i:Int = 0 Until m_vertexCount
+'            m_vertices[i].SetV(vertices.Get(i))
+'        End
+'        '// Compute normals. Ensure the edges have non-zero length.
+'        For Local i:Int = 0 Until m_vertexCount
+'            
+'            Local i1 :int = i
+'            Local i2 :int =  0
+'            
+'            If( i + 1 < m_vertexCount  )
+'                i2 =  i + 1
+'            End
+'            
+'            Local edge :b2Vec2 = b2Math.SubtractVV(m_vertices[i2], m_vertices[i1])
+'            b2Settings.B2Assert(edge.LengthSquared() > Constants.EPSILON )
+'            m_normals[i].SetV(b2Math.CrossVF(edge, 1.0))
+'            m_normals[i].Normalize()
+'        End
+'        
+'        '// Compute the polygon centroid
+'        m_centroid = ComputeCentroid(m_vertices, m_vertexCount)
+'    End
+'    
+'    Function AsVector : b2PolygonShape (vertices:FlashArray<b2Vec2>, vertexCount:Float)
+'        Local polygonShape :b2PolygonShape = New b2PolygonShape()
+'        polygonShape.SetAsVector(vertices, vertexCount)
+'        Return polygonShape
+'    End
+'    
     #rem
     '/**
     '* Build vertices to represent an axis-aligned box.
@@ -220,8 +218,8 @@ Class b2PolygonShape Extends b2Shape
         xf.R.Set(angle)
         '// Transform vertices and normals.
         For Local i:Int = 0 Until m_vertexCount
-            m_vertices[i] = b2Math.MulX(xf, m_vertices[i])
-            m_normals[i] = b2Math.MulMV(xf.R, m_normals[i])
+            b2Math.MulX(xf, m_vertices[i], m_vertices[i])
+            b2Math.MulMV(xf.R, m_normals[i], m_normals[i])
         End
     End
     
@@ -541,14 +539,11 @@ Class b2PolygonShape Extends b2Shape
     '* @inheritDoc
     '*/
     #end
-    Method ComputeSubmergedArea : Float (
-        normal:b2Vec2,
-        offset:Float,
-        xf:b2Transform,
-        c:b2Vec2)
+    Method ComputeSubmergedArea:Float( normal:b2Vec2, offset:Float, xf:b2Transform, c:b2Vec2)
         
         '// Transform plane into shape co-ordinates
-        Local normalL :b2Vec2 = b2Math.MulTMV(xf.R, normal)
+        Local normalL :b2Vec2 = New b2Vec2()
+        b2Math.MulTMV(xf.R, normal, normalL)
         Local offsetL :Float = offset - b2Math.Dot(normal, xf.position)
         Local depths:Float[] = New Float[m_vertexCount]
         Local diveCount :int = 0
@@ -584,7 +579,7 @@ Class b2PolygonShape Extends b2Shape
                     '// Completely submerged
                     Local md :b2MassData = New b2MassData()
                     ComputeMass(md, 1)
-                    c.SetV(b2Math.MulX(xf, md.center))
+                    b2Math.MulX(xf, md.center, c)
                     Return md.mass
                 Else
                     '//Completely dry
@@ -631,7 +626,7 @@ Class b2PolygonShape Extends b2Shape
             End
             '//Normalize and transform centroid
             center.Multiply(1 / area)
-            c.SetV(b2Math.MulX(xf, center))
+            b2Math.MulX(xf, center, c)
             Return area
         End
         #rem

@@ -57,24 +57,21 @@ Class b2Joint
     '* Get the anchor point on bodyA in world coordinates.
     '*/
     #end
-    Method GetAnchorA : b2Vec2 ()
-        Return null
+    Method GetAnchorA:Void( out:b2Vec2 )
     End
     #rem
     '/**
     '* Get the anchor point on bodyB in world coordinates.
     '*/
     #end
-    Method GetAnchorB : b2Vec2 ()
-        Return null
+    Method GetAnchorB:Void( out:b2Vec2 )
     End
     #rem
     '/**
     '* Get the reaction force on body2 at the joint anchor in Newtons.
     '*/
     #end
-    Method GetReactionForce : b2Vec2 (inv_dt:Float)
-        Return null
+    Method GetReactionForce:Void (inv_dt:Float, out:b2Vec2 )
     End
     #rem
     '/**

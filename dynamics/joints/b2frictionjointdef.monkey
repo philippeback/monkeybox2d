@@ -61,8 +61,8 @@ Class b2FrictionJointDef Extends b2JointDef
         
         bodyA = bA
         bodyB = bB
-        localAnchorA.SetV( bodyA.GetLocalPoint(anchor))
-        localAnchorB.SetV( bodyB.GetLocalPoint(anchor))
+        bodyA.GetLocalPoint(anchor,localAnchorA)
+        bodyB.GetLocalPoint(anchor,localAnchorB)
     End
     #rem
     '/**

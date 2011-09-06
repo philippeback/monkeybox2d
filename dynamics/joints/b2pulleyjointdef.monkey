@@ -68,8 +68,8 @@ Class b2PulleyJointDef Extends b2JointDef
         bodyB = bB
         groundAnchorA.SetV( gaA )
         groundAnchorB.SetV( gaB )
-        localAnchorA = bodyA.GetLocalPoint(anchorA)
-        localAnchorB = bodyB.GetLocalPoint(anchorB)
+        bodyA.GetLocalPoint(anchorA,localAnchorA)
+        bodyB.GetLocalPoint(anchorB,localAnchorB)
         '//b2Vec2 d1 = anchorA - gaA
         Local d1X :Float = anchorA.x - gaA.x
         Local d1Y :Float = anchorA.y - gaA.y

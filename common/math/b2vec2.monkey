@@ -38,127 +38,115 @@ Import box2d.common
 #end
 Class b2Vec2
     
+
+    Field x:Float
+    Field y:Float
+    
     Method New(x_:Float=0, y_:Float=0)
         x=x_
         y=y_
     End
-    Method SetZero : void ()
+    
+    Method SetZero:Void()
         x = 0.0
         y = 0.0
     End
     
-    
-    Method Set : void (x_:Float=0, y_:Float=0)
+    Method Set:Void(x_:Float=0, y_:Float=0)
         x=x_
         y=y_
     End
     
-    
-    Method SetV : void (v:b2Vec2)
+    Method SetV:Void(v:b2Vec2)
         x=v.x
         y=v.y
     End
-    Method GetNegative : b2Vec2 ()
-        Return New b2Vec2(-x, -y)
+    
+    Method GetNegative:Void(out:b2Vec2)
+        out.Set(-x, -y)
     End
     
-    
-    Method NegativeSelf : void ()
+    Method NegativeSelf:Void()
         x = -x
         y = -y
     End
+    
     Function Make : b2Vec2 (x_:Float, y_:Float)
-        
         Return New b2Vec2(x_, y_)
     End
+    
     Method Copy : b2Vec2 ()
-        
         Return New b2Vec2(x,y)
     End
-    Method Add : void (v:b2Vec2)
-        
+    
+    Method Add:Void(v:b2Vec2)
         x += v.x
-        
         y += v.y
     End
-    Method Subtract : void (v:b2Vec2)
-        
+    
+    Method Subtract:Void(v:b2Vec2)
         x -= v.x
-        
         y -= v.y
     End
-    Method Multiply : void (a:Float)
-        
+    
+    Method Multiply:Void(a:Float)
         x *= a
-        
         y *= a
     End
-    Method MulM : void (A:b2Mat22)
-        
+    
+    Method MulM:Void(A:b2Mat22)
         Local tX :Float = x
         x = A.col1.x * tX + A.col2.x * y
         y = A.col1.y * tX + A.col2.y * y
     End
-    Method MulTM : void (A:b2Mat22)
-        
+    
+    Method MulTM:Void(A:b2Mat22)
         Local tX :Float = b2Math.Dot(Self, A.col1)
         y = b2Math.Dot(Self, A.col2)
         x = tX
     End
-    Method CrossVF : void (s:Float)
-        
+    
+    Method CrossVF:Void(s:Float)
         Local tX :Float = x
         x = s * y
         y = -s * tX
     End
-    Method CrossFV : void (s:Float)
-        
+    
+    Method CrossFV:Void(s:Float)
         Local tX :Float = x
         x = -s * y
         y = s * tX
     End
-    Method MinV : void (b:b2Vec2)
-        
+    
+    Method MinV:Void(b:b2Vec2)
         If( x < b.x  )
             x = x
         Else
-            
-            
             x = b.x
-            
         End
         
         If( y < b.y  )
             y = y
         Else
-            
-            
             y = b.y
-            
         End
     End
-    Method MaxV : void (b:b2Vec2)
-        
+    
+    Method MaxV:Void(b:b2Vec2)
         If( x > b.x  )
             x = x
         Else
-            
-            
             x = b.x
-            
         End
         
         If( y > b.y  )
             y = y
         Else
-            
-            
             y = b.y
-            
         End
     End
-    Method Abs : void ()
-        
+    
+    Method Abs:Void()
         If (x < 0)
             x = -x
         End
@@ -166,19 +154,18 @@ Class b2Vec2
             y = -y
         End
     End
+    
     Method Length : Float ()
-        
         Return Sqrt(x * x + y * y)
     End
+    
     Method LengthSquared : Float ()
-        
         Return (x * x + y * y)
     End
+    
     Method Normalize : Float ()
-        
         Local length :Float = Sqrt(x * x + y * y)
         If (length < Constants.EPSILON)
-            
             Return 0.0
         End
         
@@ -187,15 +174,10 @@ Class b2Vec2
         y *= invLength
         Return length
     End
+    
     Method IsValid : Bool ()
-        
         Return b2Math.IsValid(x) And b2Math.IsValid(y)
     End
-    Field x:Float
-    
-    
-    Field y:Float
-    
     
 End
 

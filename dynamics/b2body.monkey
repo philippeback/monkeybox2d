@@ -54,6 +54,9 @@ End
 
 
 Class b2Body
+    Global tmpVec1:b2Vec2 = New b2Vec2()
+    Global tmpVec2:b2Vec2 = New b2Vec2()
+        
     Method ConnectEdges : Float (s1: b2EdgeShape, s2: b2EdgeShape, angle1:Float)
         
         Local angle2 :Float = ATan2r(s2.GetDirectionVector().y, s2.GetDirectionVector().x)
@@ -588,14 +591,17 @@ Class b2Body
         '// Compute consistent velocites for New bodies based on cached velocity
         Local center1 :b2Vec2 = body1.GetWorldCenter()
         Local center2 :b2Vec2 = body2.GetWorldCenter()
-        Local velocity1 :b2Vec2 = b2Math.AddVV(linearVelocity,
-        b2Math.CrossFV(angularVelocity,
-        b2Math.SubtractVV(center1, center)))
-        Local velocity2 :b2Vec2 = b2Math.AddVV(linearVelocity,
-        b2Math.CrossFV(angularVelocity,
-        b2Math.SubtractVV(center2, center)))
-        body1.SetLinearVelocity(velocity1)
-        body2.SetLinearVelocity(velocity2)
+        
+        b2Math.SubtractVV(center1, center, tmpVec1)
+        b2Math.CrossFV(angularVelocity,tmpVec1,tmpVec2)
+        b2Math.AddVV(linearVelocity,tmpVec2,tmpVec1)
+        body1.SetLinearVelocity(tmpVec1)
+        
+        b2Math.SubtractVV(center2, center, tmpVec1)
+        b2Math.CrossFV(angularVelocity,tmpVec1,tmpVec2)
+        b2Math.AddVV(linearVelocity,tmpVec2,tmpVec1)
+        body2.SetLinearVelocity(tmpVec1)
+       
         body1.SetAngularVelocity(angularVelocity)
         body2.SetAngularVelocity(angularVelocity)
         body1.SynchronizeFixtures()
@@ -739,7 +745,6 @@ Class b2Body
         m_sweep.localCenter.SetZero()
         '// Static and kinematic bodies have zero mass.
         If (m_type = b2_staticBody Or m_type = b2_kinematicBody)
-            
             Return
         End
         
@@ -748,7 +753,6 @@ Class b2Body
         Local center :b2Vec2 = b2Vec2.Make(0, 0)
         Local f:b2Fixture = m_fixtureList
         While ( f <> Null )
-            
             If (f.m_density = 0.0)
                 f = f.m_next
                 Continue
@@ -760,42 +764,40 @@ Class b2Body
             m_I += massData.I
             f = f.m_next
         End
+        
         '// Compute the center of mass.
         If (m_mass > 0.0)
-            
             m_invMass = 1.0 / m_mass
             center.x *= m_invMass
             center.y *= m_invMass
         Else
-            
-            
             '// Force all  bodies to have a positive mass.
             m_mass = 1.0
             m_invMass = 1.0
         End
+        
         If (m_I > 0.0 And (m_flags & e_fixedRotationFlag) = 0)
-            
             '// Center the inertia about the center of mass
             m_I -= m_mass * (center.x * center.x + center.y * center.y)
             m_I *= m_inertiaScale
             b2Settings.B2Assert(m_I > 0)
             m_invI = 1.0 / m_I
         Else
-            
-            
             m_I = 0.0
             m_invI = 0.0
         End
+        
         '// Move center of mass
         Local oldCenter :b2Vec2 = m_sweep.c.Copy()
         m_sweep.localCenter.SetV(center)
-        m_sweep.c0.SetV(b2Math.MulX(m_xf, m_sweep.localCenter))
+        b2Math.MulX(m_xf, m_sweep.localCenter,m_sweep.c0)
         m_sweep.c.SetV(m_sweep.c0)
         '// Update center of mass velocity
         '//m_linearVelocity += b2Cross(m_angularVelocity, m_sweep.c - oldCenter)
         m_linearVelocity.x += m_angularVelocity * -(m_sweep.c.y - oldCenter.y)
         m_linearVelocity.y += m_angularVelocity * +(m_sweep.c.x - oldCenter.x)
     End
+    
     #rem
     '/**
     '* Get the world coordinates of a point given the local coordinates.
@@ -803,16 +805,15 @@ Class b2Body
     '* @return the same point expressed in world coordinates.
     '*/
     #end
-    Method GetWorldPoint : b2Vec2 (localPoint:b2Vec2)
-        
-        '//return b2Math.b2MulX(m_xf, localPoint)
+    Method GetWorldPoint:Void (localPoint:b2Vec2, out:b2Vec2)
         Local A :b2Mat22 = m_xf.R
-        Local u :b2Vec2 = New b2Vec2(A.col1.x * localPoint.x + A.col2.x * localPoint.y,
-        A.col1.y * localPoint.x + A.col2.y * localPoint.y)
-        u.x += m_xf.position.x
-        u.y += m_xf.position.y
-        Return u
+        Local tmp:Float = localPoint.x
+        out.Set(A.col1.x * tmp + A.col2.x * localPoint.y,
+            A.col1.y * tmp + A.col2.y * localPoint.y)
+        out.x += m_xf.position.x
+        out.y += m_xf.position.y
     End
+    
     #rem
     '/**
     '* Get the world coordinates of a vector given the local coordinates.
@@ -820,10 +821,10 @@ Class b2Body
     '* @return the same vector expressed in world coordinates.
     '*/
     #end
-    Method GetWorldVector : b2Vec2 (localVector:b2Vec2)
-        
-        Return b2Math.MulMV(m_xf.R, localVector)
+    Method GetWorldVector:Void (localVector:b2Vec2, out:b2Vec2)
+        b2Math.MulMV(m_xf.R, localVector, out)
     End
+    
     #rem
     '/**
     '* Gets a local point relative to the bodys origin given a world point.
@@ -831,10 +832,10 @@ Class b2Body
     '* @return the corresponding local point relative to the bodys origin.
     '*/
     #end
-    Method GetLocalPoint : b2Vec2 (worldPoint:b2Vec2)
-        
-        Return b2Math.MulXT(m_xf, worldPoint)
+    Method GetLocalPoint:Void (worldPoint:b2Vec2, out:b2Vec2)
+        b2Math.MulXT(m_xf, worldPoint, out)
     End
+    
     #rem
     '/**
     '* Gets a local vector given a world vector.
@@ -842,10 +843,10 @@ Class b2Body
     '* @return the corresponding local vector.
     '*/
     #end
-    Method GetLocalVector : b2Vec2 (worldVector:b2Vec2)
-        
-        Return b2Math.MulTMV(m_xf.R, worldVector)
+    Method GetLocalVector:Void (worldVector:b2Vec2, out:b2Vec2)
+        b2Math.MulTMV(m_xf.R, worldVector, out)
     End
+    
     #rem
     '/**
     '* Get the world linear velocity of a world point attached to this body.
@@ -853,10 +854,9 @@ Class b2Body
     '* @return the world velocity of a point.
     '*/
     #end
-    Method GetLinearVelocityFromWorldPoint : b2Vec2 (worldPoint:b2Vec2)
-        
+    Method GetLinearVelocityFromWorldPoint:Void (worldPoint:b2Vec2, out:b2Vec2)
         '//return          m_linearVelocity   + b2Cross(m_angularVelocity,   worldPoint   - m_sweep.c)
-        Return New b2Vec2(m_linearVelocity.x -         m_angularVelocity * (worldPoint.y - m_sweep.c.y),
+        out.Set(m_linearVelocity.x -         m_angularVelocity * (worldPoint.y - m_sweep.c.y),
         m_linearVelocity.y +         m_angularVelocity * (worldPoint.x - m_sweep.c.x))
     End
     #rem

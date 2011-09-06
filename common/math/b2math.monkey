@@ -73,68 +73,58 @@ Class b2Math
         Return a.x * b.x + a.y * b.y
     End
     Function CrossVV : Float (a:b2Vec2, b:b2Vec2)
-        
         Return a.x * b.y - a.y * b.x
     End
-    Function CrossVF : b2Vec2 (a:b2Vec2, s:Float)
-        
-        Local v :b2Vec2 = New b2Vec2(s * a.y, -s * a.x)
-        Return v
+    
+    Function CrossVF:Void (a:b2Vec2, s:Float, out:b2Vec2)
+        Local tmp:Float = a.x
+        out.Set(s * a.y, -s * tmp)
     End
-    Function CrossFV : b2Vec2 (s:Float, a:b2Vec2)
-        
-        Local v :b2Vec2 = New b2Vec2(-s * a.y, s * a.x)
-        Return v
+    
+    Function CrossFV:Void (s:Float, a:b2Vec2, out:b2Vec2)
+        Local tmp:Float = a.x
+        out.Set(-s * a.y, s * tmp)
     End
-    Function MulMV : b2Vec2 (A:b2Mat22, v:b2Vec2)
-        
-        '// (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
-        '// (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
-        Local u :b2Vec2 = New b2Vec2(A.col1.x * v.x + A.col2.x * v.y, A.col1.y * v.x + A.col2.y * v.y)
-        Return u
+    
+    Function MulMV:Void (A:b2Mat22, v:b2Vec2, out:b2Vec2)
+        Local tmp:Float =  A.col1.y * v.x + A.col2.y * v.y
+        out.Set(A.col1.x * v.x + A.col2.x * v.y, tmp)
     End
-    Function MulTMV : b2Vec2 (A:b2Mat22, v:b2Vec2)
-        
-        '// (tVec.x * tMat.col1.x + tVec.y * tMat.col1.y)
-        '// (tVec.x * tMat.col2.x + tVec.y * tMat.col2.y)
-        Local u :b2Vec2 = New b2Vec2(Dot(v, A.col1), Dot(v, A.col2))
-        Return u
+    
+    Function MulTMV:Void (A:b2Mat22, v:b2Vec2, out:b2Vec2)
+        Local tmp:Float = Dot(v, A.col2)
+        out.Set(Dot(v, A.col1), tmp)
     End
-    Function MulX : b2Vec2 (T:b2Transform, v:b2Vec2)
-        
-        Local a :b2Vec2 = MulMV(T.R, v)
-        a.x += T.position.x
-        a.y += T.position.y
-        '//return T.position + b2Mul(T.R, v)
-        Return a
+    
+    Function MulX:Void (T:b2Transform, v:b2Vec2, out:b2Vec2)
+        MulMV(T.R, v, out)
+        out.x += T.position.x
+        out.y += T.position.y
     End
-    Function MulXT : b2Vec2 (T:b2Transform, v:b2Vec2)
-        
-        Local a :b2Vec2 = SubtractVV(v, T.position)
+
+    Function MulXT:Void (T:b2Transform, v:b2Vec2, out:b2Vec2)
+        SubtractVV(v, T.position, out)
         '//return b2MulT(T.R, v - T.position)
-        Local tX :Float = (a.x * T.R.col1.x + a.y * T.R.col1.y )
-        a.y = (a.x * T.R.col2.x + a.y * T.R.col2.y )
-        a.x = tX
-        Return a
+        Local tX :Float = (out.x * T.R.col1.x + out.y * T.R.col1.y )
+        out.y = (out.x * T.R.col2.x + out.y * T.R.col2.y )
+        out.x = tX
     End
-    Function AddVV : b2Vec2 (a:b2Vec2, b:b2Vec2)
-        
-        Local v :b2Vec2 = New b2Vec2(a.x + b.x, a.y + b.y)
-        Return v
+    
+    Function AddVV:Void(a:b2Vec2, b:b2Vec2,out:b2Vec2)
+        out.Set(a.x + b.x, a.y + b.y)
     End
-    Function SubtractVV : b2Vec2 (a:b2Vec2, b:b2Vec2)
-        
-        Local v :b2Vec2 = New b2Vec2(a.x - b.x, a.y - b.y)
-        Return v
+    
+    Function SubtractVV:Void(a:b2Vec2, b:b2Vec2,out:b2Vec2)
+        out.Set(a.x - b.x, a.y - b.y)
     End
+    
     Function Distance : Float (a:b2Vec2, b:b2Vec2)
-        
         Local cX :Float = a.x-b.x
         Local cY :Float = a.y-b.y
         Return Sqrt(cX*cX + cY*cY)
     End
+    
     Function DistanceSquared : Float (a:b2Vec2, b:b2Vec2)
-        
         Local cX :Float = a.x-b.x
         Local cY :Float = a.y-b.y
         Return (cX*cX + cY*cY)
@@ -175,18 +165,17 @@ Class b2Math
             
         End
     End
-    Function AbsV : b2Vec2 (a:b2Vec2)
-        
-        Local b :b2Vec2 = New b2Vec2(Abs(a.x), Abs(a.y))
-        Return b
+    
+    Function AbsV : b2Vec2 (a:b2Vec2, out:b2Vec2)
+        out.Set(Abs(a.x), Abs(a.y))
     End
+    
     Function AbsM : b2Mat22 (A:b2Mat22)
-        
         Local B :b2Mat22 = b2Mat22.FromVV(AbsV(A.col1), AbsV(A.col2))
         Return B
     End
+    
     Function Min : Float (a:Float, b:Float)
-        
         If( a < b  )
             
             Return  a

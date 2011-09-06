@@ -85,23 +85,26 @@ Class TestCompound Extends Test
         
         Local xf1 :b2Transform = New b2Transform()
         xf1.R.Set(0.3524 * Constants.PI)
-        xf1.position = b2Math.MulMV(xf1.R, New b2Vec2(1.0, 0.0))
+        b2Math.MulMV(xf1.R, New b2Vec2(1.0, 0.0), xf1.position)
         Local sd1 :b2PolygonShape = New b2PolygonShape()
-        sd1.SetAsArray([b2Math.MulX(xf1, New b2Vec2(-30.0/m_physScale, 0.0)),
-        b2Math.MulX(xf1, New b2Vec2(30.0/m_physScale, 0.0)),
-        b2Math.MulX(xf1, New b2Vec2(0.0, 15.0 / m_physScale))])
+        Local vArr:b2Vec2[] = [New b2Vec2(),New b2Vec2(),New b2Vec2()]
+        b2Math.MulX(xf1, New b2Vec2(-30.0/m_physScale, 0.0),vArr[0])
+        b2Math.MulX(xf1, New b2Vec2(30.0/m_physScale, 0.0),vArr[1])
+        b2Math.MulX(xf1, New b2Vec2(0.0, 15.0 / m_physScale),vArr[2])
+        sd1.SetAsArray(vArr)
         Local xf2 :b2Transform = New b2Transform()
         xf2.R.Set(-0.3524 * Constants.PI)
-        xf2.position = b2Math.MulMV(xf2.R, New b2Vec2(-30.0/m_physScale, 0.0))
+        b2Math.MulMV(xf2.R, New b2Vec2(-30.0/m_physScale, 0.0),xf2.position)
         Local sd2 :b2PolygonShape = New b2PolygonShape()
-        sd2.SetAsArray([b2Math.MulX(xf2, New b2Vec2(-30.0/m_physScale, 0.0)),
-        b2Math.MulX(xf2, New b2Vec2(30.0/m_physScale, 0.0)),
-        b2Math.MulX(xf2, New b2Vec2(0.0, 15.0 / m_physScale))])
+        b2Math.MulX(xf2, New b2Vec2(-30.0/m_physScale, 0.0),vArr[0])
+        b2Math.MulX(xf2, New b2Vec2(30.0/m_physScale, 0.0),vArr[1])
+        b2Math.MulX(xf2, New b2Vec2(0.0, 15.0 / m_physScale),vArr[2])
+        sd2.SetAsArray(vArr)
         bd = New b2BodyDef()
         bd.type = b2Body.b2_Body
         bd.fixedRotation = False
+        
         For Local i:Int = 0 Until 5
-            
             x = 320.0 + b2Math.RandomRange(-3.0, 3.0)
             bd.position.Set(x/m_physScale, (-61.5 + 55.0 * -i + 300)/m_physScale)
             bd.angle = 0.0
@@ -124,9 +127,6 @@ Class TestCompound Extends Test
         body.CreateFixture2(sd_left, 4.0)
         body.CreateFixture2(sd_right, 4.0)
     End
-    '//===========
-    '// Member Data
-    '//===========
 End
 
 

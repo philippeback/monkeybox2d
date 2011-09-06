@@ -55,21 +55,20 @@ Import box2d.dynamics
 Class b2FrictionJoint Extends b2Joint
     
     '* @inheritDoc
-    Method GetAnchorA : b2Vec2 ()
-        
-        Return m_bodyA.GetWorldPoint(m_localAnchorA)
+    Method GetAnchorA:Void (out:b2Vec2)
+        m_bodyA.GetWorldPoint(m_localAnchorA,out)
     End
     
     '* @inheritDoc
-    Method GetAnchorB : b2Vec2 ()
-        
-        Return m_bodyB.GetWorldPoint(m_localAnchorB)
+    Method GetAnchorB:Void (out:b2Vec2)
+        m_bodyB.GetWorldPoint(m_localAnchorB,out)
     End
+    
     '* @inheritDoc
-    Method GetReactionForce : b2Vec2 (inv_dt:Float)
-        
-        Return New b2Vec2(inv_dt * m_linearImpulse.x, inv_dt * m_linearImpulse.y)
+    Method GetReactionForce:Void (inv_dt:Float, out:b2Vec2)
+        out.Set(inv_dt * m_linearImpulse.x, inv_dt * m_linearImpulse.y)
     End
+    
     '* @inheritDoc
     Method GetReactionTorque : Float (inv_dt:Float)
         
@@ -223,16 +222,16 @@ Class b2FrictionJoint Extends b2Joint
         '//b2Vec2 Cdot = vB + b2Cross(wB, rB) - vA - b2Cross(wA, rA)
         Local CdotX :Float = vB.x - wB * rBY - vA.x + wA * rAY
         Local CdotY :Float = vB.y + wB * rBX - vA.y - wA * rAX
-        Local impulseV :b2Vec2 = b2Math.MulMV(m_linearMass, New b2Vec2(-CdotX, -CdotY))
+        Local impulseV:b2Vec2 = New b2Vec2(-CdotX, -CdotY)
+        b2Math.MulMV(m_linearMass, impulseV, impulseV)
         Local oldImpulseV :b2Vec2 = m_linearImpulse.Copy()
         m_linearImpulse.Add(impulseV)
         maxImpulse = timeStep.dt * m_maxForce
         If (m_linearImpulse.LengthSquared() > maxImpulse * maxImpulse)
-            
             m_linearImpulse.Normalize()
             m_linearImpulse.Multiply(maxImpulse)
         End
-        impulseV = b2Math.SubtractVV(m_linearImpulse, oldImpulseV)
+        b2Math.SubtractVV(m_linearImpulse, oldImpulseV, impulseV)
         vA.x -= mA * impulseV.x
         vA.y -= mA * impulseV.y
         wA -= iA * (rAX * impulseV.y - rAY * impulseV.x)
@@ -246,31 +245,20 @@ Class b2FrictionJoint Extends b2Joint
         '//bB->m_linearVelocity = vB
         bB.m_angularVelocity = wB
     End
+    
     Method SolvePositionConstraints : Bool (baumgarte:Float)
-        
         '//B2_NOT_USED(baumgarte)
         Return True
     End
+    
     Field m_localAnchorA:b2Vec2 = New b2Vec2()
-    
-    
     Field m_localAnchorB:b2Vec2 = New b2Vec2()
-    
     Field m_linearMass:b2Mat22 = New b2Mat22()
-    
-    
     Field m_angularMass:Float
-    
     Field m_linearImpulse:b2Vec2 = New b2Vec2()
-    
-    
     Field m_angularImpulse:Float
-    
     Field m_maxForce:Float
-    
-    
     Field m_maxTorque:Float
-    
     
 End
 

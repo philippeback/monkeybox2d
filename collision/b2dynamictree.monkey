@@ -286,12 +286,15 @@ Class b2DynamicTree
         End
         Local p1 :b2Vec2 = input.p1
         Local p2 :b2Vec2 = input.p2
-        Local r :b2Vec2 = b2Math.SubtractVV(p1, p2)
+        Local r :b2Vec2 = New b2Vec2()
+        b2Math.SubtractVV(p1, p2, r)
         '//b2Settings.B2Assert(r.LengthSquared() > 0.0)
         r.Normalize()
         '// perpendicular(v) to the segment
-        Local v :b2Vec2 = b2Math.CrossFV(1.0, r)
-        Local abs_v :b2Vec2 = b2Math.AbsV(v)
+        Local v :b2Vec2 = New b2Vec2()
+        b2Math.CrossFV(1.0, r, v)
+        Local abs_v :b2Vec2 = New b2Vec2()
+        b2Math.AbsV(v, abs_v)
         Local maxFraction :Float = input.maxFraction
         '// Build a bounding box for the segment
         Local segmentAABB :b2AABB = New b2AABB()
@@ -353,6 +356,8 @@ Class b2DynamicTree
             End
         End
     End
+    
+    
     Method AllocateNode : b2DynamicTreeNode ()
         
         '// Peel a node off the free list

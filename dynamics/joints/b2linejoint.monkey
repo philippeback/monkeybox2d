@@ -102,22 +102,19 @@ Import box2d.dynamics
 Class b2LineJoint Extends b2Joint
     
     '* @inheritDoc
-    Method GetAnchorA : b2Vec2 ()
-        
-        Return m_bodyA.GetWorldPoint(m_localAnchor1)
+    Method GetAnchorA:Void (out:b2Vec2)
+        m_bodyA.GetWorldPoint(m_localAnchor1,out)
     End
     
     '* @inheritDoc
-    Method GetAnchorB : b2Vec2 ()
-        
-        Return m_bodyB.GetWorldPoint(m_localAnchor2)
+    Method GetAnchorB:Void (out:b2Vec2)
+        m_bodyB.GetWorldPoint(m_localAnchor2,out)
     End
     
     '* @inheritDoc
-    Method GetReactionForce : b2Vec2 (inv_dt:Float)
-        
+    Method GetReactionForce:Void (inv_dt:Float, out:b2Vec2)
         '//return inv_dt * (m_impulse.x * m_perp + (m_motorImpulse + m_impulse.y) * m_axis)
-        Return New b2Vec2(	inv_dt * (m_impulse.x * m_perp.x + (m_motorImpulse + m_impulse.y) * m_axis.x),
+        out.Set(	inv_dt * (m_impulse.x * m_perp.x + (m_motorImpulse + m_impulse.y) * m_axis.x),
         inv_dt * (m_impulse.x * m_perp.y + (m_motorImpulse + m_impulse.y) * m_axis.y))
     End
     '* @inheritDoc
@@ -372,7 +369,7 @@ Class b2LineJoint Extends b2Joint
         m_invIB = bB.m_invI
         '// Compute motor Jacobian and effective mass.
         
-        m_axis.SetV(b2Math.MulMV(xf1.R, m_localXAxis1))
+        b2Math.MulMV(xf1.R, m_localXAxis1,m_axis)
         '//m_a1 = b2Math.b2Cross(d + r1, m_axis)
         m_a1 = (dX + r1X) * m_axis.y - (dY + r1Y) * m_axis.x
         '//m_a2 = b2Math.b2Cross(r2, m_axis)
@@ -381,15 +378,12 @@ Class b2LineJoint Extends b2Joint
         If( m_motorMass > Constants.EPSILON )
             m_motorMass =1.0 / m_motorMass
         Else
-            
-            
             m_motorMass =0.0
-            
         End
         'End
         '// Prismatic constraint.
         
-        m_perp.SetV(b2Math.MulMV(xf1.R, m_localYAxis1))
+        b2Math.MulMV(xf1.R, m_localYAxis1,m_perp)
         '//m_s1 = b2Math.b2Cross(d + r1, m_perp)
         m_s1 = (dX + r1X) * m_perp.y - (dY + r1Y) * m_perp.x
         '//m_s2 = b2Math.b2Cross(r2, m_perp)
@@ -622,7 +616,7 @@ Class b2LineJoint Extends b2Joint
         Local dY :Float = c2.y + r2Y - c1.y - r1Y
         If (m_enableLimit)
             
-            m_axis = b2Math.MulMV(R1, m_localXAxis1)
+            b2Math.MulMV(R1, m_localXAxis1, m_axis)
             '//m_a1 = b2Math.b2Cross(d + r1, m_axis)
             m_a1 = (dX + r1X) * m_axis.y - (dY + r1Y) * m_axis.x
             '//m_a2 = b2Math.b2Cross(r2, m_axis)
@@ -650,7 +644,7 @@ Class b2LineJoint Extends b2Joint
                 active = True
             End
         End
-        m_perp = b2Math.MulMV(R1, m_localYAxis1)
+        b2Math.MulMV(R1, m_localYAxis1, m_perp)
         '//m_s1 = b2Cross(d + r1, m_perp)
         m_s1 = (dX + r1X) * m_perp.y - (dY + r1Y) * m_perp.x
         '//m_s2 = b2Cross(r2, m_perp)

@@ -66,9 +66,9 @@ Class b2PrismaticJointDef Extends b2JointDef
         
         bodyA = bA
         bodyB = bB
-        localAnchorA = bodyA.GetLocalPoint(anchor)
-        localAnchorB = bodyB.GetLocalPoint(anchor)
-        localAxisA = bodyA.GetLocalVector(axis)
+        bodyA.GetLocalPoint(anchor,localAnchorA)
+        bodyB.GetLocalPoint(anchor,localAnchorB)
+        bodyA.GetLocalVector(axis,localAxisA)
         referenceAngle = bodyB.GetAngle() - bodyA.GetAngle()
     End
     #rem

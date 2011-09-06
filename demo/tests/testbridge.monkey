@@ -117,48 +117,46 @@ Class TestBridge Extends Test
             Local bodyDefP :b2BodyDef = New b2BodyDef()
             bodyDefP.type = b2Body.b2_Body
             Local polyShape :b2PolygonShape = New b2PolygonShape()
-            Local vertices :FlashArray<b2Vec2> = New FlashArray<b2Vec2>()
+            Local vertices : b2Vec2[]
             Local vertexCount :int
             If (Rnd() > 0.66)
                 
                 vertexCount = 4
+                vertices = New b2Vec2[vertexCount]
                 For Local j:Int = 0 Until vertexCount
-                    
-                    vertices.Set( j,  New b2Vec2() )
+                    vertices[j] = New b2Vec2()
                 End
                 
-                vertices.Get(0).Set((-10 -Rnd()*10) / m_physScale, ( 10 +Rnd()*10) / m_physScale)
-                vertices.Get(1).Set(( -5 -Rnd()*10) / m_physScale, (-10 -Rnd()*10) / m_physScale)
-                vertices.Get(2).Set((  5 +Rnd()*10) / m_physScale, (-10 -Rnd()*10) / m_physScale)
-                vertices.Get(3).Set(( 10 +Rnd()*10) / m_physScale, ( 10 +Rnd()*10) / m_physScale)
+                vertices[0].Set((-10 -Rnd()*10) / m_physScale, ( 10 +Rnd()*10) / m_physScale)
+                vertices[1].Set(( -5 -Rnd()*10) / m_physScale, (-10 -Rnd()*10) / m_physScale)
+                vertices[2].Set((  5 +Rnd()*10) / m_physScale, (-10 -Rnd()*10) / m_physScale)
+                vertices[3].Set(( 10 +Rnd()*10) / m_physScale, ( 10 +Rnd()*10) / m_physScale)
             Else  If (Rnd() > 0.5)
                 
-                
                 vertexCount = 5
+                vertices = New b2Vec2[vertexCount]
                 For Local j:Int = 0 Until vertexCount
-                    
-                    vertices.Set( j,  New b2Vec2() )
+                    vertices[j] = New b2Vec2()
                 End
                 
-                vertices.Get(0).Set(0, (10 +Rnd()*10) / m_physScale)
-                vertices.Get(2).Set((-5 -Rnd()*10) / m_physScale, (-10 -Rnd()*10) / m_physScale)
-                vertices.Get(3).Set(( 5 +Rnd()*10) / m_physScale, (-10 -Rnd()*10) / m_physScale)
-                vertices.Get(1).Set((vertices.Get(0).x + vertices.Get(2).x), (vertices.Get(0).y + vertices.Get(2).y))
-                vertices.Get(1).Multiply(Rnd()/2+0.8)
-                vertices.Get(4).Set((vertices.Get(3).x + vertices.Get(0).x), (vertices.Get(3).y + vertices.Get(0).y))
-                vertices.Get(4).Multiply(Rnd()/2+0.8)
+                vertices[0].Set(0, (10 +Rnd()*10) / m_physScale)
+                vertices[2].Set((-5 -Rnd()*10) / m_physScale, (-10 -Rnd()*10) / m_physScale)
+                vertices[3].Set(( 5 +Rnd()*10) / m_physScale, (-10 -Rnd()*10) / m_physScale)
+                vertices[1].Set((vertices[0].x + vertices[2].x), (vertices[0].y + vertices[2].y))
+                vertices[1].Multiply(Rnd()/2+0.8)
+                vertices[4].Set((vertices[3].x + vertices[0].x), (vertices[3].y + vertices[0].y))
+                vertices[4].Multiply(Rnd()/2+0.8)
             Else
                 
-                
                 vertexCount = 3
+                vertices = New b2Vec2[vertexCount]
                 For Local j:Int = 0 Until vertexCount
-                    
-                    vertices.Set( j,  New b2Vec2() )
+                    vertices[j] = New b2Vec2()
                 End
                 
-                vertices.Get(0).Set(0, (10 +Rnd()*10) / m_physScale)
-                vertices.Get(1).Set((-5 -Rnd()*10) / m_physScale, (-10 -Rnd()*10) / m_physScale)
-                vertices.Get(2).Set(( 5 +Rnd()*10) / m_physScale, (-10 -Rnd()*10) / m_physScale)
+                vertices[0].Set(0, (10 +Rnd()*10) / m_physScale)
+                vertices[1].Set((-5 -Rnd()*10) / m_physScale, (-10 -Rnd()*10) / m_physScale)
+                vertices[2].Set(( 5 +Rnd()*10) / m_physScale, (-10 -Rnd()*10) / m_physScale)
             End
             
             polyShape.SetAsArray( vertices, vertexCount )

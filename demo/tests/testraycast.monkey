@@ -76,16 +76,16 @@ Class TestRaycast Extends Test
     '//===========
     '// Member Data
     '//===========
-    Field p1 :b2Vec2
-    Field p2 :b2Vec2
+    Field p1:b2Vec2 = New b2Vec2()
+    Field p2:b2Vec2 = New b2Vec2()
     Field f :b2Fixture
     Field lambda :Float = 1.0
     
     Method Update : void ()
         
         Super.Update()
-        p1 = laser.GetWorldPoint(New b2Vec2(30.1 / m_physScale, 0))
-        p2 = laser.GetWorldPoint(New b2Vec2(130.1 / m_physScale, 0))
+        laser.GetWorldPoint(New b2Vec2(30.1 / m_physScale, 0), p1)
+        laser.GetWorldPoint(New b2Vec2(130.1 / m_physScale, 0), p2)
         f = m_world.RayCastOne(p1, p2)
         lambda = 1.0
         

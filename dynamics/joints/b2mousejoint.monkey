@@ -56,21 +56,18 @@ Import box2d.dynamics
 Class b2MouseJoint Extends b2Joint
     
     '* @inheritDoc
-    Method GetAnchorA : b2Vec2 ()
-        
-        Return m_target
+    Method GetAnchorA:Void (out:b2Vec2)
+        out.SetV(m_target)
     End
     
     '* @inheritDoc
-    Method GetAnchorB : b2Vec2 ()
-        
-        Return m_bodyB.GetWorldPoint(m_localAnchor)
+    Method GetAnchorB:Void (out:b2Vec2)
+        m_bodyB.GetWorldPoint(m_localAnchor,out)
     End
     
     '* @inheritDoc
-    Method GetReactionForce : b2Vec2 (inv_dt:Float)
-        
-        Return New b2Vec2(inv_dt * m_impulse.x, inv_dt * m_impulse.y)
+    Method GetReactionForce:Void (inv_dt:Float,out:b2Vec2)
+        out.Set(inv_dt * m_impulse.x, inv_dt * m_impulse.y)
     End
     
     '* @inheritDoc
