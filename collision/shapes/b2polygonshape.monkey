@@ -241,7 +241,8 @@ Class b2PolygonShape Extends b2Shape
         m_vertices[1].SetV(v2)
         m_centroid.x = 0.5 * (v1.x + v2.x)
         m_centroid.y = 0.5 * (v1.y + v2.y)
-        m_normals[0] = b2Math.CrossVF(b2Math.SubtractVV(v2, v1), 1.0)
+        b2Math.SubtractVV(v2, v1, m_normals[0])
+        b2Math.CrossVF(m_normals[0], 1.0, m_normals[0])
         m_normals[0].Normalize()
         m_normals[1].x = -m_normals[0].x
         m_normals[1].y = -m_normals[0].y
