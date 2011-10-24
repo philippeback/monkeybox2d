@@ -80,7 +80,7 @@ Class b2GravityController Extends b2Controller
                     dx = p2.x - p1.x
                     dy = p2.y - p1.y
                     r2 = dx*dx+dy*dy
-                    If(r2<Constants.F_MIN)
+                    If(r2<Constants.FMIN)
                         Continue
                     End
                     f = New b2Vec2(dx,dy)
@@ -110,7 +110,7 @@ Class b2GravityController Extends b2Controller
                     dx = p2.x - p1.x
                     dy = p2.y - p1.y
                     r2 = dx*dx+dy*dy
-                    If(r2<Constants.F_MIN)
+                    If(r2<Constants.FMIN)
                         Continue
                     End
                     f = New b2Vec2(dx,dy)
