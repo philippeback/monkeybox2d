@@ -41,7 +41,7 @@ Import box2d.demo
 
 
 Class MainDemo Extends App
-    Const VersionString:String = "1.0.7"
+    Const VersionString:String = "1.0.8"
 
     Const frameRate:Int = 30
     Const physicsRate:Int = 60

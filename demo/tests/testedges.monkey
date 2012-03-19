@@ -44,7 +44,7 @@ Class TestEdges Extends Test
     Method New()
         Super.New()
         '// Set Text field
-        name = "Edge Chains"
+        name = "Edges"
         
         
         Local ground :b2Body = m_world.GetGroundBody()
