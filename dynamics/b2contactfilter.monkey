@@ -78,7 +78,7 @@ Class b2ContactFilter
         If(Not(userData))
             Return True
         End
-        Return b2Fixture(ShouldCollide(userData),fixture)
+        Return ShouldCollide(b2Fixture(userData),fixture)
     End
     'static b2internal
     global b2_defaultFilter:b2ContactFilter = New b2ContactFilter()

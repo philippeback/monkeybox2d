@@ -132,13 +132,16 @@ Class b2LineJoint Extends b2Joint
         Local bA :b2Body = m_bodyA
         Local bB :b2Body = m_bodyB
         Local tMat :b2Mat22
-        Local p1 :b2Vec2 = bA.GetWorldPoint(m_localAnchor1)
-        Local p2 :b2Vec2 = bB.GetWorldPoint(m_localAnchor2)
+        Local p1 :b2Vec2 = New b2Vec2()
+        bA.GetWorldPoint(m_localAnchor1,p1)
+        Local p2 :b2Vec2 = New b2Vec2()
+        bB.GetWorldPoint(m_localAnchor2,p2)
         '//var d:b2Vec2 = b2Math.SubtractVV(p2, p1)
         Local dX :Float = p2.x - p1.x
         Local dY :Float = p2.y - p1.y
         '//b2Vec2 axis = bA->GetWorldVector(m_localXAxis1)
-        Local axis :b2Vec2 = bA.GetWorldVector(m_localXAxis1)
+        bA.GetWorldVector(m_localXAxis1,p1)
+        Local axis :b2Vec2 = p1
         '//float32 translation = b2Dot(d, axis)
         Local translation :Float = axis.x*dX + axis.y*dY
         Return translation
@@ -177,7 +180,8 @@ Class b2LineJoint Extends b2Joint
         Local dX :Float = p2X - p1X
         Local dY :Float = p2Y - p1Y
         '//b2Vec2 axis = bA->GetWorldVector(m_localXAxis1)
-        Local axis :b2Vec2 = bA.GetWorldVector(m_localXAxis1)
+        Local axis :b2Vec2 = New b2Vec2()
+        bA.GetWorldVector(m_localXAxis1,axis)
         Local v1 :b2Vec2 = bA.m_linearVelocity
         Local v2 :b2Vec2 = bB.m_linearVelocity
         Local w1 :Float = bA.m_angularVelocity

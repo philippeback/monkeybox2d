@@ -364,6 +364,13 @@ Class b2EdgeShape Extends b2Shape
         
         Return s_supportVec
     End
+    
+    Method Copy : b2Shape ()
+        Local s :b2EdgeShape = New b2EdgeShape(Self.m_v1.Copy(),Self.m_v2.Copy())
+        Return s
+    End
+
+    
     '//--------------- Internals Below -------------------
     #rem
     '/**

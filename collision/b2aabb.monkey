@@ -95,8 +95,8 @@ Class b2AABB
         Local pY :Float = input.p1.y
         Local dX :Float = input.p2.x - input.p1.x
         Local dY :Float = input.p2.y - input.p1.y
-        Local absDX :Float = Math.abs(dX)
-        Local absDY :Float = Math.abs(dY)
+        Local absDX :Float = Abs(dX)
+        Local absDY :Float = Abs(dY)
         Local normal :b2Vec2 = output.normal
         Local inv_d :Float
         Local t1 :Float

@@ -185,7 +185,8 @@ Class b2PrismaticJoint Extends b2Joint
         Local dX :Float = p2X - p1X
         Local dY :Float = p2Y - p1Y
         '//b2Vec2 axis = bA->GetWorldVector(m_localXAxis1)
-        Local axis :b2Vec2 = bA.GetWorldVector(m_localXAxis1)
+        Local axis :b2Vec2 = New b2Vec2()
+        bA.GetWorldVector(m_localXAxis1,axis)
         Local v1 :b2Vec2 = bA.m_linearVelocity
         Local v2 :b2Vec2 = bB.m_linearVelocity
         Local w1 :Float = bA.m_angularVelocity

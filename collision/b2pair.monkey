@@ -31,8 +31,6 @@
 #end
 Import box2d.flash.flashtypes
 
-
-
 '// The pair used(manager) by the broad-phase to quickly add/remove/find pairs
 '// of overlapping proxies. based(It) closely on code provided by Pierre Terdiman.
 '// http://www.codercorner.com/IncrementalSAP.txt
@@ -46,49 +44,45 @@ Import box2d.common
 '*/
 #end
 Class b2Pair
+    
     Method SetBuffered : void ()
         status |= e_pairBuffered
     End
-    
     
     Method ClearBuffered : void ()
         status &= ~e_pairBuffered
     End
     
-    
     Method IsBuffered : Bool ()
         Return (status & e_pairBuffered) = e_pairBuffered
     End
+    
     Method SetRemoved : void ()
         status |= e_pairRemoved
     End
-    
     
     Method ClearRemoved : void ()
         status &= ~e_pairRemoved
     End
     
-    
     Method IsRemoved : Bool ()
         Return (status & e_pairRemoved) = e_pairRemoved
     End
+    
     Method SetFinal : void ()
         status |= e_pairFinal
     End
     
-    
     Method IsFinal : Bool ()
         Return (status & e_pairFinal) = e_pairFinal
     End
+    
     Field userData: Object = null
-    
     Field proxy1:b2Proxy
-    
     Field proxy2:b2Proxy
-    
     Field nextItem:b2Pair
-    
     Field status:Int
+    
     '// STATIC
     Global b2_nullProxy:Int = b2Settings.USHRT_MAX
     '// enum

@@ -128,7 +128,9 @@ Class b2Fixture
             End
             edge = edge.nextItem
         End
+        
     End
+    
     #rem
     '/**
     '* Get the contact filtering data.

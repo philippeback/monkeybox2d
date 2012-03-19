@@ -153,7 +153,7 @@ Class b2ContactManager
         m_broadPhase.UpdatePairs(New CMUpdatePairsCallback(Self))
     End
     
-    Const s_evalCP:b2ContactPoint = New b2ContactPoint()
+    Global s_evalCP:b2ContactPoint = New b2ContactPoint()
     
     Method Destroy : void (c:b2Contact)
         Local fixtureA :b2Fixture = c.GetFixtureA()

@@ -62,10 +62,11 @@ Class b2Body
         Local angle2 :Float = ATan2r(s2.GetDirectionVector().y, s2.GetDirectionVector().x)
         Local coreOffset :Float = Tanr((angle2 - angle1) * 0.5)
         Local core : b2Vec2 = b2Math.MulFV(coreOffset, s2.GetDirectionVector())
-        core = b2Math.SubtractVV(core, s2.GetNormalVector())
+        b2Math.SubtractVV(core, s2.GetNormalVector(),core)
         core = b2Math.MulFV(b2Settings.b2_toiSlop, core)
-        core = b2Math.AddVV(core, s2.GetVertex1())
-        Local cornerDir : b2Vec2 = b2Math.AddVV(s1.GetDirectionVector(), s2.GetDirectionVector())
+        b2Math.AddVV(core, s2.GetVertex1(),core)
+        Local cornerDir:b2Vec2 = New b2Vec2()
+        b2Math.AddVV(s1.GetDirectionVector(), s2.GetDirectionVector(),cornerDir)
         cornerDir.Normalize()
         Local convex : Bool = b2Math.Dot(s1.GetDirectionVector(), s2.GetNormalVector()) > 0.0
         s1.SetNextEdge(s2, core, cornerDir, convex)
@@ -630,11 +631,11 @@ Class b2Body
             m_fixtureList = f
             m_fixtureCount += 1
             
-            f.m_body = body2
+            f.m_body = other
             f = nextItem
         End
         
-        body1.m_fixtureCount = 0
+        Self.m_fixtureCount = 0
         '// Recalculate velocities
         Local body1 :b2Body = Self
         Local body2 :b2Body = other
@@ -719,9 +720,10 @@ Class b2Body
             m_invI = 1.0 / m_I
         End
         '// Move center of mass
-        Local oldCenter :b2Vec2 = m_sweep.c.Copy()
+        Local oldCenter:b2Vec2 = m_sweep.c.Copy()
         m_sweep.localCenter.SetV(massData.center)
-        m_sweep.c0.SetV(b2Math.MulX(m_xf, m_sweep.localCenter))
+        b2Math.MulX(m_xf, m_sweep.localCenter,tmpVec1)
+        m_sweep.c0.SetV(tmpVec1)
         m_sweep.c.SetV(m_sweep.c0)
         '// Update center of mass velocity
         '//m_linearVelocity += b2Cross(m_angularVelocity, m_sweep.c - oldCenter)

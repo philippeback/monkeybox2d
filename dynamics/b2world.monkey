@@ -164,7 +164,7 @@ Class WorldQueryPointCallback Extends WorldQueryCallback
     Method Callback:Bool(a:Object)
         Local fixture :b2Fixture = b2Fixture(broadPhase.GetUserData(a))
         If(fixture.TestPoint(p))
-            Return callback(fixture)
+            Return callback.Callback(fixture)
         End
         Return True
     End
@@ -597,7 +597,7 @@ Class b2World
     Method CreateController : b2Controller (controller:b2Controller)
         
         If (controller.m_world <> Self)
-            Print New Error("Controller can only be a member of one world")
+            Print("Controller can only be a member of one world")
         End
         controller.m_next = m_controllerList
         controller.m_prev = null

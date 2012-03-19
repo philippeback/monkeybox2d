@@ -70,7 +70,7 @@ Class b2Segment
     '// denom = det.Get(-r d)
     '// a = det.Get(b d) / denom
     '// mu2 = det.Get(-r b) / denom
-    Method TestSegment : Bool (lambda:Array,'// float pointer
+    Method TestSegment : Bool (lambda:FlashArray<FloatObject>,'// float pointer
         normal:b2Vec2,'// pointer
         segment:b2Segment,
         maxLambda:Float)
@@ -138,7 +138,7 @@ Class b2Segment
         Local dX :Float = p2.x-p1.x
         Local dY :Float = p2.y-p1.y
         Local lambda :Float
-        Local a:Float = Constants.POSITIVE_INFINITY
+        Local a:Float = Constants.FMAX
         If dX>0
             a = (aabb.upperBound.x-p1.x)/dX
         Else
@@ -146,7 +146,7 @@ Class b2Segment
                 a = (aabb.lowerBound.x-p1.x)/dX
             End
         End
-        Local b:Float = Constants.POSITIVE_INFINITY
+        Local b:Float = Constants.FMAX
         If dY>0
             b = (aabb.upperBound.y-p1.y)/dY
         Else
@@ -170,7 +170,7 @@ Class b2Segment
         Local dX :Float = -p2.x+p1.x
         Local dY :Float = -p2.y+p1.y
         Local lambda :Float
-        Local a:Float = Constants.POSITIVE_INFINITY
+        Local a:Float = Constants.FMAX
         If dX>0
             a = (aabb.upperBound.x-p2.x)/dX
         Else
@@ -178,7 +178,7 @@ Class b2Segment
                 a = (aabb.lowerBound.x-p2.x)/dX
             End
         End
-        Local b:Float = Constants.POSITIVE_INFINITY
+        Local b:Float = Constants.FMAX
         If dY>0
             b = (aabb.upperBound.y-p2.y)/dY
         Else

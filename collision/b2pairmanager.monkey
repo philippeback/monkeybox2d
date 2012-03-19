@@ -47,22 +47,28 @@ Import box2d.collision
 '*/
 #end
 Class b2PairManager
+
+    Field m_broadPhase:b2BroadPhase
+    Field m_pairs:FlashArray<b2Pair>
+    Field m_freePair:b2Pair
+    Field m_pairCount:Int
+    Field m_pairBuffer:FlashArray<b2Pair>
+    Field m_pairBufferCount:Int
     
-    '//:
     Method New()
         
-        m_pairs = New Array()
-        m_pairBuffer = New Array()
+        m_pairs = New FlashArray<b2Pair>()
+        m_pairBuffer = New FlashArray<b2Pair>()
         m_pairCount = 0
         m_pairBufferCount = 0
         m_freePair = null
     End
     
     '//~b2PairManager()
-    Method Initialize : void (broadPhase:b2BroadPhase)
-        
+    Method Initialize : void (broadPhase:b2BroadPhase)        
         m_broadPhase = broadPhase
     End
+    
     #rem
     '/*
     'As proxies are created and moved, many pairs are created and destroyed. Even worse, the same
@@ -101,6 +107,7 @@ Class b2PairManager
             ValidateBuffer()
         End
     End
+    
     '// Buffer a pair for removal.
     Method RemoveBufferedPair : void (proxy1:b2Proxy, proxy2:b2Proxy)
         
@@ -124,10 +131,10 @@ Class b2PairManager
         End
         pair.SetRemoved()
         If (b2BroadPhase.s_validate)
-            
             ValidateBuffer()
         End
     End
+    
     Method Commit : void (callback:UpdatePairsCallback)
         
         Local i :int
@@ -177,6 +184,7 @@ Class b2PairManager
             ValidateTable()
         End
     End
+    
     '//:
     '// Add a pair and return the New pair. If the pair already exists,
     '// no New created(pair) and the old returned(one).
@@ -205,6 +213,7 @@ Class b2PairManager
         
         Return pair
     End
+    
     '// Remove a pair, return the pairs userData.
     Method RemovePair : Object (proxy1:b2Proxy, proxy2:b2Proxy)
         
@@ -216,8 +225,8 @@ Class b2PairManager
             Return null
         End
         Local userData : Object = pair.userData
-        delete proxy1.pairs.Get(proxy2)
-        delete proxy2.pairs.Get(proxy1)
+        proxy1.pairs.Remove(proxy2)
+        proxy2.pairs.Remove(proxy1)
         '// Scrub
         pair.nextItem = m_freePair
         pair.proxy1 = null
@@ -228,33 +237,20 @@ Class b2PairManager
         m_pairCount -= 1
         Return userData
     End
+    
     Method Find : b2Pair (proxy1:b2Proxy, proxy2:b2Proxy)
         Return proxy1.pairs.Get(proxy2)
     End
+    
     Method ValidateBuffer : void ()
         
         '// DEBUG
     End
+    
     Method ValidateTable : void ()
         
         '// DEBUG
     End
-    '//:
-    Field m_broadPhase:b2BroadPhase
-    
-    
-    Field m_pairs:Array
-    
-    
-    Field m_freePair:b2Pair
-    
-    
-    Field m_pairCount:int
-    
-    Field m_pairBuffer:Array
-    
-    
-    Field m_pairBufferCount:int
-    
+
 End
 

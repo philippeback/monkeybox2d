@@ -99,7 +99,8 @@ Class b2PulleyJoint Extends b2Joint
     '*/
     #end
     Method GetLength1 : Float ()
-        Local p :b2Vec2 = m_bodyA.GetWorldPoint(m_localAnchor1)
+        Local p :b2Vec2 = New b2Vec2()
+        m_bodyA.GetWorldPoint(m_localAnchor1,p)
         '//b2Vec2 s = m_ground->m_xf.position + m_groundAnchor1
         Local sX :Float = m_ground.m_xf.position.x + m_groundAnchor1.x
         Local sY :Float = m_ground.m_xf.position.y + m_groundAnchor1.y
@@ -117,7 +118,8 @@ Class b2PulleyJoint Extends b2Joint
     #end
     Method GetLength2 : Float ()
         
-        Local p :b2Vec2 = m_bodyB.GetWorldPoint(m_localAnchor2)
+        Local p :b2Vec2 = New b2Vec2()
+        m_bodyB.GetWorldPoint(m_localAnchor2,p)
         '//b2Vec2 s = m_ground->m_xf.position + m_groundAnchor2
         Local sX :Float = m_ground.m_xf.position.x + m_groundAnchor2.x
         Local sY :Float = m_ground.m_xf.position.y + m_groundAnchor2.y

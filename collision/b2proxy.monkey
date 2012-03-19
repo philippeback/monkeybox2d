@@ -30,35 +30,44 @@
 '*/
 #end
 Import box2d.flash.flashtypes
+Import box2d.collision.b2pair
 
 #rem
 '/**
 '* @
 '*/
 #end
+Class B2ProxyMap<V> Extends Map<b2Proxy,V>
+
+	Method Compare( lhs:b2Proxy,rhs:b2Proxy )
+		If lhs.id<rhs.id Return -1
+		Return lhs.id>rhs.id
+	End
+	
+End
+
 Class b2Proxy
+    Global idCount:Int = 0
+    Field id:Int
+    
+    Method New()
+        id = idCount
+        idCount += 1
+    End
     
     Method IsValid : Bool ()
         Return overlapCount <> b2BroadPhase.b2_invalid
     End
+
     Field lowerBounds:FlashArray<IntObject> = New FlashArray<IntObject>(2)
-    
-    
     Field upperBounds:FlashArray<IntObject> = New FlashArray<IntObject>(2)
-    
-    
     Field overlapCount:Int
-    
-    
     Field timeStamp:Int
     
     '// Maps from the other b2Proxy to their mutual b2Pair.
-    Field pairs:Dictionary = New Dictionary()
-    
+    Field pairs:B2ProxyMap<b2Pair> = New B2ProxyMap<b2Pair>
     Field nextItem:b2Proxy
-    
     Field userData: Object = null
-    
     
 End
 

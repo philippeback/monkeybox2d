@@ -175,6 +175,10 @@ Class FlashArray<T>
         Splice(index,deletes,EmptyArr)
     End
 
+    Method Splice( index:Int, deletes:Int = -1, insert:T)
+        Splice(index,deletes,[insert])
+    End
+
     Method Splice( index:Int, deletes:Int = -1, insert:T[] )
         If deletes = -1
             deletes = Length - index
@@ -243,6 +247,9 @@ Class FAEnumerator<T>
     
 End
 
+Class FlashDictionary
+    
+End
 
 Class HaxeFastList<T>
     
@@ -358,7 +365,7 @@ Class HaxeFastList<T>
     Method RemoveEach( value:T )
         Local node:HaxeFastCell<T>=_head
         While node<>null
-            Local nextnode:=node.nextItem
+            Local nextNode:=node.nextItem
             If Equals( node.elt,value )
                 Remove(node)
             End

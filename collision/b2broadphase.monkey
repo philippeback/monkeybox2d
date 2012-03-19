@@ -71,8 +71,7 @@ Class b2BroadPhase Extends IBroadPhase
         m_proxyCount = 0
         '// bounds array
         m_bounds = New FlashArray<FlashArray<b2Bound> >()
-        For Local i:Int = 0 Until 2
-            
+        For Local i:Int = 0 Until 2            
             m_bounds.Set( i,  New FlashArray<b2Bound>() )
         End
         '//b2Vec2 d = worldAABB.upperBound - worldAABB.lowerBound
@@ -119,8 +118,11 @@ Class b2BroadPhase Extends IBroadPhase
         If (Not(m_freeProxy))
             
             '// As all proxies are allocated, m_proxyCount = m_proxyPool.Length
-            m_freeProxy  = New b2Proxy()
-            m_proxyPool.Set( m_proxyCount,  m_freeProxy )
+            m_freeProxy = New b2Proxy()
+            If m_proxyCount = m_proxyPool.Length()
+                m_proxyPool = m_proxyPool.Resize(m_proxyCount*2)
+            End
+            m_proxyPool[m_proxyCount] = m_freeProxy
             m_freeProxy.nextItem = null
             m_freeProxy.timeStamp = 0
             m_freeProxy.overlapCount = b2_invalid
@@ -129,8 +131,8 @@ Class b2BroadPhase Extends IBroadPhase
                 
                 j = m_proxyCount * 2
                 j += 1
-                m_bounds.Get(i)[j] = New b2Bound()
-                m_bounds.Get(i)[j] = New b2Bound()
+                m_bounds.Get(i).Set(j, New b2Bound())
+                m_bounds.Get(i).Set(j, New b2Bound())
             End
         End
         proxy = m_freeProxy
@@ -316,15 +318,15 @@ Class b2BroadPhase Extends IBroadPhase
         ComputeBounds(newValues.lowerValues, newValues.upperValues, aabb)
         '// Get old bound values
         Local oldValues :b2BoundValues = New b2BoundValues()
-        For Local axis:Int = 0 Until 2
-            
-            bound = m_bounds.Get(axis)[proxy.lowerBounds.Get(axis)]
+        
+        For Local axis:Int = 0 Until 2            
+            bound = m_bounds.Get(axis).Get(proxy.lowerBounds.Get(axis))
             oldValues.lowerValues.Set( axis,  bound.value )
-            bound = m_bounds.Get(axis)[proxy.upperBounds.Get(axis)]
+            bound = m_bounds.Get(axis).Get(proxy.upperBounds.Get(axis))
             oldValues.upperValues.Set( axis,  bound.value )
         End
+        
         For Local axis:Int = 0 Until 2
-            
             Local bounds :FlashArray<b2Bound> = m_bounds.Get(axis)
             Local lowerIndex :Int = proxy.lowerBounds.Get(axis)
             Local upperIndex :Int = proxy.upperBounds.Get(axis)
@@ -343,8 +345,8 @@ Class b2BroadPhase Extends IBroadPhase
             If (deltaLower < 0)
                 
                 index = lowerIndex
-                While (index > 0 And lowerValue < (bounds.Get(int(index-b2Bound(1)))).value)
-                    
+                
+                While (index > 0 And lowerValue < (bounds.Get(Int(index-1))).value)
                     bound = bounds.Get(index)
                     prevBound = bounds.Get(int(index - 1))
                     Local prevProxy :b2Proxy = prevBound.proxy
@@ -393,7 +395,7 @@ Class b2BroadPhase Extends IBroadPhase
             If (deltaUpper > 0)
                 
                 index = upperIndex
-                While (index < boundCount-1 And (bounds.Get(int(index+b2Bound(1)))).value <= upperValue)
+                While (index < boundCount-1 And (bounds.Get(Int(index+1))).value <= upperValue)
                     
                     bound = bounds.Get( index )
                     nextBound = bounds.Get( int(index + 1) )
@@ -446,7 +448,7 @@ Class b2BroadPhase Extends IBroadPhase
             If (deltaLower > 0)
                 
                 index = lowerIndex
-                While (index < boundCount-1 And (bounds.Get(int(index+b2Bound(1)))).value <= lowerValue)
+                While (index < boundCount-1 And (bounds.Get(Int(index+1))).value <= lowerValue)
                     
                     bound = bounds.Get( index )
                     nextBound = bounds.Get( int(index + 1) )
@@ -496,11 +498,12 @@ Class b2BroadPhase Extends IBroadPhase
             If (deltaUpper < 0)
                 
                 index = upperIndex
-                While (index > 0 And upperValue < (bounds.Get(int(index-b2Bound(1)))).value)
+                While (index > 0 And upperValue < (bounds.Get(Int(index-1))).value)
                     
                     bound = bounds.Get(index)
                     prevBound = bounds.Get(int(index - 1))
-                    prevProxy = prevBound.proxy
+                    Local prevProxy :b2Proxy = prevBound.proxy
+                    
                     prevBound.stabbingCount -= 1
                     
                     If (prevBound.IsLower() = True)
@@ -554,16 +557,16 @@ Class b2BroadPhase Extends IBroadPhase
         
         Local proxyA_ :b2Proxy = b2Proxy(proxyA)
         Local proxyB_ :b2Proxy = b2Proxy(proxyB)
-        If ( proxyA_.lowerBounds.Get(0) > proxyB_.upperBounds.Get(0))
+        If ( proxyA_.lowerBounds.Get(0).ToInt() > proxyB_.upperBounds.Get(0).ToInt())
             Return False
         End
-        If ( proxyB_.lowerBounds.Get(0) > proxyA_.upperBounds.Get(0))
+        If ( proxyB_.lowerBounds.Get(0).ToInt() > proxyA_.upperBounds.Get(0).ToInt())
             Return False
         End
-        If ( proxyA_.lowerBounds.Get(1) > proxyB_.upperBounds.Get(1))
+        If ( proxyA_.lowerBounds.Get(1).ToInt() > proxyB_.upperBounds.Get(1).ToInt())
             Return False
         End
-        If ( proxyB_.lowerBounds.Get(1) > proxyA_.upperBounds.Get(1))
+        If ( proxyB_.lowerBounds.Get(1).ToInt() > proxyA_.upperBounds.Get(1).ToInt())
             Return False
         End
         Return True
@@ -586,10 +589,10 @@ Class b2BroadPhase Extends IBroadPhase
         
         Local aabb :b2AABB = New b2AABB()
         Local proxy :b2Proxy = b2Proxy(proxy_)
-        aabb.lowerBound.x = m_worldAABB.lowerBound.x +  m_bounds.Get(0)[proxy.lowerBounds.Get(0)].value  / m_quantizationFactor.x
-        aabb.lowerBound.y = m_worldAABB.lowerBound.y +  m_bounds.Get(1)[proxy.lowerBounds.Get(1)].value  / m_quantizationFactor.y
-        aabb.upperBound.x = m_worldAABB.lowerBound.x +  m_bounds.Get(0)[proxy.upperBounds.Get(0)].value  / m_quantizationFactor.x
-        aabb.upperBound.y = m_worldAABB.lowerBound.y +  m_bounds.Get(1)[proxy.upperBounds.Get(1)].value  / m_quantizationFactor.y
+        aabb.lowerBound.x = m_worldAABB.lowerBound.x +  m_bounds.Get(0).Get(proxy.lowerBounds.Get(0)).value  / m_quantizationFactor.x
+        aabb.lowerBound.y = m_worldAABB.lowerBound.y +  m_bounds.Get(1).Get(proxy.lowerBounds.Get(1)).value  / m_quantizationFactor.y
+        aabb.upperBound.x = m_worldAABB.lowerBound.x +  m_bounds.Get(0).Get(proxy.upperBounds.Get(0)).value  / m_quantizationFactor.x
+        aabb.upperBound.y = m_worldAABB.lowerBound.y +  m_bounds.Get(1).Get(proxy.upperBounds.Get(1)).value  / m_quantizationFactor.y
         Return aabb
     End
     #rem
@@ -626,7 +629,7 @@ Class b2BroadPhase Extends IBroadPhase
             
             Local proxy :b2Proxy =  m_queryResults.Get(i)
             '//b2Settings.B2Assert(proxy.IsValid())
-            If (Not(callback(proxy)))
+            If (Not(callback.Callback(proxy)))
                 
                 Exit
             End
@@ -635,6 +638,7 @@ Class b2BroadPhase Extends IBroadPhase
         m_queryResultCount = 0
         IncrementTimeStamp()
     End
+    
     Method Validate : void ()
         
         Local pair :b2Pair
@@ -703,13 +707,13 @@ Class b2BroadPhase Extends IBroadPhase
         '//b2Settings.B2Assert(sx<>0Orsy<>0)
         Local p1x :Float = m_quantizationFactor.x * (input.p1.x - m_worldAABB.lowerBound.x)
         Local p1y :Float = m_quantizationFactor.y * (input.p1.y - m_worldAABB.lowerBound.y)
-        Local startValues :Array = New Array()
-        Local startValues2 :Array = New Array()
-        startValues.Set( 0, uint(p1x) & (b2Settings.USHRT_MAX - 1) )
-        startValues.Set( 1, uint(p1y) & (b2Settings.USHRT_MAX - 1) )
+        Local startValues:FlashArray<IntObject> = New FlashArray<IntObject>()
+        Local startValues2:FlashArray<IntObject> = New FlashArray<IntObject>()
+        startValues.Set( 0, Int(p1x) & (b2Settings.USHRT_MAX - 1) )
+        startValues.Set( 1, Int(p1y) & (b2Settings.USHRT_MAX - 1) )
         startValues2.Set( 0, startValues.Get(0)+1 )
         startValues2.Set( 1, startValues.Get(1)+1 )
-        Local startIndices :Array = New Array()
+        'Local startIndices:Array = New Array()
         Local xIndex :int
         Local yIndex :int
         Local proxy :b2Proxy
@@ -737,7 +741,7 @@ Class b2BroadPhase Extends IBroadPhase
         '// Callback for starting proxies:
         For Local i:Int = 0 Until m_queryResultCount
             
-            subInput.maxFraction = callback(m_queryResults.Get(i), subInput)
+            subInput.maxFraction = callback.Callback(m_queryResults.Get(i), subInput)
         End
         '//Now work through the rest of the segment
         While( True )
@@ -755,7 +759,7 @@ Class b2BroadPhase Extends IBroadPhase
             End
             
             If(sx<>0)
-                xProgress = (m_bounds.Get(0)[xIndex].value - p1x) / dx
+                xProgress = (m_bounds.Get(0).Get(xIndex).value - p1x) / dx
             End
             
             '//Move on to nextItem bound
@@ -770,7 +774,7 @@ Class b2BroadPhase Extends IBroadPhase
             End
             
             If(sy<>0)
-                yProgress = (m_bounds.Get(1)[yIndex].value - p1y) / dy
+                yProgress = (m_bounds.Get(1).Get(yIndex).value - p1y) / dy
             End
             
             While( True )
@@ -781,16 +785,16 @@ Class b2BroadPhase Extends IBroadPhase
                         Exit
                     End
                     '//Check that we are entering a proxy, not leaving
-                    If( (sx>0 And m_bounds.Get(0)[xIndex].IsLower()) Or (sx>=0 And m_bounds.Get(0)[xIndex].IsUpper()) )
+                    If( (sx>0 And m_bounds.Get(0).Get(xIndex).IsLower()) Or (sx>=0 And m_bounds.Get(0).Get(xIndex).IsUpper()) )
                         
                         '//Check the other axis of the proxy
-                        proxy = m_bounds.Get(0)[xIndex].proxy
+                        proxy = m_bounds.Get(0).Get(xIndex).proxy
                         If(sy>=0)
                             
                             If(proxy.lowerBounds.Get(1)<=yIndex-1 And proxy.upperBounds.Get(1)>=yIndex)
                                 
                                 '//Add the proxy
-                                subInput.maxFraction = callback(proxy, subInput)
+                                subInput.maxFraction = callback.Callback(proxy, subInput)
                             End
                             
                         Else
@@ -799,7 +803,7 @@ Class b2BroadPhase Extends IBroadPhase
                             If(proxy.lowerBounds.Get(1)<=yIndex And proxy.upperBounds.Get(1)>=yIndex+1)
                                 
                                 '//Add the proxy
-                                subInput.maxFraction = callback(proxy, subInput)
+                                subInput.maxFraction = callback.Callback(proxy, subInput)
                             End
                         End
                     End
@@ -823,7 +827,7 @@ Class b2BroadPhase Extends IBroadPhase
                         End
                     End
                     
-                    xProgress = (m_bounds.Get(0)[xIndex].value - p1x) / dx
+                    xProgress = (m_bounds.Get(0).Get(xIndex).value - p1x) / dx
                 Else
                     
                     
@@ -831,16 +835,16 @@ Class b2BroadPhase Extends IBroadPhase
                         Exit
                     End
                     '//Check that we are entering a proxy, not leaving
-                    If( (sy>0 And m_bounds.Get(1)[yIndex].IsLower())  Or (sx<=0 And m_bounds.Get(1)[yIndex].IsUpper()))
+                    If( (sy>0 And m_bounds.Get(1).Get(yIndex).IsLower())  Or (sx<=0 And m_bounds.Get(1).Get(yIndex).IsUpper()))
                         
                         '//Check the other axis of the proxy
-                        proxy = m_bounds.Get(1)[yIndex].proxy
+                        proxy = m_bounds.Get(1).Get(yIndex).proxy
                         If(sx>=0)
                             
                             If(proxy.lowerBounds.Get(0)<=xIndex-1 And proxy.upperBounds.Get(0)>=xIndex)
                                 
                                 '//Add the proxy
-                                subInput.maxFraction = callback(proxy, subInput)
+                                subInput.maxFraction = callback.Callback(proxy, subInput)
                             End
                             
                         Else
@@ -849,7 +853,7 @@ Class b2BroadPhase Extends IBroadPhase
                             If(proxy.lowerBounds.Get(0)<=xIndex And proxy.upperBounds.Get(0)>=xIndex+1)
                                 
                                 '//Add the proxy
-                                subInput.maxFraction = callback(proxy, subInput)
+                                subInput.maxFraction = callback.Callback(proxy, subInput)
                             End
                         End
                     End
@@ -873,7 +877,7 @@ Class b2BroadPhase Extends IBroadPhase
                         End
                     End
                     
-                    yProgress = (m_bounds.Get(1)[yIndex].value - p1y) / dy
+                    yProgress = (m_bounds.Get(1).Get(yIndex).value - p1y) / dy
                 End
             End
             
@@ -906,10 +910,10 @@ Class b2BroadPhase Extends IBroadPhase
         '// Bump lower bounds downs and upper bounds up. This ensures correct sorting of
         '// lower/upper bounds that would have equal values.
         '// TODO_ERIN implement fast float to uint16 conversion.
-        lowerValues.Set( 0,  uint(m_quantizationFactor.x * (minVertexX - m_worldAABB.lowerBound.x)) & (b2Settings.USHRT_MAX - 1) )
-        upperValues.Set( 0,  (uint(m_quantizationFactor.x * (maxVertexX - m_worldAABB.lowerBound.x))& $0000ffff) | 1 )
-        lowerValues.Set( 1,  uint(m_quantizationFactor.y * (minVertexY - m_worldAABB.lowerBound.y)) & (b2Settings.USHRT_MAX - 1) )
-        upperValues.Set( 1,  (uint(m_quantizationFactor.y * (maxVertexY - m_worldAABB.lowerBound.y))& $0000ffff) | 1 )
+        lowerValues.Set( 0,  Int(m_quantizationFactor.x * (minVertexX - m_worldAABB.lowerBound.x)) & (b2Settings.USHRT_MAX - 1) )
+        upperValues.Set( 0,  (Int(m_quantizationFactor.x * (maxVertexX - m_worldAABB.lowerBound.x))& $0000ffff) | 1 )
+        lowerValues.Set( 1,  Int(m_quantizationFactor.y * (minVertexY - m_worldAABB.lowerBound.y)) & (b2Settings.USHRT_MAX - 1) )
+        upperValues.Set( 1,  (Int(m_quantizationFactor.y * (maxVertexY - m_worldAABB.lowerBound.y))& $0000ffff) | 1 )
     End
     '// This only(one) used for validation.
     Method TestOverlapValidate : Bool (p1:b2Proxy, p2:b2Proxy)
@@ -920,13 +924,13 @@ Class b2BroadPhase Extends IBroadPhase
             '//b2Settings.B2Assert(p1.upperBounds.Get(axis) < 2 * m_proxyCount)
             '//b2Settings.B2Assert(p2.lowerBounds.Get(axis) < 2 * m_proxyCount)
             '//b2Settings.B2Assert(p2.upperBounds.Get(axis) < 2 * m_proxyCount)
-            Local bound1 :b2Bound = bounds.Get(p1.lowerBounds[axis])
-            Local bound2 :b2Bound = bounds.Get(p2.upperBounds[axis])
+            Local bound1 :b2Bound = bounds.Get(p1.lowerBounds.Get(axis))
+            Local bound2 :b2Bound = bounds.Get(p2.upperBounds.Get(axis))
             If (bound1.value > bound2.value)
                 Return False
             End
-            bound1 = bounds.Get(p1.upperBounds[axis])
-            bound2 = bounds.Get(p2.lowerBounds[axis])
+            bound1 = bounds.Get(p1.upperBounds.Get(axis))
+            bound2 = bounds.Get(p2.lowerBounds.Get(axis))
             If (bound1.value < bound2.value)
                 Return False
             End
@@ -940,11 +944,11 @@ Class b2BroadPhase Extends IBroadPhase
             Local bounds :FlashArray<b2Bound> = m_bounds.Get(axis)
             '//b2Settings.B2Assert(p.lowerBounds.Get(axis) < 2 * m_proxyCount)
             '//b2Settings.B2Assert(p.upperBounds.Get(axis) < 2 * m_proxyCount)
-            Local bound :b2Bound = bounds.Get(p.upperBounds[axis])
+            Local bound :b2Bound = bounds.Get(p.upperBounds.Get(axis))
             If (b.lowerValues.Get(axis) > bound.value)
                 Return False
             End
-            bound = bounds.Get(p.lowerBounds[axis])
+            bound = bounds.Get(p.lowerBounds.Get(axis))
             If (b.upperValues.Get(axis) < bound.value)
                 Return False
             End
@@ -1018,7 +1022,7 @@ Class b2BroadPhase Extends IBroadPhase
             
             For Local i:Int = 0 Until m_proxyPool.Length
                 
-                b2Proxy((m_proxyPool.Get(i))).timeStamp = 0
+                m_proxyPool[i].timeStamp = 0
             End
             
             m_timeStamp = 1
@@ -1031,39 +1035,21 @@ Class b2BroadPhase Extends IBroadPhase
     End
     
     Field m_pairManager:b2PairManager = New b2PairManager()
-    
-    
-    Field m_proxyPool:Array = New Array()
-    
-    
+    Field m_proxyPool:b2Proxy[] = New b2Proxy[128]
     Field m_freeProxy:b2Proxy
-    
-    
     Field m_bounds:FlashArray<FlashArray<b2Bound> >
-    
-    Field m_querySortKeys:Array = New Array()
-    
-    
-    Field m_queryResults:Array = New Array()
-    
-    
+    Field m_querySortKeys:FlashArray<b2Proxy> = New FlashArray<b2Proxy>()
+    Field m_queryResults:FlashArray<b2Proxy> = New FlashArray<b2Proxy>()
     Field m_queryResultCount:int
-    
-    
     Field m_worldAABB:b2AABB
-    
-    
     Field m_quantizationFactor:b2Vec2 = New b2Vec2()
-    
-    
     Field m_proxyCount:int
-    
-    
     Field m_timeStamp:Int
     
     Global s_validate:Bool = False
     Const b2_invalid:Int = b2Settings.USHRT_MAX
     Const b2_nullEdge:Int = b2Settings.USHRT_MAX
+    
     Function BinarySearch : Int (bounds:FlashArray<b2Bound>, count:int, value:Int)
         
         Local low :int = 0
@@ -1082,10 +1068,10 @@ Class b2BroadPhase Extends IBroadPhase
             Else
                 
                 
-                Return uint(mid)
+                Return Int(mid)
             End
         End
-        Return uint(low)
+        Return Int(low)
     End
 End
 

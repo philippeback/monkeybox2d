@@ -77,6 +77,7 @@ Class MainDemo Extends App
     Method OnCreate()
         tests = [
         "TestDominoStack", 
+        "TestEdges",
         "TestStack",
         "TestRagdoll",
         "TestCompound",
@@ -130,6 +131,8 @@ Class MainDemo Extends App
         Select(testName)
             Case "TestDominoStack"
                 ret = New TestDominoStack()
+            Case "TestEdges"
+                ret = New TestEdges()
             Case "TestStack"
                 ret = New TestStack()
             Case "TestRagdoll"

@@ -42,7 +42,7 @@ Import box2d.collision.shapes
 #end
 Class b2EdgeChainDef
 	'* The vertices in local coordinates.
-	Field vertices: Array
+	Field vertices: FlashArray<b2Vec2>
 	'* The number of vertices in the chain.
 	Field vertexCount: int
 	'* Whether to create an extra edge between the first and last vertices.
@@ -52,7 +52,7 @@ Class b2EdgeChainDef
 		'//type = b2Shape.e_edgeShape
 	    vertexCount = 0
 	    isALoop = True
-	    vertices = []
+	    vertices = New FlashArray<b2Vec2>
 	End
 	
 End

@@ -29,8 +29,7 @@
 '* DAMAGE.
 '*/
 #end
-Import box2d.flash.flashtypes
-
+Import box2d.collision
 
 
 #rem

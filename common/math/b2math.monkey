@@ -45,8 +45,7 @@ Class b2Math
     '*/
     #end
     Function IsValid : Bool (x:Float)
-        
-        Return isFinite(x)
+        Return x <= Constants.FMAX And x >= Constants.FMIN
     End
     #rem
     '/*Function b2InvSqrt : Float (x:Float){
@@ -129,20 +128,23 @@ Class b2Math
         Local cY :Float = a.y-b.y
         Return (cX*cX + cY*cY)
     End
+    
     Function MulFV : b2Vec2 (s:Float, a:b2Vec2)
-        
         Local v :b2Vec2 = New b2Vec2(s * a.x, s * a.y)
         Return v
     End
+    
     Function AddMM : b2Mat22 (A:b2Mat22, B:b2Mat22)
-        
-        Local C :b2Mat22 = b2Mat22.FromVV(AddVV(A.col1, B.col1), AddVV(A.col2, B.col2))
+        AddVV(A.col1, B.col1,tempVec)
+        AddVV(A.col2, B.col2,tempVec2)
+        Local C:b2Mat22 = b2Mat22.FromVV(tempVec,tempVec2)
         Return C
     End
     '// A * B
     Function MulMM : b2Mat22 (A:b2Mat22, B:b2Mat22)
-        
-        Local C :b2Mat22 = b2Mat22.FromVV(MulMV(A, B.col1), MulMV(A, B.col2))
+        MulMV(A, B.col1, tempVec) 
+        MulMV(A, B.col2, tempVec2)
+        Local C:b2Mat22 = b2Mat22.FromVV(tempVec,tempVec2)
         Return C
     End
     '// A^T * B
@@ -171,47 +173,40 @@ Class b2Math
     End
     
     Function AbsM : b2Mat22 (A:b2Mat22)
-        Local B :b2Mat22 = b2Mat22.FromVV(AbsV(A.col1), AbsV(A.col2))
+        AbsV(A.col1,tempVec)
+        AbsV(A.col2,tempVec2)
+        Local B :b2Mat22 = b2Mat22.FromVV(tempVec,tempVec2)
         Return B
     End
     
     Function Min : Float (a:Float, b:Float)
         If( a < b  )
-            
             Return  a
         Else
-            
-            
             Return  b
-            
         End
     End
+    
     Function MinV : b2Vec2 (a:b2Vec2, b:b2Vec2)
-        
         Local c :b2Vec2 = New b2Vec2(Min(a.x, b.x), Min(a.y, b.y))
         Return c
     End
+    
     Function Max : Float (a:Float, b:Float)
-        
         If( a > b  )
-            
             Return  a
         Else
-            
-            
             Return  b
-            
         End
     End
+    
     Function MaxV : b2Vec2 (a:b2Vec2, b:b2Vec2)
-        
         Local c :b2Vec2 = New b2Vec2(Max(a.x, b.x), Max(a.y, b.y))
         Return c
     End
+    
     Function Clamp : Float (a:Float, low:Float, high:Float)
-        
         If( a < low  )
-            
             Return  low
         Else
             If( a > high )
@@ -220,35 +215,36 @@ Class b2Math
                 Return a
             End
         End
+    
     End
+    
     Function ClampV : b2Vec2 (a:b2Vec2, low:b2Vec2, high:b2Vec2)
-        
         Return MaxV(low, MinV(a, high))
     End
-    Function Swap : void (a:Array, b:Array)
-        
+    
+    Function Swap : void (a:FlashArray<Object>, b:FlashArray<Object>)
         Local tmp : Object = a.Get(0)
         a.Set( 0,  b.Get(0) )
         b.Set( 0,  tmp )
     End
+    
     '// b2Random number in range [-1,1]
     Function Random : Float ()
-        
         Return Rnd() * 2 - 1
     End
+    
     Function RandomRange : Float (lo:Float, hi:Float)
-        
         Local r :Float = Rnd()
         r = (hi - lo) * r + lo
         Return r
     End
+    
     '// "Next Largest Power of 2
     '// Given a binary integer value x, the nextItem largest power of 2 can be computed by a SWAR algorithm
     '// that recursively "folds" the upper bits into the lower bits. This process yields a bit vector with
     '// the same most significant x(1), but all 1s below it. Adding 1 to that value yields the nextItem
     '// largest power of 2.0 For a 32-bit value:"
     Function NextPowerOfTwo : Int (x:Int)
-        
         x |= (x Shr 1) & $7FFFFFFF
         x |= (x Shr 2) & $3FFFFFFF
         x |= (x Shr 4) & $0FFFFFFF
@@ -256,15 +252,18 @@ Class b2Math
         x |= (x Shr 16)& $0000FFFF
         Return x + 1
     End
+    
     Function IsPowerOfTwo : Bool (x:Int)
-        
         Local result :Bool = x > 0 And (x & (x - 1)) = 0
         Return result
     End
+    
     '// Temp vector Methods to reduce calls to New
+    Global tempVec:b2Vec2 = New b2Vec2()
+    Global tempVec2:b2Vec2 = New b2Vec2()
     #rem
     '/*static  var tempVec:b2Vec2 = New b2Vec2()
-    'Global tempVec2:b2Vec2 = New b2Vec2()
+    '
     'Global tempVec3:b2Vec2 = New b2Vec2()
     'Global tempVec4:b2Vec2 = New b2Vec2()
     'Global tempVec5:b2Vec2 = New b2Vec2()
@@ -272,9 +271,9 @@ Class b2Math
     'Global tempAABB:b2AABB = New b2AABB()
     '*/
     #end
-    Const b2Vec2_zero:b2Vec2 = New b2Vec2(0.0, 0.0)
-    Const b2Mat22_identity:b2Mat22 = b2Mat22.FromVV(New b2Vec2(1.0, 0.0), New b2Vec2(0.0, 1.0))
-    Const b2Transform_identity:b2Transform = New b2Transform(b2Vec2_zero, b2Mat22_identity)
+    Global b2Vec2_zero:b2Vec2 = New b2Vec2(0.0, 0.0)
+    Global b2Mat22_identity:b2Mat22 = b2Mat22.FromVV(New b2Vec2(1.0, 0.0), New b2Vec2(0.0, 1.0))
+    Global b2Transform_identity:b2Transform = New b2Transform(b2Vec2_zero, b2Mat22_identity)
 End
 
 
