@@ -1,3 +1,4 @@
+Strict
 #rem
 '/*
 '* Copyright (c) 2011, Damian Sinclair
@@ -97,7 +98,7 @@ Class TestRaycast Extends Test
         End
     End
     
-    Method OnRender()
+    Method OnRender:Int()
         Super.OnRender()
         
         SetColor(255,0,0)

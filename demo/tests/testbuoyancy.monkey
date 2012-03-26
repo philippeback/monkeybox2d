@@ -1,3 +1,4 @@
+Strict
 #rem
 '/*
 '* Copyright (c) 2011, Damian Sinclair
@@ -188,7 +189,7 @@ Class TestBuoyancy Extends Test
     '//===========
     '// Member Data
     '//===========
-    Method OnRender()
+    Method OnRender:Int()
         Super.OnRender()
         '//Draw water line
         SetColor(0,0,255)

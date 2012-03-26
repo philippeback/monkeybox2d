@@ -1,3 +1,4 @@
+Strict
 #rem
 '/*
 '* Copyright (c) 2011, Damian Sinclair
@@ -267,11 +268,11 @@ Class b2DebugDraw
         DrawLine(xf.position.x * m_drawScale, xf.position.y * m_drawScale,(xf.position.x + m_xformScale*xf.R.col2.x) * m_drawScale, (xf.position.y + m_xformScale*xf.R.col2.y) * m_drawScale)
     End
     
-    Method SetSprite( spr:FlashSprite)
+    Method SetSprite:Void( spr:FlashSprite)
         m_sprite = spr
     End
     
-    Method Clear()
+    Method Clear:Void()
         Cls 0,0,0
     End
     

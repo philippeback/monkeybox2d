@@ -1,3 +1,4 @@
+Strict
 #rem
 '/*
 '* Copyright (c) 2011, Damian Sinclair
@@ -276,7 +277,7 @@ Class b2DynamicTree
     '* @param input the ray-cast input data. The ray extends from p1 to p1 + maxFraction * (p2 - p1).
     '* @param callback a callback class called(that) for each proxy hit(that) by the ray.
     '* It should be of signature:
-    '* <code>Method callback(input:b2RayCastInput, proxy: Object):void</code>
+    '* <code>Method callback:Void(input:b2RayCastInput, proxy: Object):void</code>
     '*/
     #end
     Method RayCast : void (callback:RayCastCallback, input:b2RayCastInput)

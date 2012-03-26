@@ -1,3 +1,4 @@
+Strict
 #rem
 '/*
 '* Copyright (c) 2011, Damian Sinclair
@@ -49,7 +50,7 @@ Class CMUpdatePairsCallback Extends UpdatePairsCallback
     Method New(cm:b2ContactManager)
         Self.cm = cm
     End
-    Method Callback(a:Object,b:Object)
+    Method Callback:Void(a:Object,b:Object)
         cm.AddPair(a,b)
     End
 End

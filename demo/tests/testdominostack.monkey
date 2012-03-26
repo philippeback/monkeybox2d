@@ -1,3 +1,4 @@
+Strict
 #rem
 '/*
 '* Copyright (c) 2011, Damian Sinclair
@@ -46,10 +47,10 @@ Class TestDominoStack Extends Test
     Const dheight := 30.0
     Field ddensity:Float
     Const dfriction:Float = 0.6
-    Const baseCount = 9
+    Const baseCount:Int = 9
     
 
-    Method MakeDomino( x:Float, y:Float, horizontal:Bool, world:b2World)
+    Method MakeDomino:Void( x:Float, y:Float, horizontal:Bool, world:b2World)
 
     	Local sd:b2PolygonShape = new b2PolygonShape()
         Local fd :b2FixtureDef = New b2FixtureDef()
@@ -71,7 +72,7 @@ Class TestDominoStack Extends Test
         'myBody.SetMassFromShapes()
     End
 
-	Method CreateBoxObject( width:Float, height:Float, xPos:Float, yPos:Float )
+	Method CreateBoxObject:Void( width:Float, height:Float, xPos:Float, yPos:Float )
 	    Local fd :b2FixtureDef = New b2FixtureDef()
         Local sd :b2PolygonShape = New b2PolygonShape()
         Local bd :b2BodyDef = New b2BodyDef()

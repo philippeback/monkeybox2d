@@ -1,3 +1,4 @@
+Strict
 #rem
 '/*
 '* Copyright (c) 2011, Damian Sinclair
@@ -75,7 +76,7 @@ End
 '        m_world = world
 '    End
 '    
-'    Method OnRender()
+'    Method OnRender:Int()
 '        '// Render
 '        m_world.DrawDebugData()
 '    End
@@ -151,7 +152,7 @@ Class Test
         wallB.CreateFixture2(wall)
     End
     
-    Method OnRender()
+    Method OnRender:Int()
         '// Render
         m_world.DrawDebugData()
     End

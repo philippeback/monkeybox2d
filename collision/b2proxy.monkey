@@ -1,3 +1,4 @@
+Strict
 #rem
 '/*
 '* Copyright (c) 2011, Damian Sinclair
@@ -39,7 +40,7 @@ Import box2d.collision.b2pair
 #end
 Class B2ProxyMap<V> Extends Map<b2Proxy,V>
 
-	Method Compare( lhs:b2Proxy,rhs:b2Proxy )
+	Method Compare:Int( lhs:b2Proxy,rhs:b2Proxy )
 		If lhs.id<rhs.id Return -1
 		Return lhs.id>rhs.id
 	End

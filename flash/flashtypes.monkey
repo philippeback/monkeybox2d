@@ -1,3 +1,4 @@
+Strict
 #rem
 '/*
 '* Copyright (c) 2011, Damian Sinclair
@@ -60,13 +61,13 @@ Class FlashDisplayObject Abstract
     Field width:Int
     Field height:Int
     
-    Method OnRender(x:Int, y:Int) Abstract
+    Method OnRender:Void(x:Int, y:Int) Abstract
 End
 
 Class TextField Extends FlashDisplayObject
     Field text:String
     
-    Method OnRender(x:Int,y:Int)
+    Method OnRender:Void(x:Int,y:Int)
         Local color:=GetColor()
         SetColor(255,255,255)
         DrawText(text,Self.x+x,Self.y+y)
@@ -88,7 +89,7 @@ Class FlashSprite Extends FlashDisplayObject
         Return child
     End
     
-    Method OnRender(x:Int,y:Int)
+    Method OnRender:Void(x:Int,y:Int)
         For Local displayObject:FlashDisplayObject = Eachin displayList
             displayObject.OnRender(Self.x+x,Self.y+y)
         Next
@@ -109,7 +110,7 @@ Class FlashArray<T>
         Return length
     End
     
-    Method Length(value:Int) Property
+    Method Length:Void(value:Int) Property
         length = value
         If length > arr.Length
             arr = arr.Resize(length)
@@ -133,7 +134,7 @@ Class FlashArray<T>
         End
     End
     
-    Method Set( index:Int, item:T )
+    Method Set:Void( index:Int, item:T )
         If( index >= arr.Length )
             arr = arr.Resize(index+LengthInc)
         End
@@ -143,7 +144,7 @@ Class FlashArray<T>
         End
     End
     
-    Method Push( item:T )
+    Method Push:Void( item:T )
         If( length = arr.Length() )
             arr = arr.Resize(length+LengthInc)
         End
@@ -171,20 +172,20 @@ Class FlashArray<T>
         Return -1
     End
     
-    Method Splice( index:Int, deletes:Int = -1)
+    Method Splice:Void( index:Int, deletes:Int = -1)
         Splice(index,deletes,EmptyArr)
     End
 
-    Method Splice( index:Int, deletes:Int = -1, insert:T)
+    Method Splice:Void( index:Int, deletes:Int = -1, insert:T)
         Splice(index,deletes,[insert])
     End
 
-    Method Splice( index:Int, deletes:Int = -1, insert:T[] )
+    Method Splice:Void( index:Int, deletes:Int = -1, insert:T[] )
         If deletes = -1
             deletes = Length - index
         End
         
-        Local newLength = Length - deletes
+        Local newLength:Int = Length - deletes
         If newLength < 0
             newLength = 0
         End
@@ -200,7 +201,7 @@ Class FlashArray<T>
             newArr = New T[newLength]
         End 
 
-        Local copyInd = index
+        Local copyInd:Int = index
         
         If insert
             For Local val:= Eachin insert
@@ -256,7 +257,7 @@ Class HaxeFastList<T>
     Field _head:HaxeFastCell<T> = null
     Field _tail:HaxeFastCell<T> = null
     
-    Method Add( item:T )
+    Method Add:Void( item:T )
         AddFirst(item)
     End
     
@@ -264,21 +265,24 @@ Class HaxeFastList<T>
         Return RemoveFirst()
     End
     
-    Method Equals( lhs:Object,rhs:Object )
+    Method Equals:Bool( lhs:Object,rhs:Object )
         Return lhs=rhs
     End
     
-    Method Clear()
+    Method Clear:Void()
         _head=null
         _tail=null
     End
     
-    Method Count()
-        Local n,node:=_head
+    Method Count:Int()
+        Local n:Int = 0
+        Local node:HaxeFastCell<T> = _head
+        
         While node<>null
             node=node.nextItem
             n+=1
-        Wend
+        End
+        
         Return n
     End
     
@@ -362,7 +366,7 @@ Class HaxeFastList<T>
         Return False
     End
     
-    Method RemoveEach( value:T )
+    Method RemoveEach:Void( value:T )
         Local node:HaxeFastCell<T>=_head
         While node<>null
             Local nextNode:=node.nextItem
@@ -392,7 +396,7 @@ Class HaxeFastList<T>
     End
     
     
-    Method Remove(cell:HaxeFastCell<T>)
+    Method Remove:Void(cell:HaxeFastCell<T>)
         If( cell = _tail )
             _tail = cell._pred
         End

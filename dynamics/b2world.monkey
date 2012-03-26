@@ -1,3 +1,4 @@
+Strict
 #rem
 '/*
 '* Copyright (c) 2011, Damian Sinclair
@@ -773,7 +774,7 @@ Class b2World
     '* Query the world for all fixtures that potentially overlap the
     '* provided AABB.
     '* @param callback a user implemented callback class. It should match signature
-    '* <code>Method Callback(fixture:b2Fixture):Bool</code>
+    '* <code>Method Callback:Void(fixture:b2Fixture):Bool</code>
     '* Return True to continue to the nextItem fixture.
     '* @param aabb the query box.
     '*/
@@ -790,7 +791,7 @@ Class b2World
     '* Query the world for all fixtures that precisely overlap the
     '* provided transformed shape.
     '* @param callback a user implemented callback class. It should match signature
-    '* <code>Method Callback(fixture:b2Fixture):Bool</code>
+    '* <code>Method Callback:Void(fixture:b2Fixture):Bool</code>
     '* Return True to continue to the nextItem fixture.
     '* @asonly
     '*/
@@ -812,7 +813,7 @@ Class b2World
     '/**
     '* Query the world for all fixtures that contain a point.
     '* @param callback a user implemented callback class. It should match signature
-    '* <code>Method Callback(fixture:b2Fixture):Bool</code>
+    '* <code>Method Callback:Void(fixture:b2Fixture):Bool</code>
     '* Return True to continue to the nextItem fixture.
     '* @asonly
     '*/
@@ -833,7 +834,7 @@ Class b2World
     '* Controls whether you get the closest point, any point, or n-points
     '* The ray-cast ignores shapes that contain the starting point
     '* @param callback A callback Method which must be of signature:
-    '* <code>Method Callback(fixture:b2Fixture,    // The fixture hit by the ray
+    '* <code>Method Callback:Void(fixture:b2Fixture,    // The fixture hit by the ray
     '* point:b2Vec2,         // The point of initial intersection
     '* normal:b2Vec2,        // The normal vector at the point of intersection
     '* fraction:Float       // The fractional length along the ray of the intersection

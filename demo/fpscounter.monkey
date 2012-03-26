@@ -1,3 +1,4 @@
+Strict
 #rem
 '/*
 '* Copyright (c) 2011, Damian Sinclair
@@ -87,9 +88,9 @@ Class FpsCounter Extends FlashSprite
         End
     End
     
-    Const PhysicsID = 0
-    Const RenderID = 1
-    Const MaxTimings = 2
+    Const PhysicsID:Int = 0
+    Const RenderID:Int = 1
+    Const MaxTimings:Int = 2
     
     Field startTimes:Int[][] = [New Int[AverageSample],New Int[AverageSample]]
     Field durations:Int[] = [0,0]
@@ -120,7 +121,7 @@ Class FpsCounter Extends FlashSprite
     Method EndTimer : Void ( id:Int )
         Local newT :Int = Millisecs()
         Local f1 :Int = newT-startTimes[id][counts[id]]
-        Local nextFrame = (counts[id] + 1) Mod AverageSample
+        Local nextFrame:Int = (counts[id] + 1) Mod AverageSample
         
         durations[id] -= times[id][nextFrame]
         durations[id] += f1

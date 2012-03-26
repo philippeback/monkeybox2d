@@ -155,20 +155,16 @@ Class b2Math
         Local C :b2Mat22 = b2Mat22.FromVV(c1, c2)
         Return C
     End
+    
     Function Abs : Float (a:Float)
-        
-        If( a > 0.0  )
-            
+        If( a > 0.0 )
             Return  a
         Else
-            
-            
             Return  -a
-            
         End
     End
     
-    Function AbsV : b2Vec2 (a:b2Vec2, out:b2Vec2)
+    Function AbsV:Void (a:b2Vec2, out:b2Vec2)
         out.Set(Abs(a.x), Abs(a.y))
     End
     

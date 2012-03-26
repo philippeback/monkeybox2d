@@ -1,3 +1,4 @@
+Strict
 #rem
 '/*
 '* Copyright (c) 2011, Damian Sinclair
@@ -540,7 +541,7 @@ Class b2Body
     '/**
     '* Splits a body into two, preserving  properties
     '* @param	callback Called once per fixture, return True to move this fixture to the New body
-    '* <code>Method Callback(fixture:b2Fixture):Bool</code>
+    '* <code>Method Callback:Void(fixture:b2Fixture):Bool</code>
     '* @return The newly created bodies
     '* @asonly
     '*/

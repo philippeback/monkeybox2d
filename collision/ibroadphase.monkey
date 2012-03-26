@@ -1,3 +1,4 @@
+Strict
 #rem
 '/*
 '* Copyright (c) 2011, Damian Sinclair
@@ -33,7 +34,7 @@ Import box2d.flash.flashtypes
 Import box2d.common.math.b2vec2
 
 Class UpdatePairsCallback
-    Method Callback(a:Object,b:Object) Abstract
+    Method Callback:Void(a:Object,b:Object) Abstract
 End
 Class QueryCallback
     Method Callback:Bool(a:Object) Abstract
@@ -100,7 +101,7 @@ Class IBroadPhase Abstract
     '* the supplied AABB, and return a Bool indicating if
     '* the broaphase should proceed to the nextItem match.
     '* @param callback This Method should be a Method matching signature
-    '* <code>Method Callback(proxy: Object):Bool</code>
+    '* <code>Method Callback:Void(proxy: Object):Bool</code>
     '*/
     #end
     Method Query : void (callback:QueryCallback, aabb:b2AABB) Abstract
@@ -110,7 +111,7 @@ Class IBroadPhase Abstract
     '* to perform exact ray-cast in the case where the proxy contains a shape
     '* The callback also performs any collision filtering
     '* @param callback This Method should be a Method matching signature
-    '* <code>Method Callback(subInput:b2RayCastInput, proxy: Object):Float</code>
+    '* <code>Method Callback:Void(subInput:b2RayCastInput, proxy: Object):Float</code>
     '* Where the returned the(number) New value for maxFraction
     '*/
     #end
