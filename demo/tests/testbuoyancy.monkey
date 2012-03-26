@@ -189,7 +189,7 @@ Class TestBuoyancy Extends Test
     '//===========
     '// Member Data
     '//===========
-    Method OnRender:Int()
+    Method OnRender:Void()
         Super.OnRender()
         '//Draw water line
         SetColor(0,0,255)

@@ -39,7 +39,6 @@ Import box2d.demo.tests
 Import box2d.flash.flashtypes
 Import box2d.demo
 
-
 Class MainDemo Extends App
     Const VersionString:String = "1.0.8"
 
@@ -53,23 +52,22 @@ Class MainDemo Extends App
     Global m_currTest:Test
     Global m_sprite:FlashSprite
     Global m_aboutText:TextField
-    Global m_fpsCounter:FpsCounter
+    
     Field m_currId :Int = 0
-    Field m_input :Input
     Field tests : String[]
     Field changeAreaHeight:Int
     Field changeAreaWidth:Int
             
     Method OnRender()
 	    
-        m_fpsCounter.StartRender()
+        FpsCounter.testInstance.StartRender()
 	    
         If ( m_currTest <> Null)
             m_currTest.OnRender()
         Else
             Cls()
         End
-        m_fpsCounter.EndRender()
+        FpsCounter.testInstance.EndRender()
 	
         m_display.OnRender(0,0)
     End
@@ -93,10 +91,9 @@ Class MainDemo Extends App
         changeAreaHeight = DeviceHeight()/6
         changeAreaWidth = DeviceWidth()/6        
         
-        m_fpsCounter = New FpsCounter()
-        m_fpsCounter.x = 7
-        m_fpsCounter.y = 60
-        m_display.AddChildAt(m_fpsCounter, 0)
+        FpsCounter.testInstance.x = 7
+        FpsCounter.testInstance.y = 60
+        m_display.AddChildAt(FpsCounter.testInstance, 0)
         m_sprite = New FlashSprite()
         m_display.AddChild(m_sprite)
         

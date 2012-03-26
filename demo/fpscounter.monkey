@@ -34,6 +34,7 @@ Import box2d.flash.flashtypes
 Import mojo
 
 Class FpsCounter Extends FlashSprite
+    Global testInstance:FpsCounter = New FpsCounter()
     
     Field physicsRateTextBox :TextField
     Field renderRateTextBox :TextField

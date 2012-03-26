@@ -152,7 +152,7 @@ Class Test
         wallB.CreateFixture2(wall)
     End
     
-    Method OnRender:Int()
+    Method OnRender:Void()
         '// Render
         m_world.DrawDebugData()
     End
@@ -164,10 +164,10 @@ Class Test
         MouseDestroy()
         MouseDrag()
         '// Update physics
-        MainDemo.m_fpsCounter.StartPhysics()
+        FpsCounter.testInstance.StartPhysics()
         m_world.TimeStep(m_timeStep, m_velocityIterations, m_positionIterations)
         m_world.ClearForces()
-        MainDemo.m_fpsCounter.EndPhysics()
+        FpsCounter.testInstance.EndPhysics()
     End
     
     '//===========

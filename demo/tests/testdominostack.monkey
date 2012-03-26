@@ -104,12 +104,12 @@ Class TestDominoStack Extends Test
         End
         
 		'Make 'I's
-        For Local j=1 Until baseCount            
+        For Local j:Int =1 Until baseCount            
 
-			Local currY := 475 - (dheight*0.5 + (dheight+2.0*dwidth)*0.99*j) '//y at center of 'I' structure
+			Local currY :Int = 475 - (dheight*0.5 + (dheight+2.0*dwidth)*0.99*j) '//y at center of 'I' structure
             
-            For Local i := 0 Until baseCount - j
-                Local currX := 320 + i*1.5*dheight - (1.5*dheight*(baseCount-j)/2.0) '// + random(-.05f, .05f);
+            For Local i :Int = 0 Until baseCount - j
+                Local currX:Int = 320 + i*1.5*dheight - (1.5*dheight*(baseCount-j)/2.0) '// + random(-.05f, .05f);
                 ddensity *= 2.5
                 If (i=0)
                     MakeDomino(currX - (1.25*dheight) + 0.5*dwidth, currY+dwidth, false, m_world)

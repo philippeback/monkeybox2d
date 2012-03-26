@@ -104,7 +104,10 @@ Class b2TensorDampingController Extends b2Controller
                 Continue
             End
             
-            Local damping:b2Vec2 =	body.GetWorldVector(b2Math.MulMV(T,	body.GetLocalVector(body.GetLinearVelocity())))
+            Local damping:b2Vec2 = New b2Vec2()
+            body.GetLocalVector(body.GetLinearVelocity(),damping)
+            b2Math.MulMV(T,damping,damping)
+            body.GetWorldVector(damping,damping)
             body.SetLinearVelocity(New b2Vec2(body.GetLinearVelocity().x + damping.x * timestep, body.GetLinearVelocity().y + damping.y * timestep ))
             i=i.nextBody
         End

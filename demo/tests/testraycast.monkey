@@ -82,7 +82,7 @@ Class TestRaycast Extends Test
     Field f :b2Fixture
     Field lambda :Float = 1.0
     
-    Method Update : void ()
+    Method Update:Void ()
         
         Super.Update()
         laser.GetWorldPoint(New b2Vec2(30.1 / m_physScale, 0), p1)
@@ -98,7 +98,7 @@ Class TestRaycast Extends Test
         End
     End
     
-    Method OnRender:Int()
+    Method OnRender:Void()
         Super.OnRender()
         
         SetColor(255,0,0)
