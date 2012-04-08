@@ -86,7 +86,8 @@ Class MainDemo Extends App
         "TestBuoyancy",
         "TestOneSidedPlatform",
         "TestBreakable",
-        "TestRaycast"]
+        "TestRaycast",
+        "TestSensor"]
 
         changeAreaHeight = DeviceHeight()/6
         changeAreaWidth = DeviceWidth()/6        
@@ -152,6 +153,8 @@ Class MainDemo Extends App
                 ret = New TestBreakable()
             Case "TestRaycast"
                 ret = New TestRaycast()
+            Case "TestSensor"
+                ret = New TestSensor()
             End
             Return ret
         End

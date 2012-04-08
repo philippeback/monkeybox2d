@@ -1448,6 +1448,14 @@ Class b2World
         End
     End
     
+    Method DrawBody:Void(body:b2Body, color:b2Color)
+        Local f:b2Fixture = body.GetFixtureList()
+        While (f <> Null)
+            DrawShape(f.GetShape(), body.m_xf, color)
+            f = f.m_next
+        End
+    End
+    
     Method DrawShape : void (shape:b2Shape, xf:b2Transform, color:b2Color)
         Select (shape.m_type)
             

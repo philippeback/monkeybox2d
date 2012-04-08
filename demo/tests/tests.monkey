@@ -41,6 +41,7 @@ Import box2d.demo.tests.testedges
 Import box2d.demo.tests.testonesidedplatform
 Import box2d.demo.tests.testragdoll
 Import box2d.demo.tests.testraycast
+Import box2d.demo.tests.testsensor
 Import box2d.demo.tests.teststack
 Import box2d.demo.tests.testtheojansen
 Import box2d.demo.tests.testdominostack
