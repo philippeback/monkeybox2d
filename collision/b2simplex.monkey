@@ -113,7 +113,7 @@ Class b2Simplex
             cache.indexB.Set( i,  vertices[i].indexB )
         End
     End
-    
+
     Method GetSearchDirection:Void(out:b2Vec2)
         
         Select(m_count)
@@ -121,8 +121,9 @@ Class b2Simplex
             Case 1
                 m_v1.w.GetNegative(out)
             Case 2
-                m_v1.w.GetNegative(tmpVec1)
-                Local sgn :Float = b2Math.CrossVV(out, tmpVec1)
+                b2Math.SubtractVV(m_v2.w, m_v1.w, out)
+			    m_v1.w.GetNegative(tmpVec1)
+                Local sgn:Float = b2Math.CrossVV(out, tmpVec1)
                 
                 If (sgn > 0.0)
                     '// left(Origin) of e12.0
