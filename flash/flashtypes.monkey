@@ -101,6 +101,7 @@ Class FlashArray<T>
     Private
     Const LengthInc : Int = 100
     Field arr : T[] = New T[LengthInc]
+    Field arrLength:Int = LengthInc
     Field EmptyArr: T[] = New T[0]
     
     Public
@@ -112,7 +113,8 @@ Class FlashArray<T>
     
     Method Length:Void(value:Int) Property
         length = value
-        If length > arr.Length
+        If length > arrLength
+            arrLength = length
             arr = arr.Resize(length)
         End
     End
@@ -123,7 +125,8 @@ Class FlashArray<T>
     
     Method New( vals:T[] )
         arr = vals
-        length = arr.Length
+        arrLength = arr.Length
+        length = arrLength
     End
     
     Method Get:T( index:Int)
@@ -135,8 +138,9 @@ Class FlashArray<T>
     End
     
     Method Set:Void( index:Int, item:T )
-        If( index >= arr.Length )
-            arr = arr.Resize(index+LengthInc)
+        If( index >= arrLength )
+            arrLength = index+LengthInc
+            arr = arr.Resize(arrLength)
         End
         arr[index] = item
         If( index >= length )
@@ -145,8 +149,9 @@ Class FlashArray<T>
     End
     
     Method Push:Void( item:T )
-        If( length = arr.Length() )
-            arr = arr.Resize(length+LengthInc)
+        If( length = arrLength )
+            arrLength += LengthInc
+            arr = arr.Resize(arrLength)
         End
         
         arr[length] = item
@@ -163,7 +168,7 @@ Class FlashArray<T>
     End
     
     Method IndexOf:Int( element:T )
-        For Local index := 0 Until Length
+        For Local index := 0 Until length
             Local check:T = arr[index]
             If check = element
                 Return index
@@ -182,10 +187,10 @@ Class FlashArray<T>
 
     Method Splice:Void( index:Int, deletes:Int = -1, insert:T[] )
         If deletes = -1
-            deletes = Length - index
+            deletes = length - index
         End
         
-        Local newLength:Int = Length - deletes
+        Local newLength:Int = length - deletes
         If newLength < 0
             newLength = 0
         End
@@ -216,6 +221,7 @@ Class FlashArray<T>
         Next
         
         arr = newArr
+        arrLength = newLength
         length = newLength
     End
     
