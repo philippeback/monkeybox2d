@@ -73,126 +73,142 @@ Class b2EdgeAndCircleContact Extends b2Contact
         
         Local bA :b2Body = m_fixtureA.GetBody()
         Local bB :b2Body = m_fixtureB.GetBody()
-        B2CollideEdgeAndCircle(m_manifold,
+        b2EdgeAndCircleContact.b2CollideEdgeAndCircle(m_manifold,
         b2EdgeShape(m_fixtureA.GetShape()), bA.m_xf,
         b2CircleShape(m_fixtureB.GetShape()), bB.m_xf)
     End
-    Method B2CollideEdgeAndCircle : void (manifold: b2Manifold,
-        edge: b2EdgeShape,
-        xf1: b2Transform,
-        circle: b2CircleShape,
-        xf2: b2Transform)
+
+    ' Compute contact points for edge versus circle.
+    ' This accounts for edge connectivity.
+    Function b2CollideEdgeAndCircle:Void(manifold:b2Manifold,
+    							edgeA:b2EdgeShape, xfA:b2Transform,
+    							circleB:b2CircleShape, xfB:b2Transform)
+    
+    	manifold.m_pointCount = 0
+    
+    	'Compute circle in frame of edge
+        Local tmpVec1:b2Vec2 = New b2Vec2()
+        b2Math.MulXT(xfB, circleB.m_p,tmpVec1)
+    	b2Math.MulXT(xfA, tmpVec1, tmpVec1 )
+        Local Q:b2Vec2 = tmpVec1
+    	
+        Local A:b2Vec2 = edgeA.m_v1
+        Local B:b2Vec2 = edgeA.m_v2
+    	Local e:b2Vec2 = B.Copy()
+        e.Subtract( A )
+    
+    	'Barycentric coordinates
+        tmpVec1 = New b2Vec2()
+        b2Math.SubtractVV(B,Q,tmpVec1)
+    	Local u:Float = b2Math.Dot(e, tmpVec1)
         
-        '//TODO_BORIS
-        #rem
-        '/*
-        'manifold.m_pointCount = 0
-        'Local tMat : b2Mat22
-        'Local tVec : b2Vec2
-        'Local dX :Float
-        'Local dY :Float
-        'Local tX :Float
-        'Local tY :Float
-        'Local tPoint :b2ManifoldPoint
-        '//b2Vec2 c = b2Mul(xf2, circle->GetLocalPosition())
-        'tMat = xf2.R
-        'tVec = circle.m_r
-        'Local cX :Float = xf2.position.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
-        'Local cY :Float = xf2.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
-        '//b2Vec2 cLocal = b2MulT(xf1, c)
-        'tMat = xf1.R
-        'tX = cX - xf1.position.x
-        'tY = cY - xf1.position.y
-        'Local cLocalX :Float = (tX * tMat.col1.x + tY * tMat.col1.y )
-        'Local cLocalY :Float = (tX * tMat.col2.x + tY * tMat.col2.y )
-        'Local n : b2Vec2 = edge.m_normal
-        'Local v1 : b2Vec2 = edge.m_v1
-        'Local v2 : b2Vec2 = edge.m_v2
-        'Local radius :Float = circle.m_radius
-        'Local separation :Float
-        'Local dirDist :Float = (cLocalX - v1.x) * edge.m_direction.x +
-        '(cLocalY - v1.y) * edge.m_direction.y
-        'Local normalCalculated : Bool = False
-        'if (dirDist <= 0)
-        '
-        'dX = cLocalX - v1.x
-        'dY = cLocalY - v1.y
-        'if (dX * edge.m_cornerDir1.x + dY * edge.m_cornerDir1.y < 0)
-        '
-        'return
-        'End
-        '
-        'dX = cX - (xf1.position.x + (tMat.col1.x * v1.x + tMat.col2.x * v1.y))
-        'dY = cY - (xf1.position.y + (tMat.col1.y * v1.x + tMat.col2.y * v1.y))
-        'Else  if (dirDist >= edge.m_length)
-        '
-        '
-        'dX = cLocalX - v2.x
-        'dY = cLocalY - v2.y
-        'if (dX * edge.m_cornerDir2.x + dY * edge.m_cornerDir2.y > 0)
-        '
-        'return
-        'End
-        '
-        'dX = cX - (xf1.position.x + (tMat.col1.x * v2.x + tMat.col2.x * v2.y))
-        'dY = cY - (xf1.position.y + (tMat.col1.y * v2.x + tMat.col2.y * v2.y))
-        'Else
-        '
-        '
-        'separation = (cLocalX - v1.x) * n.x + (cLocalY - v1.y) * n.y
-        'if (separation > radius Or separation < -radius)
-        '
-        'return
-        'End
-        '
-        'separation -= radius
-        '//manifold.normal = b2Mul(xf1.R, n)
-        'tMat = xf1.R
-        'manifold.normal.x = (tMat.col1.x * n.x + tMat.col2.x * n.y)
-        'manifold.normal.y = (tMat.col1.y * n.x + tMat.col2.y * n.y)
-        'normalCalculated = True
-        'End
-        'if (Not(normalCalculated))
-        '
-        'Local distSqr :Float = dX * dX + dY * dY
-        'if (distSqr > radius * radius)
-        '
-        'return
-        'End
-        'if (distSqr < Constants.EPSILON)
-        '
-        'separation = -radius
-        'manifold.normal.x = (tMat.col1.x * n.x + tMat.col2.x * n.y)
-        'manifold.normal.y = (tMat.col1.y * n.x + tMat.col2.y * n.y)
-        'Else
-        '
-        '
-        'distSqr = Sqrt(distSqr)
-        'dX /= distSqr
-        'dY /= distSqr
-        'separation = distSqr - radius
-        'manifold.normal.x = dX
-        'manifold.normal.y = dY
-        'End
-        'End
-        'tPoint = manifold.points.Get(0)
-        'manifold.pointCount = 1
-        'tPoint.id.key = 0
-        'tPoint.separation = separation
-        'cX = cX - radius * manifold.normal.x
-        'cY = cY - radius * manifold.normal.y
-        'tX = cX - xf1.position.x
-        'tY = cY - xf1.position.y
-        'tPoint.localPoint1.x = (tX * tMat.col1.x + tY * tMat.col1.y )
-        'tPoint.localPoint1.y = (tX * tMat.col2.x + tY * tMat.col2.y )
-        'tMat = xf2.R
-        'tX = cX - xf2.position.x
-        'tY = cY - xf2.position.y
-        'tPoint.localPoint2.x = (tX * tMat.col1.x + tY * tMat.col1.y )
-        'tPoint.localPoint2.y = (tX * tMat.col2.x + tY * tMat.col2.y )
-        '*/
-        #end
-    End
+        b2Math.SubtractVV(Q,A,tmpVec1)
+    	Local v:Float = b2Math.Dot(e, tmpVec1)
+    
+    	Local radius:Float = edgeA.m_radius + circleB.m_radius
+    
+    	Local cf:b2ContactFeature
+    	cf.indexB = 0
+    	cf.typeB = b2ContactFeature.e_vertex
+    
+    	'Region A
+    	If v <= 0.0
+    		Local P:b2Vec2 = A
+    		Local d:b2Vec2 = Q - P
+    		Local dd:Float = b2Dot(d, d)
+    		
+            If (dd > radius * radius)
+    			Return
+    		End
+    
+    		' Is there an edge connected to A?
+    		If edgeA.m_hasVertex0
+    		
+    			Local A1:b2Vec2 = edgeA.m_vertex0
+    			Local B1:b2Vec2 = A
+    			Local e1:b2Vec2 = B1 - A1
+    			Local u1:Float = b2Dot(e1, B1 - Q)
+    
+    			' Is the circle in Region AB of the previous edge?
+    			If u1 > 0.0
+    			    Return
+                End
+    		End
+    
+    		cf.indexA = 0
+    		cf.typeA = b2ContactFeature.e_vertex
+    		manifold.pointCount = 1
+    		manifold.type = b2Manifold.e_circles
+    		manifold.localNormal.SetZero()
+    		manifold.localPoint = P
+    		manifold.points[0].id.key = 0
+    		manifold.points[0].id.cf = cf
+    		manifold.points[0].localPoint = circleB.m_p
+    		Return
+    	End
+    
+    	' Region B
+    	If u <= 0.0
+    		Local P:b2Vec2 P = B
+    		Local d:b2Vec2 = Q - P
+    		Local dd:b2Vec2 = b2Dot(d, d)
+    		If dd > radius * radius
+    			Return
+    		End
+    
+    		' Is there an edge connected to B?
+    		If edgeA.m_hasVertex3
+    	
+    			Local B2:b2Vec2 = edgeA.m_vertex3
+    			Local A2:b2Vec2 = B
+    			Local e2:b2Vec2 = B2 - A2
+    			Local v2:Float = b2Dot(e2, Q - A2)
+    
+    			' Is the circle in Region AB of the next edge?
+    			If v2 > 0.0
+        			Return
+    		    End
+            End
+    
+    		cf.indexA = 1
+    		cf.typeA = b2ContactFeature.e_vertex
+    		manifold.pointCount = 1
+    		manifold.type = b2Manifold.e_circles
+    		manifold.localNormal.SetZero()
+    		manifold.localPoint = P
+    		manifold.points[0].id.key = 0
+    		manifold.points[0].id.cf = cf
+    		manifold.points[0].localPoint = circleB.m_p
+    		Return
+    	End
+    
+    	' Region AB
+    	Local den:Float = b2Dot(e, e)
+    	b2Assert(den > 0.0)
+    	Local P:b2Vec2 = (1.0 / den) * (u * A + v * B)
+    	Local d:b2Vec2 = Q - P
+    	Local dd:Float = b2Dot(d, d)
+    	If (dd > radius * radius)
+        	Return
+        End
+    
+    	Local n:b2Vec2 = New b2Vec2(-e.y, e.x)
+    	If (b2Dot(n, Q - A) < 0.0)
+    	    n.Set(-n.x, -n.y)
+    	End
+        
+    	n.Normalize()
+    
+    	cf.indexA = 0
+    	cf.typeA = b2ContactFeature.e_face
+    	manifold.pointCount = 1
+    	manifold.type = b2Manifold.e_faceA
+    	manifold.localNormal = n
+    	manifold.localPoint = A
+    	manifold.points[0].id.key = 0
+    	manifold.points[0].id.cf = cf
+    	manifold.points[0].localPoint = circleB.m_p
+    End    
 End
 
 

@@ -70,7 +70,12 @@ Class b2DistanceProxy
                 m_vertices = polygon.m_vertices
                 m_count = polygon.m_vertexCount
                 m_radius = polygon.m_radius
-                Default
+            case b2Shape.e_edgeShape
+                Local edge:b2EdgeShape = b2EdgeShape(shape)
+                m_vertices = [edge.m_v1,edge.m_v2]
+                m_count = 2
+                m_radius = edge.m_radius
+            Default
                 b2Settings.B2Assert(False)
         End
     End
