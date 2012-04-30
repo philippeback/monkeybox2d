@@ -156,7 +156,7 @@ Class b2Segment
             End
         End
         
-        lambda = Math.Min(a,b)
+        lambda = b2Math.Min(a,b)
         
         p2.x = p1.x + dX * lambda
         p2.y = p1.y + dY * lambda
@@ -188,7 +188,7 @@ Class b2Segment
             End
         End
         
-        lambda = Math.Min(a,b)
+        lambda = b2Math.Min(a,b)
         
         p1.x = p2.x + dX * lambda
         p1.y = p2.y + dY * lambda

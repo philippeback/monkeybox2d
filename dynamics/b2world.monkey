@@ -1188,7 +1188,7 @@ Class b2World
                     If (toi > 0.0 And toi < 1.0)
                         
                         '// Interpolate on the actual range.
-                        '//toi = Math.Min((1.0 - toi) * t0 + toi, 1.0)
+                        '//toi = b2Math.Min((1.0 - toi) * t0 + toi, 1.0)
                         toi = (1.0 - toi) * t0 + toi
                         If (toi > 1)
                             toi = 1

@@ -304,10 +304,10 @@ Class b2DynamicTree
         
         tX = p1.x + maxFraction * (p2.x - p1.x)
         tY = p1.y + maxFraction * (p2.y - p1.y)
-        segmentAABB.lowerBound.x = Math.Min(p1.x, tX)
-        segmentAABB.lowerBound.y = Math.Min(p1.y, tY)
-        segmentAABB.upperBound.x = Math.Max(p1.x, tX)
-        segmentAABB.upperBound.y = Math.Max(p1.y, tY)
+        segmentAABB.lowerBound.x = b2Math.Min(p1.x, tX)
+        segmentAABB.lowerBound.y = b2Math.Min(p1.y, tY)
+        segmentAABB.upperBound.x = b2Math.Max(p1.x, tX)
+        segmentAABB.upperBound.y = b2Math.Max(p1.y, tY)
         
         Local stack :FlashArray<b2DynamicTreeNode> = New FlashArray<b2DynamicTreeNode>()
         Local count :int = 0
@@ -344,10 +344,10 @@ Class b2DynamicTree
                 
                 tX = p1.x + maxFraction * (p2.x - p1.x)
                 tY = p1.y + maxFraction * (p2.y - p1.y)
-                segmentAABB.lowerBound.x = Math.Min(p1.x, tX)
-                segmentAABB.lowerBound.y = Math.Min(p1.y, tY)
-                segmentAABB.upperBound.x = Math.Max(p1.x, tX)
-                segmentAABB.upperBound.y = Math.Max(p1.y, tY)
+                segmentAABB.lowerBound.x = b2Math.Min(p1.x, tX)
+                segmentAABB.lowerBound.y = b2Math.Min(p1.y, tY)
+                segmentAABB.upperBound.x = b2Math.Max(p1.x, tX)
+                segmentAABB.upperBound.y = b2Math.Max(p1.y, tY)
             Else
                 '// No stack limit, so no assert
                 stack.Set( count,  node.child1 )

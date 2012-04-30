@@ -135,7 +135,7 @@ Class b2AABB
                 tmin = t1
             End
             '// Pull the max down
-            tmax = Math.Min(tmax, t2)
+            tmax = b2Math.Min(tmax, t2)
             If (tmin > tmax)
                 Return False
             End
@@ -173,7 +173,7 @@ Class b2AABB
                 tmin = t1
             End
             '// Pull the max down
-            tmax = Math.Min(tmax, t2)
+            tmax = b2Math.Min(tmax, t2)
             If (tmin > tmax)
                 Return False
             End
@@ -212,10 +212,10 @@ Class b2AABB
     '* Combine two AABBs into one.
     Method Combine : void (aabb1:b2AABB, aabb2:b2AABB)
         
-        lowerBound.x = Math.Min(aabb1.lowerBound.x, aabb2.lowerBound.x)
-        lowerBound.y = Math.Min(aabb1.lowerBound.y, aabb2.lowerBound.y)
-        upperBound.x = Math.Max(aabb1.upperBound.x, aabb2.upperBound.x)
-        upperBound.y = Math.Max(aabb1.upperBound.y, aabb2.upperBound.y)
+        lowerBound.x = b2Math.Min(aabb1.lowerBound.x, aabb2.lowerBound.x)
+        lowerBound.y = b2Math.Min(aabb1.lowerBound.y, aabb2.lowerBound.y)
+        upperBound.x = b2Math.Max(aabb1.upperBound.x, aabb2.upperBound.x)
+        upperBound.y = b2Math.Max(aabb1.upperBound.y, aabb2.upperBound.y)
     End
     
     '* The lower vertex

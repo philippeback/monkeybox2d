@@ -30,6 +30,7 @@ Strict
 '* DAMAGE.
 '*/
 #end
+Import box2d.common.math
 Import box2d.flash.flashtypes
 Import mojo
 
@@ -66,11 +67,11 @@ Class FpsCounter Extends FlashSprite
     Method EndPhysics:Void()
         EndTimer(PhysicsID)
         Local avgFrameMS:Float = GetAverageDuration(PhysicsID)
-        Local maxFPS:Int = Math.Round(1000.0/avgFrameMS)
+        Local maxFPS:Int = b2Math.Round(1000.0/avgFrameMS)
         If avgFrameMS < 1
-            physicsRateTextBox.text = String("Actual physics updates/sec: " + Math.Round(GetActualRate(PhysicsID)) + ", Avg: < 1 ms (max. > 1000 updates/sec)")
+            physicsRateTextBox.text = String("Actual physics updates/sec: " + b2Math.Round(GetActualRate(PhysicsID)) + ", Avg: < 1 ms (max. > 1000 updates/sec)")
         Else
-            physicsRateTextBox.text = String("Actual physics updates/sec: " + Math.Round(GetActualRate(PhysicsID)) + ", Avg update: " + Math.Round(avgFrameMS)+" ms (max. " + maxFPS +" updates/sec)")
+            physicsRateTextBox.text = String("Actual physics updates/sec: " + b2Math.Round(GetActualRate(PhysicsID)) + ", Avg update: " + b2Math.Round(avgFrameMS)+" ms (max. " + maxFPS +" updates/sec)")
         End
     End
     
@@ -81,11 +82,11 @@ Class FpsCounter Extends FlashSprite
     Method EndRender:Void()
         EndTimer(RenderID)
         Local avgFrameMS:Float = GetAverageDuration(RenderID)
-        Local maxFPS:Int = Math.Round(1000.0/avgFrameMS)
+        Local maxFPS:Int = b2Math.Round(1000.0/avgFrameMS)
         If avgFrameMS < 1
-            renderRateTextBox.text = String("Actual drawn FPS: " + Math.Round(GetActualRate(RenderID)) + ", Avg. Render time: < 1 ms (max. > 1000 frames/sec)")
+            renderRateTextBox.text = String("Actual drawn FPS: " + b2Math.Round(GetActualRate(RenderID)) + ", Avg. Render time: < 1 ms (max. > 1000 frames/sec)")
         Else
-            renderRateTextBox.text = String("Actual drawn FPS: " + Math.Round(GetActualRate(RenderID)) + ", Avg. Render time: " + Math.Round(avgFrameMS)+" ms (max. " + maxFPS +" frames/sec)")
+            renderRateTextBox.text = String("Actual drawn FPS: " + b2Math.Round(GetActualRate(RenderID)) + ", Avg. Render time: " + b2Math.Round(avgFrameMS)+" ms (max. " + maxFPS +" frames/sec)")
         End
     End
     

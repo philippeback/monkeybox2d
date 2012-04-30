@@ -63,7 +63,7 @@ Class TestDominoStack Extends Test
         fd.shape = sd
 		bd.position.Set( x/m_physScale, y/m_physScale)
    		If horizontal
-			bd.angle = Math.PI/2.0
+			bd.angle = Constants.PI*0.5
 		Else
 			bd.angle = 0.0
 		End

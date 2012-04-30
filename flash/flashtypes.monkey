@@ -44,17 +44,6 @@ Import mojo
 'functional reasons.
 #end
 
-Class Math
-    
-    Function Round:Int( f : Float )
-        If( Ceil(f) - f > f - Floor(f))
-            Return Floor(f)
-        Else
-            Return Ceil(f)
-        End
-    End
-End
-
 Class FlashDisplayObject Abstract
     Field x:Int
     Field y:Int

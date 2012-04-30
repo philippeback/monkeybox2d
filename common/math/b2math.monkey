@@ -175,6 +175,14 @@ Class b2Math
         Return B
     End
     
+    Function Round:Int( f : Float )
+        If( Ceil(f) - f > f - Floor(f))
+            Return Floor(f)
+        Else
+            Return Ceil(f)
+        End
+    End
+    
     Function Min : Float (a:Float, b:Float)
         If( a < b  )
             Return  a
