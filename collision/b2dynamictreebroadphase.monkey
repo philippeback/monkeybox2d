@@ -165,7 +165,10 @@ Class b2DynamicTreeBroadPhase Extends IBroadPhase
         
         dtQueryCallBack.m_pairCount = 0
         '// Perform tree queries for all moving queries
-        For Local queryProxy:b2DynamicTreeNode = Eachin m_moveBuffer
+        Local nodes:b2DynamicTreeNode[] = m_moveBuffer.BackingArray()
+        
+        For Local i:Int = 0 Until m_moveBuffer.Length() 
+            Local queryProxy:b2DynamicTreeNode = nodes[i]
             '// We have to query the tree with the fat AABB so that
             '// we dont fail to create a pair that may touch later.
             Local fatAABB :b2AABB = m_tree.GetFatAABB(queryProxy)

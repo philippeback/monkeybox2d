@@ -117,6 +117,11 @@ Class FlashArray<T>
         arrLength = arr.Length
         length = arrLength
     End
+
+    'Use with caution
+    Method BackingArray:T[]()
+        Return arr     
+    End
     
     Method Get:T( index:Int)
         If( index >=0 And length > index )
@@ -217,8 +222,8 @@ Class FlashArray<T>
     Method ObjectEnumerator:FAEnumerator<T>()
         Return New FAEnumerator<T>( Self )
     End
-    
 End
+
 Class FAEnumerator<T>
     
     Method New( arr:FlashArray<T> )

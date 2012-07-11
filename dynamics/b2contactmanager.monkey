@@ -57,6 +57,9 @@ End
 
 Class b2ContactManager
     
+
+    Field pairsCallback:UpdatePairsCallback
+    
     Method New()
         m_world = null
         m_contactCount = 0
@@ -64,6 +67,7 @@ Class b2ContactManager
         m_contactListener = b2ContactListener.b2_defaultListener
         m_contactFactory = New b2ContactFactory(m_allocator)
         m_broadPhase = New b2DynamicTreeBroadPhase()
+        pairsCallback = New CMUpdatePairsCallback(Self)
     End
     
     '// a(This) callback from the broadphase when two AABB proxies begin
@@ -151,7 +155,7 @@ Class b2ContactManager
     End
     
     Method FindNewContacts : void ()
-        m_broadPhase.UpdatePairs(New CMUpdatePairsCallback(Self))
+        m_broadPhase.UpdatePairs(pairsCallback)
     End
     
     Global s_evalCP:b2ContactPoint = New b2ContactPoint()
