@@ -179,6 +179,9 @@ Class b2Vec2
     Method IsValid : Bool ()
         Return b2Math.IsValid(x) And b2Math.IsValid(y)
     End
-    
+   
+    Method Equals:Bool( vec:b2Vec2 )
+        Return vec <> Null And vec.x = x And vec.y = y 
+    End
 End
 
