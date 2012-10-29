@@ -59,7 +59,10 @@ Class MainDemo Extends App
     Field changeAreaWidth:Int
             
     Method OnRender()
-	    
+	    If (m_currTest <> Null)
+            PhysicsUpdate()
+        End
+        
         FpsCounter.testInstance.StartRender()
 	    
         If ( m_currTest <> Null)
@@ -191,6 +194,10 @@ Class MainDemo Extends App
                 m_aboutText.text = m_currTest.name
             End
             
+            
+        End
+        
+        Method PhysicsUpdate:Void()
             Local ms = Millisecs()
             If nextFrame = 0.0 Or (ms - nextFrame) > (physicsFramesPerRender*physicsFrameMS)
                 nextFrame = Float(ms)-physicsFramesPerRender*physicsFrameMS
@@ -201,7 +208,6 @@ Class MainDemo Extends App
 	            nextFrame += physicsFrameMS
             End
         End
-        
         
     End
     
