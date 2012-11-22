@@ -34,6 +34,8 @@ Import box2d.dynamics.joints.b2distancejoint
 Import box2d.dynamics.joints.b2distancejointdef
 Import box2d.dynamics.joints.b2frictionjoint
 Import box2d.dynamics.joints.b2frictionjointdef
+Import box2d.dynamics.joints.b2ropejoint
+Import box2d.dynamics.joints.b2ropejointdef
 Import box2d.dynamics.joints.b2gearjoint
 Import box2d.dynamics.joints.b2gearjointdef
 Import box2d.dynamics.joints.b2jacobian

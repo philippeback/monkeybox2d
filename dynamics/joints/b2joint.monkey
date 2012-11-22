@@ -179,7 +179,11 @@ Class b2Joint
                 
                 '//void* mem = allocator->Allocate(sizeof(b2FrictionJoint))
                 joint = New b2FrictionJoint(b2FrictionJointDef(def))
-                Default
+				
+			Case e_ropeJoint
+				joint = New b2RopeJoint(b2RopeJointDef(def))
+				
+            Default
                 '//b2Settings.B2Assert(False)
             End
             Return joint
@@ -323,7 +327,8 @@ Class b2Joint
         'static b2internal
         const e_weldJoint:int = 8
         'static b2internal
-        const e_frictionJoint:int = 9
+        Const e_frictionJoint:int = 9
+		Const e_ropeJoint:Int = 10
         '// enum b2LimitState
         'static b2internal
         const e_inactiveLimit:int = 0
