@@ -282,7 +282,7 @@ Class b2Contact
         m_nodeB.other = null
     End
     
-    Method Update : void (listener:b2ContactListener)
+    Method Update : void (listener:b2ContactListenerInterface)
         
         '// Swap old & New manifold
         Local tManifold :b2Manifold = m_oldManifold
