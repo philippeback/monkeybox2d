@@ -263,7 +263,7 @@ Class b2World
     '* Register a contact event listener
     '*/
     #end
-    Method SetContactListener : void (listener:b2ContactListener)
+    Method SetContactListener : void (listener:b2ContactListenerInterface)
         
         m_contactManager.m_contactListener = listener
     End

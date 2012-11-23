@@ -121,7 +121,7 @@ Class b2Island
         contactCapacity:int,
         jointCapacity:int,
         allocator: Object,
-        listener:b2ContactListener,
+        listener:b2ContactListenerInterface,
         contactSolver:b2ContactSolver)
         
         Local i :int
@@ -441,7 +441,7 @@ Class b2Island
     Field m_allocator: Object
     
     
-    Field m_listener:b2ContactListener
+    Field m_listener:b2ContactListenerInterface
     
     
     Field m_contactSolver:b2ContactSolver

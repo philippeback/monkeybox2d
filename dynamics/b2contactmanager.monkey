@@ -286,7 +286,7 @@ Class b2ContactManager
     Field m_contactFilter:b2ContactFilter
     
     
-    Field m_contactListener:b2ContactListener
+    Field m_contactListener:b2ContactListenerInterface
     
     
     Field m_contactFactory:b2ContactFactory

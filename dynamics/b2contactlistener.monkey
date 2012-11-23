@@ -52,20 +52,27 @@ Import box2d.common
 '* @warning You cannot create/destroy Box2D entities inside these callbacks.
 '*/
 #end
-Class b2ContactListener
+Interface b2ContactListenerInterface
+    Method BeginContact:Void(contact:b2Contact)
+    Method EndContact:Void(contact:b2Contact)
+    Method PreSolve:Void(contact:b2Contact, oldManifold:b2Manifold)
+    Method PostSolve:Void(contact:b2Contact, impulse:b2ContactImpulse)
+End
+
+Class b2ContactListener Implements b2ContactListenerInterface
     #rem
     '/**
     '* Called when two fixtures begin to touch.
     '*/
     #end
-    Method BeginContact : void (contact:b2Contact)
+    Method BeginContact:Void(contact:b2Contact)
     End
     #rem
     '/**
     '* Called when two fixtures cease to touch.
     '*/
     #end
-    Method EndContact : void (contact:b2Contact)
+    Method EndContact:Void(contact:b2Contact)
     End
     #rem
     '/**
@@ -81,7 +88,7 @@ Class b2ContactListener
     '* the nextItem timeStep.
     '*/
     #end
-    Method PreSolve : void (contact:b2Contact, oldManifold:b2Manifold)
+    Method PreSolve:Void(contact:b2Contact, oldManifold:b2Manifold)
     End
     #rem
     '/**
@@ -93,7 +100,7 @@ Class b2ContactListener
     '* Note: only(this) called for contacts that are touching, solid, and awake.
     '*/
     #end
-    Method PostSolve : void (contact:b2Contact, impulse:b2ContactImpulse)
+    Method PostSolve:Void(contact:b2Contact, impulse:b2ContactImpulse)
     End
-    Global b2_defaultListener:b2ContactListener = New b2ContactListener()
+    Global b2_defaultListener:b2ContactListenerInterface = New b2ContactListener()
 End
