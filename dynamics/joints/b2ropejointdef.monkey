@@ -38,7 +38,7 @@ class b2RopeJointDef Extends b2JointDef
 		maxLength = 0
 	End
 	
-	Method Initialize:Void(bA:b2Body, bB:b2Body, anchorA:b2Vec2, anchorB:b2Vec2, maxLength:Number)
+	Method Initialize:Void(bA:b2Body, bB:b2Body, anchorA:b2Vec2, anchorB:b2Vec2, maxLength:Float)
 		bodyA = bA;
 		bodyB = bB;
 		localAnchorA.SetV(bodyA.GetLocalPoint(anchorA))
