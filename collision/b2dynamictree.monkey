@@ -248,11 +248,31 @@ Class b2DynamicTree
 		count += 1
         While (count > 0)
             count -= 1
-            'Local node :b2DynamicTreeNode = stack.Get(count)
             Local node:b2DynamicTreeNode = nodeStack[count]
-            If (node.aabb.TestOverlap(aabb))
+			
+			'This is manually inlined from AABB.TestOverlap!
+			Local overlap:Bool = True
+			Local upperBound:b2Vec2 = node.aabb.upperBound
+			Local otherLowerBound:b2Vec2 = aabb.lowerBound
+			
+			If (otherLowerBound.x > upperBound.x)
+				overlap = False
+			ElseIf(otherLowerBound.y > upperBound.y)
+				overlap = False
+			Else
+				Local otherUpperBound:b2Vec2 = aabb.upperBound
+				Local lowerBound:b2Vec2 = node.aabb.lowerBound
+				If (lowerBound.x > otherUpperBound.x)
+					overlap = False
+				ElseIf(lowerBound.y > otherUpperBound.y)
+					overlap = False
+				End
+			End
+			
+            'If (node.aabb.TestOverlap(aabb))
+             If (overlap)
                 
-                If (node.IsLeaf())
+                If (node.child1 = Null)'IsLeaf())
                     
                     Local proceed :Bool = callback.Callback(node)
                     If (Not(proceed))
@@ -397,23 +417,54 @@ Class b2DynamicTree
             Return
         End
         Local center :b2Vec2 = leaf.aabb.GetCenter()
-        Local sibling :b2DynamicTreeNode = m_root
-        If (sibling.IsLeaf() = False)
+        Local centerX:Float = center.x
+	    Local centerY:Float = center.y
+	            
+		Local sibling :b2DynamicTreeNode = m_root
+        If (sibling.child1 <> Null) 'sibling.IsLeaf() = False)
             Repeat
-            Local child1 :b2DynamicTreeNode = sibling.child1
-            Local child2 :b2DynamicTreeNode = sibling.child2
-            '//b2Vec2 delta1 = b2Abs(m_nodes.Get(child1).aabb.GetCenter() - center)
-            '//b2Vec2 delta2 = b2Abs(m_nodes.Get(child2).aabb.GetCenter() - center)
-            '//float32 norm1 = delta1.x + delta1.y
-            '//float32 norm2 = delta2.x + delta2.y
-            Local norm1 :Float = Abs((child1.aabb.lowerBound.x + child1.aabb.upperBound.x) / 2 - center.x) + Abs((child1.aabb.lowerBound.y + child1.aabb.upperBound.y) / 2 - center.y)
-            Local norm2 :Float = Abs((child2.aabb.lowerBound.x + child2.aabb.upperBound.x) / 2 - center.x) + Abs((child2.aabb.lowerBound.y + child2.aabb.upperBound.y) / 2 - center.y)
-            If (norm1 < norm2)
-                sibling = child1
-            Else
-                sibling = child2
-            End
-            Until (sibling.IsLeaf())
+	            Local child1 :b2DynamicTreeNode = sibling.child1
+	            Local child2 :b2DynamicTreeNode = sibling.child2
+	            '//b2Vec2 delta1 = b2Abs(m_nodes.Get(child1).aabb.GetCenter() - center)
+	            '//b2Vec2 delta2 = b2Abs(m_nodes.Get(child2).aabb.GetCenter() - center)
+	            '//float32 norm1 = delta1.x + delta1.y
+	            '//float32 norm2 = delta2.x + delta2.y
+				Local aabb1:b2AABB = child1.aabb
+				Local aabb2:b2AABB = child2.aabb
+				Local lowerBound:b2Vec2 = aabb1.lowerBound
+				Local upperBound:b2Vec2 = aabb1.upperBound
+				
+				Local midX:Float = (lowerBound.x + upperBound.x) * 0.5 - centerX
+				If midX < 0
+					midX = -midX
+				End
+				Local midY:Float = (lowerBound.y + upperBound.y) * 0.5 - centerY
+				If midY < 0
+					midY = -midY
+				End
+				
+				Local norm1:Float = midX + midY
+	            
+				lowerBound = aabb2.lowerBound
+				upperBound = aabb2.upperBound
+				
+				midX = (lowerBound.x + upperBound.x) * 0.5 - centerX
+				If midX < 0
+					midX = -midX
+				End
+				midY = (lowerBound.y + upperBound.y) * 0.5 - centerY
+				If midY < 0
+					midY = -midY
+				End
+				
+				Local norm2:Float = midX + midY
+				
+	            If (norm1 < norm2)
+	                sibling = child1
+	            Else
+	                sibling = child2
+	            End
+            Until (sibling.child1 = Null)'sibling.IsLeaf())
         End
         '// Create a parent for the siblings
         Local node1 :b2DynamicTreeNode = sibling.parent
@@ -434,12 +485,12 @@ Class b2DynamicTree
             leaf.parent = node2
             
             Repeat
-            If (node1.aabb.Contains(node2.aabb))
-                Exit
-            End
-            node1.aabb.Combine(node1.child1.aabb, node1.child2.aabb)
-            node2 = node1
-            node1 = node1.parent
+	            If (node1.aabb.Contains(node2.aabb))
+	                Exit
+	            End
+	            node1.aabb.Combine(node1.child1.aabb, node1.child2.aabb)
+	            node2 = node1
+	            node1 = node1.parent
             Until(node1 = Null)
         Else
             node2.child1 = sibling
@@ -449,6 +500,7 @@ Class b2DynamicTree
             m_root = node2
         End
     End
+	
     Method RemoveLeaf : void (leaf:b2DynamicTreeNode)
         
         If ( leaf = m_root)
