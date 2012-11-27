@@ -234,19 +234,22 @@ Class b2DynamicTree
     '* and should return False to trigger premature termination.
     '*/
     #end
+	
+	Field nodeStack:b2DynamicTreeNode[] = New b2DynamicTreeNode[100]
     
     Method Query : void (callback:QueryCallback, aabb:b2AABB)
         
         If (m_root = null)
             Return
         End
-        Local stack :FlashArray<b2DynamicTreeNode> = New FlashArray<b2DynamicTreeNode>()
-        Local count :int = 0
-        stack.Set( count,  m_root )
-        count += 1
+        Local count:int = 0
+		Local nodeStackLength:Int = nodeStack.Length()
+        nodeStack[count] = m_root
+		count += 1
         While (count > 0)
             count -= 1
-            Local node :b2DynamicTreeNode = stack.Get(count)
+            'Local node :b2DynamicTreeNode = stack.Get(count)
+            Local node:b2DynamicTreeNode = nodeStack[count]
             If (node.aabb.TestOverlap(aabb))
                 
                 If (node.IsLeaf())
@@ -258,11 +261,14 @@ Class b2DynamicTree
                 Else
                     
                     '// No stack limit, so no assert
-                    
-                    stack.Set( count,  node.child1 )
-                    count += 1
-                    stack.Set( count,  node.child2 )
-                    count += 1
+                    If count >= nodeStackLength
+						nodeStack = nodeStack.Resize(count * 2)
+						nodeStackLength = count * 2
+					End
+                    nodeStack[count] = node.child1
+					count += 1
+                    nodeStack[count] = node.child2
+					count += 1
                 End
             End
         End
