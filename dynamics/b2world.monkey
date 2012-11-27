@@ -64,7 +64,7 @@ Class InnerRayCastOneCallback Extends InnerRayCastCallback
 			bestFraction = fraction
 			result = fixture
 		EndIf
-		Return best
+		Return bestFraction
     End
 End
 
