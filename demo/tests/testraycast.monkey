@@ -86,7 +86,7 @@ Class TestRaycast Extends Test
         
         Super.Update()
         laser.GetWorldPoint(New b2Vec2(30.1 / m_physScale, 0), p1)
-        laser.GetWorldPoint(New b2Vec2(130.1 / m_physScale, 0), p2)
+        laser.GetWorldPoint(New b2Vec2(430.1 / m_physScale, 0), p2)
         f = m_world.RayCastOne(p1, p2)
         lambda = 1.0
         

@@ -54,11 +54,17 @@ Class InnerRayCastCallback Abstract
 End
 
 Class InnerRayCastOneCallback Extends InnerRayCastCallback
+	'modified by skn3 to make ray picking work properly
     Field result:b2Fixture
+	Field bestFraction:Float = 1.0
     
-    Method Callback : Float (fixture:b2Fixture, point:b2Vec2, normal:b2Vec2, fraction:Float)
-        result = fixture
-        Return fraction
+    Method Callback:Float(fixture:b2Fixture, point:b2Vec2, normal:b2Vec2, fraction:Float)
+		'need to keep track of the "best" fraction so we dont fail at picking
+		If fraction <= bestFraction
+			bestFraction = fraction
+			result = fixture
+		EndIf
+		Return best
     End
 End
 
