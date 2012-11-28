@@ -59,12 +59,17 @@ Class b2PositionSolverManifold
     
     Method Initialize : void (cc:b2ContactConstraint)
         
+#If CONFIG = "debug"
         b2Settings.B2Assert(cc.pointCount > 0)
+#End
         Local i :int
+        Local pointCount:Int = cc.pointCount
         Local clipPointX :Float
         Local clipPointY :Float
+        Local tTrans :b2Transform
         Local tMat :b2Mat22
         Local tVec :b2Vec2
+        Local tmpPos:b2Vec2
         Local planePointX :Float
         Local planePointY :Float
         
@@ -72,18 +77,22 @@ Class b2PositionSolverManifold
             
             Case b2Manifold.e_circles
                 '//var pointA:b2Vec2 = cc.bodyA.GetWorldPoint(cc.localPoint)
-                tMat = cc.bodyA.m_xf.R
+                tTrans = cc.bodyA.m_xf
+                tMat = tTrans.R
                 tVec = cc.localPoint
-        
-                Local pointAX :Float = cc.bodyA.m_xf.position.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
-                Local pointAY :Float = cc.bodyA.m_xf.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
+                tmpPos = tTrans.position
+                
+                Local pointAX :Float = tmpPos.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
+                Local pointAY :Float = tmpPos.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
                 
                 '//var pointB:b2Vec2 = cc.bodyB.GetWorldPoint(cc.points.Get(0).localPoint)
-                tMat = cc.bodyB.m_xf.R
+                tTrans = cc.bodyB.m_xf
+                tMat = tTrans.R
                 tVec = cc.points[0].localPoint
-        
-                Local pointBX :Float = cc.bodyB.m_xf.position.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
-                Local pointBY :Float = cc.bodyB.m_xf.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
+                tmpPos = tTrans.position
+                
+                Local pointBX :Float = tmpPos.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
+                Local pointBY :Float = tmpPos.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
                 Local dX :Float = pointBX - pointAX
                 Local dY :Float = pointBY - pointAY
                 Local d2 :Float = dX * dX + dY * dY
@@ -104,23 +113,41 @@ Class b2PositionSolverManifold
             Case b2Manifold.e_faceA
                 
                 '//m_normal = cc.bodyA.GetWorldVector(cc.localPlaneNormal)
-                tMat = cc.bodyA.m_xf.R
+                tTrans = cc.bodyA.m_xf
+                tMat = tTrans.R
                 tVec = cc.localPlaneNormal
+                tmpPos = tTrans.position
+                
                 m_normal.x = tMat.col1.x * tVec.x + tMat.col2.x * tVec.y
                 m_normal.y = tMat.col1.y * tVec.x + tMat.col2.y * tVec.y
                 '//planePoint = cc.bodyA.GetWorldPoint(cc.localPoint)
-                tMat = cc.bodyA.m_xf.R
+                
                 tVec = cc.localPoint
-                planePointX = cc.bodyA.m_xf.position.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
-                planePointY = cc.bodyA.m_xf.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
-                tMat = cc.bodyB.m_xf.R
-        
-                For Local i:Int = 0 Until cc.pointCount
+                
+                planePointX = tmpPos.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
+                planePointY = tmpPos.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
+                
+                tTrans = cc.bodyB.m_xf
+                tMat = tTrans.R
+                tmpPos = tTrans.position
+                Local tMatCol1:b2Vec2 = tMat.col1
+                Local tMatCol2:b2Vec2 = tMat.col2
+                Local normX:Float = m_normal.x
+                Local normY:Float = m_normal.y
+                Local ccRad:Float = cc.radius
+                Local mc1X:Float = tMatCol1.x
+                Local mc1Y:Float = tMatCol1.y
+                Local mc2X:Float = tMatCol2.x
+                Local mc2Y:Float = tMatCol2.y
+                Local tmpX:Float = tmpPos.x
+                Local tmpY:Float = tmpPos.y
+                
+                For Local i:Int = 0 Until pointCount
                     '//clipPoint = cc.bodyB.GetWorldPoint(cc.points.Get(i).localPoint)
                     tVec = cc.points[i].localPoint
-                    clipPointX = cc.bodyB.m_xf.position.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
-                    clipPointY = cc.bodyB.m_xf.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
-                    m_separations[i] = (clipPointX - planePointX) * m_normal.x + (clipPointY - planePointY) * m_normal.y - cc.radius
+                    clipPointX = tmpX + (mc1X * tVec.x + mc2X * tVec.y)
+                    clipPointY = tmpY + (mc1Y * tVec.x + mc2Y * tVec.y)
+                    m_separations[i] = (clipPointX - planePointX) * normX + (clipPointY - planePointY) * normY - ccRad
                     m_points[i].x = clipPointX
                     m_points[i].y = clipPointY
                 End
@@ -128,24 +155,40 @@ Class b2PositionSolverManifold
             Case b2Manifold.e_faceB
                 
                 '//m_normal = cc.bodyB.GetWorldVector(cc.localPlaneNormal)
-                tMat = cc.bodyB.m_xf.R
+                tTrans = cc.bodyB.m_xf
+                tMat = tTrans.R
+                tmpPos = tTrans.position
                 tVec = cc.localPlaneNormal
                 m_normal.x = tMat.col1.x * tVec.x + tMat.col2.x * tVec.y
                 m_normal.y = tMat.col1.y * tVec.x + tMat.col2.y * tVec.y
                 '//planePoint = cc.bodyB.GetWorldPoint(cc.localPoint)
-                tMat = cc.bodyB.m_xf.R
                 tVec = cc.localPoint
-                planePointX = cc.bodyB.m_xf.position.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
-                planePointY = cc.bodyB.m_xf.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
-                tMat = cc.bodyA.m_xf.R
-        
-                For Local i:Int = 0 Until cc.pointCount
+                planePointX = tmpPos.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
+                planePointY = tmpPos.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
+                
+                tTrans = cc.bodyA.m_xf
+                tMat = tTrans.R
+                tmpPos = tTrans.position
+                Local tMatCol1:b2Vec2 = tMat.col1
+                Local tMatCol2:b2Vec2 = tMat.col2
+                Local normX:Float = m_normal.x
+                Local normY:Float = m_normal.y
+                Local ccRad:Float = cc.radius
+                Local mc1X:Float = tMatCol1.x
+                Local mc1Y:Float = tMatCol1.y
+                Local mc2X:Float = tMatCol2.x
+                Local mc2Y:Float = tMatCol2.y
+                Local tmpX:Float = tmpPos.x
+                Local tmpY:Float = tmpPos.y
+                
+                For Local i:Int = 0 Until pointCount
                     '//clipPoint = cc.bodyA.GetWorldPoint(cc.points.Get(i).localPoint)
                     tVec = cc.points[i].localPoint
-                    clipPointX = cc.bodyA.m_xf.position.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
-                    clipPointY = cc.bodyA.m_xf.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
-                    m_separations[i] = (clipPointX - planePointX) * m_normal.x + (clipPointY - planePointY) * m_normal.y - cc.radius
-                    m_points[i].Set(clipPointX, clipPointY)
+                    clipPointX = tmpX + (mc1X * tVec.x + mc2X * tVec.y)
+                    clipPointY = tmpY + (mc1Y * tVec.x + mc2Y * tVec.y)
+                    m_separations[i] = (clipPointX - planePointX) * normX + (clipPointY - planePointY) * normY - ccRad
+                    m_points[i].x = clipPointX
+                    m_points[i].y = clipPointY
                 End
                 '// Ensure normal points from A to B
                 m_normal.x *= -1
