@@ -117,28 +117,34 @@ Class b2PositionSolverManifold
                 tMat = tTrans.R
                 tVec = cc.localPlaneNormal
                 tmpPos = tTrans.position
-                
-                m_normal.x = tMat.col1.x * tVec.x + tMat.col2.x * tVec.y
-                m_normal.y = tMat.col1.y * tVec.x + tMat.col2.y * tVec.y
-                '//planePoint = cc.bodyA.GetWorldPoint(cc.localPoint)
-                
-                tVec = cc.localPoint
-                
-                planePointX = tmpPos.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
-                planePointY = tmpPos.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
-                
-                tTrans = cc.bodyB.m_xf
-                tMat = tTrans.R
-                tmpPos = tTrans.position
                 Local tMatCol1:b2Vec2 = tMat.col1
                 Local tMatCol2:b2Vec2 = tMat.col2
-                Local normX:Float = m_normal.x
-                Local normY:Float = m_normal.y
-                Local ccRad:Float = cc.radius
                 Local mc1X:Float = tMatCol1.x
                 Local mc1Y:Float = tMatCol1.y
                 Local mc2X:Float = tMatCol2.x
                 Local mc2Y:Float = tMatCol2.y
+                
+                m_normal.x = mc1X * tVec.x + mc2X * tVec.y
+                m_normal.y = mc1Y * tVec.x + mc2Y * tVec.y
+                '//planePoint = cc.bodyA.GetWorldPoint(cc.localPoint)
+                
+                tVec = cc.localPoint
+                
+                planePointX = tmpPos.x + (mc1X * tVec.x + mc2X * tVec.y)
+                planePointY = tmpPos.y + (mc1Y * tVec.x + mc2Y * tVec.y)
+                
+                tTrans = cc.bodyB.m_xf
+                tMat = tTrans.R
+                tmpPos = tTrans.position
+                tMatCol1 = tMat.col1
+                tMatCol2 = tMat.col2
+                Local normX:Float = m_normal.x
+                Local normY:Float = m_normal.y
+                Local ccRad:Float = cc.radius
+                mc1X = tMatCol1.x
+                mc1Y = tMatCol1.y
+                mc2X = tMatCol2.x
+                mc2Y = tMatCol2.y
                 Local tmpX:Float = tmpPos.x
                 Local tmpY:Float = tmpPos.y
                 
@@ -159,25 +165,31 @@ Class b2PositionSolverManifold
                 tMat = tTrans.R
                 tmpPos = tTrans.position
                 tVec = cc.localPlaneNormal
-                m_normal.x = tMat.col1.x * tVec.x + tMat.col2.x * tVec.y
-                m_normal.y = tMat.col1.y * tVec.x + tMat.col2.y * tVec.y
-                '//planePoint = cc.bodyB.GetWorldPoint(cc.localPoint)
-                tVec = cc.localPoint
-                planePointX = tmpPos.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
-                planePointY = tmpPos.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
-                
-                tTrans = cc.bodyA.m_xf
-                tMat = tTrans.R
-                tmpPos = tTrans.position
                 Local tMatCol1:b2Vec2 = tMat.col1
                 Local tMatCol2:b2Vec2 = tMat.col2
-                Local normX:Float = m_normal.x
-                Local normY:Float = m_normal.y
-                Local ccRad:Float = cc.radius
                 Local mc1X:Float = tMatCol1.x
                 Local mc1Y:Float = tMatCol1.y
                 Local mc2X:Float = tMatCol2.x
                 Local mc2Y:Float = tMatCol2.y
+                m_normal.x = mc1X * tVec.x + mc2X * tVec.y
+                m_normal.y = mc1Y * tVec.x + mc2Y * tVec.y
+                '//planePoint = cc.bodyB.GetWorldPoint(cc.localPoint)
+                tVec = cc.localPoint
+                planePointX = tmpPos.x + (mc1X * tVec.x + mc2X * tVec.y)
+                planePointY = tmpPos.y + (mc1Y * tVec.x + mc2Y * tVec.y)
+                
+                tTrans = cc.bodyA.m_xf
+                tMat = tTrans.R
+                tmpPos = tTrans.position
+                tMatCol1 = tMat.col1
+                tMatCol2 = tMat.col2
+                Local normX:Float = m_normal.x
+                Local normY:Float = m_normal.y
+                Local ccRad:Float = cc.radius
+                mc1X = tMatCol1.x
+                mc1Y = tMatCol1.y
+                mc2X = tMatCol2.x
+                mc2Y = tMatCol2.y
                 Local tmpX:Float = tmpPos.x
                 Local tmpY:Float = tmpPos.y
                 
