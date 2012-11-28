@@ -1325,9 +1325,10 @@ Class b2Body
     End
     
     Method SynchronizeTransform : void ()
-        m_xf.R.Set(m_sweep.a)
         '//m_xf.position = m_sweep.c - b2Mul(m_xf.R, m_sweep.localCenter)
         Local tMat :b2Mat22 = m_xf.R
+        tMat.Set(m_sweep.a)
+        
         Local tVec :b2Vec2 = m_sweep.localCenter
         m_xf.position.x = m_sweep.c.x - (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
         m_xf.position.y = m_sweep.c.y - (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
