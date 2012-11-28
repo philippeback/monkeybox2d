@@ -52,7 +52,8 @@ Class b2Distance
     Global s_saveB:Int[] = New Int[3]
     Global tmpVec1:b2Vec2 = New b2Vec2()
     Global tmpVec2:b2Vec2 = New b2Vec2()
-    
+    Global tmpP:b2Vec2 = New b2Vec2()
+     
     Function Distance : void (output:b2DistanceOutput, cache:b2SimplexCache, input:b2DistanceInput)
         
         b2_gjkCalls += 1
@@ -72,11 +73,10 @@ Class b2Distance
         Local saveA:Int[] = s_saveA
         Local saveB:Int[] = s_saveB
         Local saveCount :int = 0
-        Local closestPoint :b2Vec2 = simplex.GetClosestPoint()
-        Local distanceSqr1 :Float = closestPoint.LengthSquared()
+        simplex.GetClosestPoint(tmpVec1)
+        Local distanceSqr1 :Float = tmpVec1.LengthSquared()
         Local distanceSqr2 :Float = distanceSqr1
         Local i :int
-        Local p :b2Vec2
         '// Main iteration loop
         Local iter :int = 0
         While (iter < k_maxIters)
@@ -107,8 +107,8 @@ Class b2Distance
                     Exit
                 End
                 '// Compute the closest point.
-                p = simplex.GetClosestPoint()
-                distanceSqr2 = p.LengthSquared()
+                simplex.GetClosestPoint(tmpVec1)
+                distanceSqr2 = tmpVec1.LengthSquared()
                 '// Ensure progress
                 If (distanceSqr2 > distanceSqr1)
                     
@@ -191,12 +191,11 @@ Class b2Distance
                     
                     '// Shapes are overlapped when radii are considered.
                     '// Move the witness points to the middle.
-                    p = tmpVec2
-                    p.x = 0.5 * (output.pointA.x + output.pointB.x)
-                    p.y = 0.5 * (output.pointA.y + output.pointB.y)
-                    output.pointA.x = p.x
+                    tmpVec2.x = 0.5 * (output.pointA.x + output.pointB.x)
+                    tmpVec2.y = 0.5 * (output.pointA.y + output.pointB.y)
+                    output.pointA.x = tmpVec2.x
                     output.pointB.x = output.pointA.x
-                    output.pointA.y = p.y
+                    output.pointA.y = tmpVec2.y
                     output.pointB.y = output.pointA.y
                     output.distance = 0.0
                 End
