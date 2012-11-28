@@ -67,8 +67,8 @@ Class b2Simplex
         Local vertices:b2SimplexVertex[] = m_vertices
         For Local i:Int = 0 Until m_count
             v = vertices[i]
-            v.indexA = cache.indexA.Get(i)
-            v.indexB = cache.indexB.Get(i)
+            v.indexA = cache.indexA[i]
+            v.indexB = cache.indexB[i]
             wALocal = proxyA.GetVertex(v.indexA)
             wBLocal = proxyB.GetVertex(v.indexB)
             b2Math.MulX(transformA, wALocal, v.wA)
@@ -109,8 +109,8 @@ Class b2Simplex
         cache.count = m_count
         Local vertices:b2SimplexVertex[] = m_vertices
         For Local i:Int = 0 Until m_count
-            cache.indexA.Set( i,  vertices[i].indexA )
-            cache.indexB.Set( i,  vertices[i].indexB )
+            cache.indexA[i] = vertices[i].indexA
+            cache.indexB[i] = vertices[i].indexB
         End
     End
 
@@ -139,21 +139,24 @@ Class b2Simplex
         End
     End
     
-    Method GetClosestPoint : b2Vec2 ()
+    Method GetClosestPoint:Void(out:b2Vec2)
         
         Select(m_count)
             
             Case 0
                 b2Settings.B2Assert(False)
-                Return New b2Vec2()
+                out.x = 0.0
+                out.y = 0.0
             Case 1
-                Return m_v1.w
+                out.x = m_v1.w.x
+                out.y = m_v1.w.y
             Case 2
-                Return New b2Vec2(m_v1.a * m_v1.w.x + m_v2.a * m_v2.w.x,
-                m_v1.a * m_v1.w.y + m_v2.a * m_v2.w.y)
-                Default
+                out.x = m_v1.a * m_v1.w.x + m_v2.a * m_v2.w.x
+                out.y = m_v1.a * m_v1.w.y + m_v2.a * m_v2.w.y
+            Default
                 b2Settings.B2Assert(False)
-                Return New b2Vec2()
+                out.x = 0.0
+                out.y = 0.0
         End
     End
     

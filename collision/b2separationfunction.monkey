@@ -77,17 +77,17 @@ Class b2SeparationFunction
 
         If (count = 1)
             m_type = e_points
-            Local localPointA := m_proxyA.GetVertex(cache.indexA.Get(0))
-            Local localPointB := m_proxyB.GetVertex(cache.indexB.Get(0))
+            Local localPointA := m_proxyA.GetVertex(cache.indexA[0])
+            Local localPointB := m_proxyB.GetVertex(cache.indexB[0])
             b2Math.MulX(xfA, localPointA, tmpVec1)
             b2Math.MulX(xfB, localPointB, tmpVec2)
             b2Math.SubtractVV(tmpVec2,tmpVec1,m_axis)
             m_axis.Normalize()
-        Else  If (cache.indexA.Get(0).ToInt() = cache.indexA.Get(1).ToInt())
+        Else  If (cache.indexA[0] = cache.indexA[1])
             '// Two points on B and one on A.
             m_type = e_faceB
-            Local localPointB1 := proxyB.GetVertex(cache.indexB.Get(0))
-            Local localPointB2 := proxyB.GetVertex(cache.indexB.Get(1))
+            Local localPointB1 := proxyB.GetVertex(cache.indexB[0])
+            Local localPointB2 := proxyB.GetVertex(cache.indexB[1])
             b2Math.SubtractVV(localPointB2, localPointB1, m_axis)
             b2Math.CrossVF(m_axis, 1.0, m_axis)
             m_axis.Normalize()
@@ -98,7 +98,7 @@ Class b2SeparationFunction
             m_localPoint.Multiply(0.5)
             b2Math.MulX(xfB, m_localPoint, tmpVec2)
 
-            Local localPointA := proxyA.GetVertex(cache.indexA.Get(0))
+            Local localPointA := proxyA.GetVertex(cache.indexA[0])
             b2Math.MulX(xfA, localPointA, tmpVec3)
             b2Math.SubtractVV(tmpVec3, tmpVec2, tmpVec3)
             Local s:Float = b2Math.Dot(tmpVec3, normal)
@@ -110,8 +110,8 @@ Class b2SeparationFunction
         Else
             '// Two points on A and one or two points on B.
             m_type = e_faceA
-            Local localPointA1 := m_proxyA.GetVertex(cache.indexA.Get(0))
-            Local localPointA2 := m_proxyA.GetVertex(cache.indexA.Get(1))
+            Local localPointA1 := m_proxyA.GetVertex(cache.indexA[0])
+            Local localPointA2 := m_proxyA.GetVertex(cache.indexA[1])
             
             b2Math.SubtractVV(localPointA2, localPointA1, m_axis)
             b2Math.CrossVF(m_axis, 1.0, m_axis)
@@ -123,7 +123,7 @@ Class b2SeparationFunction
             m_localPoint.Multiply(0.5)
             b2Math.MulX(xfA, m_localPoint, tmpVec1)
 
-            Local localPointB := m_proxyB.GetVertex(cache.indexB.Get(0))
+            Local localPointB := m_proxyB.GetVertex(cache.indexB[0])
             b2Math.MulX(xfB, localPointB, tmpVec2)
             b2Math.SubtractVV(tmpVec2, tmpVec1, tmpVec1)
             Local s:Float = b2Math.Dot(tmpVec1, normal)
