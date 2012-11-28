@@ -54,6 +54,9 @@ Class b2SeparationFunction
     Global tmpVec1:b2Vec2 = New b2Vec2()
     Global tmpVec2:b2Vec2 = New b2Vec2()
     Global tmpVec3:b2Vec2 = New b2Vec2()
+    Global tmpTransA:b2Transform = New b2Transform()
+    Global tmpTransB:b2Transform = New b2Transform()
+    
     
     Method Initialize : void (cache:b2SimplexCache,
         proxyA:b2DistanceProxy, sweepA:b2Sweep,
@@ -67,8 +70,8 @@ Class b2SeparationFunction
         
         m_sweepA = sweepA
         m_sweepB = sweepB
-        Local xfA := New b2Transform()
-        Local xfB := New b2Transform()
+        Local xfA:b2Transform = tmpTransA
+        Local xfB:b2Transform = tmpTransB
         m_sweepA.GetTransform(xfA, alpha)
         m_sweepB.GetTransform(xfB, alpha)
 
