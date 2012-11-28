@@ -148,6 +148,10 @@ Class b2EdgeShape Extends b2Shape
     '* @inheritDoc
     '*/
     #end
+    Global sharedV0:b2Vec2 = New b2Vec2()
+    Global sharedV1:b2Vec2 = New b2Vec2()
+    Global sharedV2:b2Vec2 = New b2Vec2()
+    
     Method ComputeSubmergedArea : Float (
         normal:b2Vec2,
         offset:Float,
@@ -157,10 +161,12 @@ Class b2EdgeShape Extends b2Shape
         '// Note that independant(v0) of any details of the specific edge
         '// We are relying on v0 being consistent between multiple edges of the same body
         '//b2Vec2 v0 = offset * normal
-        Local v0 :b2Vec2 = New b2Vec2(normal.x * offset, normal.y * offset)
-        Local v1 :b2Vec2 = New b2Vec2()
+        Local v0 :b2Vec2 = sharedV0
+        v0.x = normal.x * offset
+        v0.y = normal.y * offset
+        Local v1 :b2Vec2 = sharedV1
         b2Math.MulX(xf, m_v1, v1)
-        Local v2 :b2Vec2 = New b2Vec2()
+        Local v2 :b2Vec2 = sharedV2
         b2Math.MulX(xf, m_v2, v1)
         Local d1 :Float = b2Math.Dot(normal, v1) - offset
         Local d2 :Float = b2Math.Dot(normal, v2) - offset
