@@ -830,16 +830,35 @@ Class b2ContactSolver
             Local invIB :Float = bodyB.m_mass * bodyB.m_invI
             s_psm.Initialize(c)
             Local normal :b2Vec2 = s_psm.m_normal
+            
+            Local ba_sweep:b2Sweep = bodyA.m_sweep
+            Local ba_sweepc:b2Vec2 = ba_sweep.c
+            Local ba_xf:b2Transform = bodyA.m_xf
+            Local ba_xfPos:b2Vec2 = ba_xf.position
+            Local ba_tMat:b2Mat22 = ba_xf.R
+            Local ba_tMat_col1:b2Vec2 = ba_tMat.col1
+            Local ba_tMat_col2:b2Vec2 = ba_tMat.col2
+            Local ba_tVec:b2Vec2 = ba_sweep.localCenter
+            
+            Local bb_sweep:b2Sweep = bodyB.m_sweep
+            Local bb_sweepc:b2Vec2 = bb_sweep.c
+            Local bb_xf:b2Transform = bodyB.m_xf
+            Local bb_xfPos:b2Vec2 = bb_xf.position
+            Local bb_tMat:b2Mat22 = bb_xf.R
+            Local bb_tMat_col1:b2Vec2 = bb_tMat.col1
+            Local bb_tMat_col2:b2Vec2 = bb_tMat.col2
+            Local bb_tVec:b2Vec2 = bb_sweep.localCenter
+                    
             '// Solve normal constraints
             For Local j:Int = 0 Until c.pointCount
                 
                 Local ccp :b2ContactConstraintPoint = c.points[j]
                 Local point :b2Vec2 = s_psm.m_points[j]
                 Local separation :Float = s_psm.m_separations[j]
-                Local rAX :Float = point.x - bodyA.m_sweep.c.x
-                Local rAY :Float = point.y - bodyA.m_sweep.c.y
-                Local rBX :Float = point.x - bodyB.m_sweep.c.x
-                Local rBY :Float = point.y - bodyB.m_sweep.c.y
+                Local rAX :Float = point.x - ba_sweepc.x
+                Local rAY :Float = point.y - ba_sweepc.y
+                Local rBX :Float = point.x - bb_sweepc.x
+                Local rBY :Float = point.y - bb_sweepc.y
                 '// Track max constraint error.
                 If( minSeparation < separation )
                     minSeparation = minSeparation
@@ -859,18 +878,45 @@ Class b2ContactSolver
                 Local impulse :Float = -ccp.equalizedMass * C
                 Local PX :Float = impulse * normal.x
                 Local PY :Float = impulse * normal.y
+                
                 '//bodyA.m_sweep.c -= invMassA * P
-                bodyA.m_sweep.c.x -= invMassA * PX
-                bodyA.m_sweep.c.y -= invMassA * PY
+                ba_sweepc.x -= invMassA * PX
+                ba_sweepc.y -= invMassA * PY
                 '//bodyA.m_sweep.a -= invIA * b2Cross(rA, P)
-                bodyA.m_sweep.a -= invIA * (rAX * PY - rAY * PX)
-                bodyA.SynchronizeTransform()
+                ba_sweep.a -= invIA * (rAX * PY - rAY * PX)
+                
+                'bodyA.SynchronizeTransform()
+                '**** THE FOLLOWING IS THE ABOVE LINE MANUALLY INLINED!
+                'ba_tMat.Set(ba_sweep.a)
+                Local c :Float = Cosr(ba_sweep.a)
+                Local s :Float = Sinr(ba_sweep.a)
+                ba_tMat_col1.x = c
+                ba_tMat_col2.x = -s
+                ba_tMat_col1.y = s
+                ba_tMat_col2.y = c
+                
+                ba_xfPos.x = ba_sweepc.x - (ba_tMat_col1.x * ba_tVec.x + ba_tMat_col2.x * ba_tVec.y)
+                ba_xfPos.y = ba_sweepc.y - (ba_tMat_col1.y * ba_tVec.x + ba_tMat_col2.y * ba_tVec.y)
+                
                 '//bodyB.m_sweep.c += invMassB * P
-                bodyB.m_sweep.c.x += invMassB * PX
-                bodyB.m_sweep.c.y += invMassB * PY
-                '//bodyB.m_sweep.a += invIB * b2Cross(rB, P)
-                bodyB.m_sweep.a += invIB * (rBX * PY - rBY * PX)
-                bodyB.SynchronizeTransform()
+                bb_sweepc.x += invMassB * PX
+                bb_sweepc.y += invMassB * PY
+                 '//bodyB.m_sweep.a += invIB * b2Cross(rB, P)
+                bb_sweep.a += invIB * (rBX * PY - rBY * PX)
+                
+                'bodyB.SynchronizeTransform()
+                '**** THE FOLLOWING IS THE ABOVE LINE MANUALLY INLINED!
+                'bb_tMat.Set(bb_sweep.a)
+                c = Cosr(bb_sweep.a)
+                s = Sinr(bb_sweep.a)
+                bb_tMat_col1.x = c
+                bb_tMat_col2.x = -s
+                bb_tMat_col1.y = s
+                bb_tMat_col2.y = c
+                
+                bb_xfPos.x = bb_sweepc.x - (bb_tMat_col1.x * bb_tVec.x + bb_tMat_col2.x * bb_tVec.y)
+                bb_xfPos.y = bb_sweepc.y - (bb_tMat_col1.y * bb_tVec.x + bb_tMat_col2.y * bb_tVec.y)
+                
             End
         End
         '// We cant expect minSpeparation >= -b2_linearSlop because we dont
