@@ -1174,8 +1174,8 @@ Class b2World
                     bA = fA.m_body
                     bB = fB.m_body
       
-                    If ((bA.m_type <> b2Body.b2_Body Or bA.m_flags~b2Body.e_awakeFlag) And
-                        (bB.m_type <> b2Body.b2_Body Or bA.m_flags~b2Body.e_awakeFlag))
+                    If ((bA.m_type <> b2Body.b2_Body Or Not(bA.m_flags&b2Body.e_awakeFlag)) And
+                        (bB.m_type <> b2Body.b2_Body Or Not(bA.m_flags&b2Body.e_awakeFlag)))
                         c = c.m_next
                         Continue
                     End
@@ -1237,7 +1237,7 @@ Class b2World
 
             '// Is the contact solid?
             If (minContact.m_flags & b2Contact.e_sensorFlag Or
-                minContact.m_flags ~ b2Contact.e_enabledFlag)
+                Not(minContact.m_flags & b2Contact.e_enabledFlag))
                 
                 '// Restore the sweeps
                 bA.m_sweep.Set(s_backupA)
@@ -1248,7 +1248,7 @@ Class b2World
             End
             
             '// Did numerical issues prevent;,ontact pointjrom being generated
-            If (minContact.m_flags ~ b2Contact.e_touchingFlag)
+            If (Not(minContact.m_flags & b2Contact.e_touchingFlag))
                 '// Give up on this TOI
                 Continue
             End
@@ -1282,7 +1282,7 @@ Class b2World
                 island.AddBody(b)
             
                 '// Make sure the awake(body).
-                If (b.m_flags ~ b2Body.e_awakeFlag)
+                If (Not(b.m_flags & b2Body.e_awakeFlag))
                     b.SetAwake(True)
                 End
                 
