@@ -106,7 +106,9 @@ Class b2ContactSolver
             Local vBY :Float = bodyB.m_linearVelocity.y
             Local wA :Float = bodyA.m_angularVelocity
             Local wB :Float = bodyB.m_angularVelocity
+#If CONFIG = "debug"
             b2Settings.B2Assert(manifold.m_pointCount > 0)
+#End
             s_worldManifold.Initialize(manifold, bodyA.m_xf, radiusA, bodyB.m_xf, radiusB)
             Local normalX :Float = s_worldManifold.m_normal.x
             Local normalY :Float = s_worldManifold.m_normal.y

@@ -144,11 +144,13 @@ Class b2DynamicTree
     #end
     Method MoveProxy : Bool (proxy:b2DynamicTreeNode, aabb:b2AABB, displacement:b2Vec2)
         
+#If CONFIG = "debug"
         b2Settings.B2Assert(proxy.IsLeaf())
+#End
         If (proxy.aabb.Contains(aabb))
-            
             Return False
         End
+        
         RemoveLeaf(proxy)
         '// Extend AABB
         Local extendX :Float = -displacement.x

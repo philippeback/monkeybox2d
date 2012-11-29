@@ -62,8 +62,10 @@ Class b2TimeOfImpact
         Local proxyB :b2DistanceProxy = input.proxyB
         Local sweepA :b2Sweep = input.sweepA
         Local sweepB :b2Sweep = input.sweepB
+#If CONFIG = "debug"
         b2Settings.B2Assert(sweepA.t0 = sweepB.t0)
         b2Settings.B2Assert(1.0 - sweepA.t0 > Constants.EPSILON)
+#End
         Local radius :Float = proxyA.m_radius + proxyB.m_radius
         Local tolerance :Float = input.tolerance
         Local alpha :Float = 0.0

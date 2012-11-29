@@ -228,7 +228,9 @@ Class b2Joint
         '* @
         Method New(def:b2JointDef)
             
+#If CONFIG = "debug"
             b2Settings.B2Assert(def.bodyA <> def.bodyB)
+#End
             m_type = def.type
             m_prev = null
             m_next = null

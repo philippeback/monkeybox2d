@@ -62,8 +62,10 @@ Class b2PolyAndEdgeContact Extends b2Contact
     Method Reset : void (fixtureA:b2Fixture, fixtureB:b2Fixture)
         
         Super.Reset(fixtureA, fixtureB)
+#If CONFIG = "debug"
         b2Settings.B2Assert(fixtureA.GetType() = b2Shape.e_polygonShape)
         b2Settings.B2Assert(fixtureB.GetType() = b2Shape.e_edgeShape)
+#End
     End
     
     '//~b2PolyAndEdgeContact() {}

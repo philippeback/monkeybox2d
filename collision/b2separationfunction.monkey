@@ -66,7 +66,9 @@ Class b2SeparationFunction
         m_proxyA = proxyA
         m_proxyB = proxyB
         Local count :Int = cache.count
+#If CONFIG = "debug"
         b2Settings.B2Assert(0 < count And count < 3)
+#End
         
         m_sweepA = sweepA
         m_sweepB = sweepB

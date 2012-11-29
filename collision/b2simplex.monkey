@@ -58,7 +58,9 @@ Class b2Simplex
         proxyA:b2DistanceProxy, transformA:b2Transform,
         proxyB:b2DistanceProxy, transformB:b2Transform)
         
+#If CONFIG = "debug"
         b2Settings.B2Assert(0 <= cache.count And cache.count <= 3)
+#End
         Local wALocal :b2Vec2
         Local wBLocal :b2Vec2
         Local v :b2SimplexVertex

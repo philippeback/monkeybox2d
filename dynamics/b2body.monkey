@@ -694,7 +694,9 @@ Class b2Body
     #end
     Method SetMassData : void (massData:b2MassData)
         
+#If CONFIG = "debug"
         b2Settings.B2Assert(m_world.IsLocked() = False)
+#End
         If (m_world.IsLocked() = True)
             
             Return
@@ -783,7 +785,9 @@ Class b2Body
             '// Center the inertia about the center of mass
             m_I -= m_mass * (center.x * center.x + center.y * center.y)
             m_I *= m_inertiaScale
+#If CONFIG = "debug"
             b2Settings.B2Assert(m_I > 0)
+#End
             m_invI = 1.0 / m_I
         Else
             m_I = 0.0
