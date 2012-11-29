@@ -172,7 +172,7 @@ Class WorldQueryPointCallback Extends WorldQueryCallback
 End
 
 Class b2World
-    Field m_flags:int
+    Field m_flags:Int
     Field m_contactManager:b2ContactManager = New b2ContactManager()
     
     '// These two are stored purely for efficiency purposes, they dont maintain
@@ -182,11 +182,11 @@ Class b2World
     Field m_bodyList:b2Body
     Field m_jointList:b2Joint
     Field m_contactList:b2Contact
-    Field m_bodyCount:int
-    Field m_contactCount:int
-    Field m_jointCount:int
+    Field m_bodyCount:Int
+    Field m_contactCount:Int
+    Field m_jointCount:Int
     Field m_controllerList:b2Controller
-    Field m_controllerCount:int
+    Field m_controllerCount:Int
     Field m_gravity:b2Vec2
     Field m_allowSleep:Bool
     Field m_groundBody:b2Body
@@ -203,8 +203,8 @@ Class b2World
     'debugging the solver.
     Global m_continuousPhysics:Bool
     '// m_flags
-    Const e_newFixture:int = $0001
-    Const e_locked:int = $0002
+    Const e_newFixture:Int = $0001
+    Const e_locked:Int = $0002
 
     '// Construct a world object.
     #rem
@@ -315,7 +315,7 @@ Class b2World
     '* Get the number of broad-phase proxies.
     '*/
     #end
-    Method GetProxyCount : int ()
+    Method GetProxyCount : Int ()
         
         Return m_contactManager.m_broadPhase.GetProxyCount()
     End
@@ -649,7 +649,7 @@ Class b2World
     '* Get the number of bodies.
     '*/
     #end
-    Method GetBodyCount : int ()
+    Method GetBodyCount : Int ()
         
         Return m_bodyCount
     End
@@ -658,7 +658,7 @@ Class b2World
     '* Get the number of joints.
     '*/
     #end
-    Method GetJointCount : int ()
+    Method GetJointCount : Int ()
         
         Return m_jointCount
     End
@@ -667,7 +667,7 @@ Class b2World
     '* Get the number of contacts (each may have 0 or more contact points).
     '*/
     #end
-    Method GetContactCount : int ()
+    Method GetContactCount : Int ()
         
         Return m_contactCount
     End
@@ -709,7 +709,7 @@ Class b2World
     '* @param positionIterations for the position constraint solver.
     '*/
     #end
-    Method TimeStep : void (dt:Float, velocityIterations:int, positionIterations:int)
+    Method TimeStep : void (dt:Float, velocityIterations:Int, positionIterations:Int)
         
         If (m_flags & e_newFixture)
             
@@ -1060,7 +1060,7 @@ Class b2World
             '// Post solve cleanup.
             For Local i:Int = 0 Until island.m_bodyCount
                 '// Allow static bodies to participate in other islands.
-                b = island.m_bodies.Get(i)
+                b = island.m_bodies[i]
                 If (b.m_type = b2Body.b2_staticBody)                    
                     b.m_flags &= ~b2Body.e_islandFlag
                 End
@@ -1095,10 +1095,12 @@ Class b2World
         '// Look for New contacts.
         m_contactManager.FindNewContacts()
     End
+   
     Global s_backupA:b2Sweep = New b2Sweep()
     Global s_backupB:b2Sweep = New b2Sweep()
     Global s_timestep:b2TimeStep = New b2TimeStep()
-    Global s_queue:FlashArray<b2Body> = New FlashArray<b2Body>()
+    Global s_queue:b2Body[] = New b2Body[256] 'Reasonable start?
+   
     '// Find TOI contacts and solve them.
     Method SolveTOI : void (timeStep:b2TimeStep)
         Local b :b2Body
@@ -1121,7 +1123,10 @@ Class b2World
         '//queueStart += 1
         '//  poppedElement = queue.Get(queueStart)
         '//  --queueSize
-        Local queue :FlashArray<b2Body> = s_queue
+        If m_bodyCount > s_queue.Length
+            s_queue = s_queue.Resize(m_bodyCount)
+        End
+        Local queue:b2Body[] = s_queue
         b = m_bodyList
         While( b <> Null )
             b.m_flags &= ~b2Body.e_islandFlag
@@ -1140,59 +1145,58 @@ Class b2World
             j.m_islandFlag = False
             j = j.m_next
         End
+        
         '// Find TOI events and solve them.
         While(True)
-            
             '// Find the first TOI.
             Local minContact :b2Contact = null
             Local minTOI :Float = 1.0
             c = m_contactList
             While( c <> Null )
                 '// Can this contact generate a solid TOI contact?
-                If (c.IsSensor() = True Or
-                    c.IsEnabled() = False Or
-                    c.IsContinuous() = False)
+                If( c.m_flags & (b2Contact.e_enabledFlag|b2Contact.e_continuousFlag) <> 
+                    (b2Contact.e_enabledFlag|b2Contact.e_continuousFlag) Or 
+                    c.m_flags & b2Contact.e_sensorFlag)
                     c = c.m_next
                     Continue
                 End
+      
                 '// TODO_ERIN keep a counter on the contact, only respond to M TOIs per contact.
                 Local toi :Float = 1.0
-                If (c.m_flags & b2Contact.e_toiFlag)
-                    
+      
+                If( c.m_flags & b2Contact.e_toiFlag)
                     '// This contact has a valid cached TOI.
                     toi = c.m_toi
                 Else
-                    
-                    
                     '// Compute the TOI for this contact.
                     fA = c.m_fixtureA
                     fB = c.m_fixtureB
                     bA = fA.m_body
                     bB = fB.m_body
-                    If ((bA.GetType() <> b2Body.b2_Body Or bA.IsAwake() = False) And
-                        (bB.GetType() <> b2Body.b2_Body Or bB.IsAwake() = False))
+      
+                    If ((bA.m_type <> b2Body.b2_Body Or bA.m_flags~b2Body.e_awakeFlag) And
+                        (bB.m_type <> b2Body.b2_Body Or bA.m_flags~b2Body.e_awakeFlag))
                         c = c.m_next
                         Continue
                     End
                     '// Put the sweeps onto the same time interval.
                     Local t0 :Float = bA.m_sweep.t0
+                    
                     If (bA.m_sweep.t0 < bB.m_sweep.t0)
-                        
                         t0 = bB.m_sweep.t0
                         bA.m_sweep.Advance(t0)
-                    Else  If (bB.m_sweep.t0 < bA.m_sweep.t0)
-                        
-                        
+                    ElseIf (bB.m_sweep.t0 < bA.m_sweep.t0)
                         t0 = bA.m_sweep.t0
                         bB.m_sweep.Advance(t0)
                     End
                     '//b2Settings.B2Assert(t0 < 1.0f)
                     '// Compute the time of impact.
                     toi = c.ComputeTOI(bA.m_sweep, bB.m_sweep)
+#If CONFIG = "debug"
                     b2Settings.B2Assert(0.0 <= toi And toi <= 1.0)
+#End
                     '// If the in(TOI) range ...
                     If (toi > 0.0 And toi < 1.0)
-                        
                         '// Interpolate on the actual range.
                         '//toi = b2Math.Min((1.0 - toi) * t0 + toi, 1.0)
                         toi = (1.0 - toi) * t0 + toi
@@ -1200,22 +1204,24 @@ Class b2World
                             toi = 1
                         End
                     End
+
                     c.m_toi = toi
                     c.m_flags |= b2Contact.e_toiFlag
                 End
+
                 If (Constants.EPSILON < toi And toi < minTOI)
-                    
                     '// the(This) minimum TOI found so far.
                     minContact = c
                     minTOI = toi
                 End
                 c = c.m_next
             End
+
             If (minContact = null Or 1.0 - 100.0 * Constants.EPSILON < minTOI)
-                
                 '// No more TOI events. Done!
                 Exit
             End
+
             '// Advance the bodies to the TOI.
             fA = minContact.m_fixtureA
             fB = minContact.m_fixtureB
@@ -1228,9 +1234,10 @@ Class b2World
             '// The TOI contact likely has some New contact points.
             minContact.Update(m_contactManager.m_contactListener)
             minContact.m_flags &= ~b2Contact.e_toiFlag
+
             '// Is the contact solid?
-            If (minContact.IsSensor() = True Or
-                minContact.IsEnabled() = False)
+            If (minContact.m_flags & b2Contact.e_sensorFlag Or
+                minContact.m_flags ~ b2Contact.e_enabledFlag)
                 
                 '// Restore the sweeps
                 bA.m_sweep.Set(s_backupA)
@@ -1239,92 +1246,98 @@ Class b2World
                 bB.SynchronizeTransform()
                 Continue
             End
+            
             '// Did numerical issues prevent;,ontact pointjrom being generated
-            If (minContact.IsTouching() = False)
-                
+            If (minContact.m_flags ~ b2Contact.e_touchingFlag)
                 '// Give up on this TOI
                 Continue
             End
+            
             '// Build the TOI island. We need a  seed.
             Local seed :b2Body = bA
-            If (seed.GetType() <> b2Body.b2_Body)
-                
+            
+            If (seed.m_type <> b2Body.b2_Body)
                 seed = bB
             End
+            
             '// Reset island and queue.
             island.Clear()
+            
             Local other :b2Body
-            Local queueStart :int = 0
+            Local queueStart :Int = 0
             '//start index for queue
-            Local queueSize :int = 0
+            Local queueSize :Int = 0
             '//elements in queue
-            queue.Set( queueStart + queueSize,  seed )
+            queue[queueStart + queueSize] =  seed
             queueSize += 1
             seed.m_flags |= b2Body.e_islandFlag
+            
             '// Perform a breadth first search (BFS) on the contact graph.
             While (queueSize > 0)
-                
                 '// Grab the nextItem body off the stack and add it to the island.
-                b = queue.Get(queueStart)
+                b = queue[queueStart]
                 queueStart += 1
                 queueSize -= 1
                 
                 island.AddBody(b)
+            
                 '// Make sure the awake(body).
-                If (b.IsAwake() = False)
-                    
+                If (b.m_flags ~ b2Body.e_awakeFlag)
                     b.SetAwake(True)
                 End
+                
                 '// To keep small(islands) as possible, we dont
                 '// propagate islands across static or kinematic bodies.
-                If (b.GetType() <> b2Body.b2_Body)
-                    
+                If (b.m_type <> b2Body.b2_Body)
                     Continue
                 End
+                
                 '// Search all contacts connected to this body.
                 cEdge = b.m_contactList
                 While( cEdge <> Null )
                     '// Does the TOI island still have space for contacts?
                     If (island.m_contactCount = island.m_contactCapacity)
-                        
                         Exit
                     End
                     '// Has this contact already been added to an island?
                     If (cEdge.contact.m_flags & b2Contact.e_islandFlag)
-                        
                         cEdge = cEdge.nextItem
                         Continue
                     End
+                    
                     '// Skip sperate, sensor, or disabled contacts.
-                    If (cEdge.contact.IsSensor() = True Or
-                        cEdge.contact.IsEnabled() = False Or
-                        cEdge.contact.IsTouching() = False)
-                        
+                    If (cEdge.contact.m_flags & (b2Contact.e_enabledFlag|b2Contact.e_touchingFlag) <> 
+                        (b2Contact.e_enabledFlag|b2Contact.e_touchingFlag) Or
+                        cEdge.contact.m_flags & b2Contact.e_sensorFlag)
                         cEdge = cEdge.nextItem
                         Continue
                     End
+                    
                     island.AddContact(cEdge.contact)
                     cEdge.contact.m_flags |= b2Contact.e_islandFlag
+                    
                     '// Update other body.
                     other = cEdge.other
+                    
                     '// Was the other body already added to this island?
                     If (other.m_flags & b2Body.e_islandFlag)
-                        
                         cEdge = cEdge.nextItem
                         Continue
                     End
+                    
                     '// Synchronize the connected body.
-                    If (other.GetType() <> b2Body.b2_staticBody)
-                        
+                    If (other.m_type <> b2Body.b2_staticBody)
                         other.Advance(minTOI)
                         other.SetAwake(True)
                     End
+                    
                     '//b2Settings.B2Assert(queueStart + queueSize < queueCapacity)
-                    queue.Set( queueStart + queueSize,  other )
+                    queue[queueStart + queueSize] = other
                     queueSize += 1
                     other.m_flags |= b2Body.e_islandFlag
                     cEdge = cEdge.nextItem
                 End
+                
                 Local jEdge:b2JointEdge = b.m_jointList
                 While( jEdge <> Null )
                     If (island.m_jointCount = island.m_jointCapacity)
@@ -1335,9 +1348,9 @@ Class b2World
                         jEdge = jEdge.nextItem
                         Continue
                     End
+                
                     other = jEdge.other
                     If (other.IsActive() = False)
-                        
                         jEdge = jEdge.nextItem
                         Continue
                     End
@@ -1347,19 +1360,20 @@ Class b2World
                         jEdge = jEdge.nextItem
                         Continue
                     End
+                
                     '// Synchronize the connected body.
-                    If (other.GetType() <> b2Body.b2_staticBody)
-                        
+                    If (other.m_type <> b2Body.b2_staticBody)
                         other.Advance(minTOI)
                         other.SetAwake(True)
                     End
                     '//b2Settings.B2Assert(queueStart + queueSize < queueCapacity)
-                    queue.Set( queueStart + queueSize,  other )
+                    queue[queueStart + queueSize] = other
                     queueSize += 1
                     other.m_flags |= b2Body.e_islandFlag
                     jEdge = jEdge.nextItem
                 End
             End
+            
             Local subStep :b2TimeStep = s_timestep
             subStep.warmStarting = False
             subStep.dt = (1.0 - minTOI) * timeStep.dt
@@ -1371,46 +1385,49 @@ Class b2World
             
             '// Post solve cleanup.
             For Local i:Int = 0 Until island.m_bodyCount
-                
                 '// Allow bodies to participate in future TOI islands.
-                b = island.m_bodies.Get(i)
+                b = island.m_bodies[i]
                 b.m_flags &= ~b2Body.e_islandFlag
-                If (b.IsAwake() = False)
-                    
+            
+                If (Not (b.m_flags & b2Body.e_awakeFlag) )
                     Continue
                 End
-                If (b.GetType() <> b2Body.b2_Body)
-                    
+                
+                If (b.m_type <> b2Body.b2_Body)
                     Continue
                 End
+                
                 '// Update fixtures (for broad-phase).
                 b.SynchronizeFixtures()
                 '// Invalidate all contact TOIs associated with this body. Some of these
                 '// may not be in the island because they were not touching.
                 cEdge = b.m_contactList
+                
                 While( cEdge <> Null )
                     cEdge.contact.m_flags &= ~b2Contact.e_toiFlag
                     cEdge = cEdge.nextItem
                 End
             End
+            
             For Local i:Int = 0 Until island.m_contactCount
-                
                 '// Allow contacts to participate in future TOI islands.
-                c = island.m_contacts.Get(i)
+                c = island.m_contacts[i]
                 c.m_flags &= ~(b2Contact.e_toiFlag | b2Contact.e_islandFlag)
             End
+            
             For Local i:Int = 0 Until island.m_jointCount
-                
                 '// Allow joints to participate in future TOI islands
-                j = island.m_joints.Get(i)
+                j = island.m_joints[i]
                 j.m_islandFlag = False
             End
+            
             '// Commit fixture proxy movements to the broad-phase so that New contacts are created.
             '// Also, some contacts can be destroyed.
             m_contactManager.FindNewContacts()
         End
         '//m_stackAllocator.Free(queue)
     End
+    
     Global s_jointColor:b2Color = New b2Color(0.5, 0.8, 0.8)
     '//
     Method DrawJoint : void (joint:b2Joint)
@@ -1508,7 +1525,7 @@ Class b2World
         End
         m_debugDraw.Clear()
         Local flags :Int = m_debugDraw.GetFlags()
-        Local i :int
+        Local i :Int
         Local b :b2Body
         Local f :b2Fixture
         Local s :b2Shape

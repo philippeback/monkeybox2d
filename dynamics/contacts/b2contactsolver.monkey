@@ -63,15 +63,19 @@ Class b2ContactSolver
     End
     
     Global s_worldManifold:b2WorldManifold = New b2WorldManifold()
-    Method Initialize : void (timeStep:b2TimeStep, contacts:FlashArray<b2Contact>, contactCount:int, allocator: Object)
+    Method Initialize : void (timeStep:b2TimeStep, contacts:b2Contact[], contactCount:Int, allocator: Object)
         
         Local contact :b2Contact
+       
         m_step.Set(timeStep)
         m_allocator = allocator
-        Local i :int
+        
+        Local i :Int
         Local tVec :b2Vec2
         Local tMat :b2Mat22
+        
         m_constraintCount = contactCount
+        
         '// fill vector to hold enough constraints
         If m_constraintCount > constraintCapacity
             m_constraints = m_constraints.Resize(m_constraintCount)
@@ -82,7 +86,7 @@ Class b2ContactSolver
         End
         
         For Local i:Int = 0 Until contactCount
-            contact = contacts.Get(i)
+            contact = contacts[i]
             Local fixtureA :b2Fixture = contact.m_fixtureA
             Local fixtureB :b2Fixture = contact.m_fixtureB
             Local shapeA :b2Shape = fixtureA.m_shape
@@ -125,8 +129,8 @@ Class b2ContactSolver
             cc.localPoint.y = manifold.m_localPoint.y
             cc.radius = radiusA + radiusB
             cc.type = manifold.m_type
+           
             For Local k:Int = 0 Until cc.pointCount
-                
                 Local cp :b2ManifoldPoint = manifold.m_points[k]
                 Local ccp :b2ContactConstraintPoint = cc.points[k]
                 ccp.normalImpulse = cp.m_normalImpulse
@@ -239,8 +243,8 @@ Class b2ContactSolver
             Local tangentX :Float = normalY
             Local tangentY :Float = -normalX
             Local tX :Float
-            Local j :int
-            Local tCount :int
+            Local j :Int
+            Local tCount :Int
             If (timeStep.warmStarting)
                 
                 tCount = c.pointCount
@@ -280,7 +284,7 @@ Class b2ContactSolver
     
     Method SolveVelocityConstraints : void ()
         
-        Local j :int
+        Local j :Int
         Local ccp :b2ContactConstraintPoint
         Local rAX :Float
         Local rAY :Float
@@ -358,7 +362,7 @@ Class b2ContactSolver
                 ccp.tangentImpulse = newImpulse
             End
             '// Solve the normal constraints
-            Local tCount :int = c.pointCount
+            Local tCount :Int = c.pointCount
             If (c.pointCount = 1)
                 
                 ccp = c.points[0]
@@ -741,7 +745,7 @@ Class b2ContactSolver
     '//			var normalY:Float = c.normal.y
     '//
     '//			// Solver normal constraints
-    '//			var tCount:int = c.pointCount
+    '//			var tCount:Int = c.pointCount
     '//			For Local j:Int = 0 Until tCount
     '//			{
     '//				var ccp:b2ContactConstraintPoint = c.points.Get( j )
