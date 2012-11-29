@@ -407,13 +407,15 @@ Class b2Collision
         End
         
         Local localTangent :b2Vec2 = s_localTangent
-        localTangent.Set(local_v12.x - local_v11.x, local_v12.y - local_v11.y)
+        localTangent.x = local_v12.x - local_v11.x
+        localTangent.y = local_v12.y - local_v11.y
         localTangent.Normalize()
         Local localNormal :b2Vec2 = s_localNormal
         localNormal.x = localTangent.y
         localNormal.y = -localTangent.x
         Local planePoint :b2Vec2 = s_planePoint
-        planePoint.Set(0.5 * (local_v11.x + local_v12.x), 0.5 * (local_v11.y + local_v12.y))
+        planePoint.x = 0.5 * (local_v11.x + local_v12.x)
+        planePoint.y = 0.5 * (local_v11.y + local_v12.y)
         Local tangent :b2Vec2 = s_tangent
         '//tangent = b2Math.b2MulMV(xf1.R, localTangent)
         tMat = xf1.R

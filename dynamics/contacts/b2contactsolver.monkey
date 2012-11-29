@@ -131,7 +131,8 @@ Class b2ContactSolver
                 Local ccp :b2ContactConstraintPoint = cc.points[k]
                 ccp.normalImpulse = cp.m_normalImpulse
                 ccp.tangentImpulse = cp.m_tangentImpulse
-                ccp.localPoint.SetV(cp.m_localPoint)
+                ccp.localPoint.x = cp.m_localPoint.x
+                ccp.localPoint.y = cp.m_localPoint.y
                 ccp.rA.x = s_worldManifold.m_points[k].x - bodyA.m_sweep.c.x
                 Local rAX :Float = ccp.rA.x
                 ccp.rA.y = s_worldManifold.m_points[k].y - bodyA.m_sweep.c.y
@@ -200,8 +201,10 @@ Class b2ContactSolver
                 Local k_maxConditionNumber :Float = 100.0
                 If ( k11 * k11 < k_maxConditionNumber * (k11 * k22 - k12 * k12))
                     '// safe(K) to invert.
-                    cc.K.col1.Set(k11, k12)
-                    cc.K.col2.Set(k12, k22)
+                    cc.K.col1.x = k11
+                    cc.K.col1.y = k12
+                    cc.K.col2.x = k12
+                    cc.K.col2.y = k22
                     cc.K.GetInverse(cc.normalMass)
                 Else
                     '// The constraints are redundant, just use one.
