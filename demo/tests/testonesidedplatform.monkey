@@ -73,13 +73,13 @@ Class TestOneSidedPlatform Extends Test
     '//===========
     '// Member Data
     '//===========
-    Global e_unknown:int = 0
-    Global e_above:int = 1
-    Global e_below:int = 2
+    Global e_unknown:Int = 0
+    Global e_above:Int = 1
+    Global e_below:Int = 2
     Field m_radius :Float
     Field m_top :Float
     Field m_bottom :Float
-    Field m_state :int
+    Field m_state :Int
     Field m_platform :b2Fixture
     Field m_character :b2Fixture
 End

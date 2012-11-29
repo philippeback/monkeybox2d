@@ -49,7 +49,7 @@ Class b2Joint
     '* Get the type of the concrete joint.
     '*/
     #end
-    Method GetType : int ()
+    Method GetType : Int ()
         
         Return m_type
     End
@@ -256,7 +256,7 @@ Class b2Joint
         End
         
         
-        Field m_type:int
+        Field m_type:Int
         
         
         Field m_prev:b2Joint
@@ -305,34 +305,34 @@ Class b2Joint
         '// ENUMS
         '// enum b2JointType
         'static b2internal
-        const e_unknownJoint:int = 0
+        const e_unknownJoint:Int = 0
         'static b2internal
-        const e_revoluteJoint:int = 1
+        const e_revoluteJoint:Int = 1
         'static b2internal
-        const e_prismaticJoint:int = 2
+        const e_prismaticJoint:Int = 2
         'static b2internal
-        const e_distanceJoint:int = 3
+        const e_distanceJoint:Int = 3
         'static b2internal
-        const e_pulleyJoint:int = 4
+        const e_pulleyJoint:Int = 4
         'static b2internal
-        const e_mouseJoint:int = 5
+        const e_mouseJoint:Int = 5
         'static b2internal
-        const e_gearJoint:int = 6
+        const e_gearJoint:Int = 6
         'static b2internal
-        const e_lineJoint:int = 7
+        const e_lineJoint:Int = 7
         'static b2internal
-        const e_weldJoint:int = 8
+        const e_weldJoint:Int = 8
         'static b2internal
-        const e_frictionJoint:int = 9
+        const e_frictionJoint:Int = 9
         '// enum b2LimitState
         'static b2internal
-        const e_inactiveLimit:int = 0
+        const e_inactiveLimit:Int = 0
         'static b2internal
-        const e_atLowerLimit:int = 1
+        const e_atLowerLimit:Int = 1
         'static b2internal
-        const e_atUpperLimit:int = 2
+        const e_atUpperLimit:Int = 2
         'static b2internal
-        const e_equalLimits:int = 3
+        const e_equalLimits:Int = 3
     End
     
     

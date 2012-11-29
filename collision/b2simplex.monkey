@@ -43,7 +43,7 @@ Class b2Simplex
     Field m_v2:b2SimplexVertex = New b2SimplexVertex()
     Field m_v3:b2SimplexVertex = New b2SimplexVertex()
     Field m_vertices:b2SimplexVertex[] = New b2SimplexVertex[3]
-    Field m_count:int
+    Field m_count:Int
     Global tmpVec1:b2Vec2 = New b2Vec2()
     Global tmpVec2:b2Vec2 = New b2Vec2()
     Global tmpVec3:b2Vec2 = New b2Vec2()

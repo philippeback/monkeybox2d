@@ -47,11 +47,11 @@ Class b2Collision
     Const b2_nullFeature:Int = $000000ff
     '//UCHAR_MAX
     '// Sutherland-Hodgman clipping.
-    Function ClipSegmentToLine : int (vOut:ClipVertex[], vIn:ClipVertex[], normal:b2Vec2, offset:Float)
+    Function ClipSegmentToLine : Int (vOut:ClipVertex[], vIn:ClipVertex[], normal:b2Vec2, offset:Float)
         
         Local cv :ClipVertex
         '// Start with no output points
-        Local numOut :int = 0
+        Local numOut :Int = 0
         cv = vIn[0]
         Local vIn0 :b2Vec2 = cv.v
         cv = vIn[1]
@@ -98,10 +98,10 @@ Class b2Collision
         Return numOut
     End
     '// Find the separation between poly1 and poly2 for a give edge normal on poly1.0
-    Function EdgeSeparation : Float (	poly1:b2PolygonShape, xf1:b2Transform, edge1:int,
+    Function EdgeSeparation : Float (	poly1:b2PolygonShape, xf1:b2Transform, edge1:Int,
         poly2:b2PolygonShape, xf2:b2Transform)
         
-        Local count1 :int = poly1.m_vertexCount
+        Local count1 :Int = poly1.m_vertexCount
         Local vertices1:b2Vec2[] = poly1.m_vertices
         Local normals1:b2Vec2[] = poly1.m_normals
         Local count2 :Int = poly2.m_vertexCount
@@ -120,7 +120,7 @@ Class b2Collision
         Local normal1X :Float = (tMat.col1.x * normal1WorldX + tMat.col1.y * normal1WorldY)
         Local normal1Y :Float = (tMat.col2.x * normal1WorldX + tMat.col2.y * normal1WorldY)
         '// Find support vertex on poly2 for -normal.
-        Local index :int = 0
+        Local index :Int = 0
         Local minDot :Float = Constants.FMAX
         
         For Local i:Int = 0 Until count2
@@ -175,7 +175,7 @@ Class b2Collision
         Local dLocal1X :Float = (dX * xf1.R.col1.x + dY * xf1.R.col1.y)
         Local dLocal1Y :Float = (dX * xf1.R.col2.x + dY * xf1.R.col2.y)
         '// Get support a(vertex) hint for our search
-        Local edge :int = 0
+        Local edge :Int = 0
         Local maxDot :Float = -Constants.FMAX
         
         For Local i:Int = 0 Until count1
@@ -198,7 +198,7 @@ Class b2Collision
         
         Local sPrev :Float = EdgeSeparation(poly1, xf1, prevEdge, poly2, xf2)
         '// Check the separation for the nextItem edge normal.
-        Local nextEdge :int =  0
+        Local nextEdge :Int =  0
         
         If( edge + 1 < count1  )
             nextEdge =  edge + 1
@@ -206,9 +206,9 @@ Class b2Collision
         
         Local sNext :Float = EdgeSeparation(poly1, xf1, nextEdge, poly2, xf2)
         '// Find the best edge and the search direction.
-        Local bestEdge :int
+        Local bestEdge :Int
         Local bestSeparation :Float
-        Local increment :int
+        Local increment :Int
         
         If (sPrev > s And sPrev > sNext)
             increment = -1
@@ -256,7 +256,7 @@ Class b2Collision
     End
     
     Function FindIncidentEdge : void (c:ClipVertex[],
-        poly1:b2PolygonShape, xf1:b2Transform, edge1:int,
+        poly1:b2PolygonShape, xf1:b2Transform, edge1:Int,
         poly2:b2PolygonShape, xf2:b2Transform)
         
         Local count1:Int = poly1.m_vertexCount
@@ -278,7 +278,7 @@ Class b2Collision
         normal1Y = 		(tMat.col2.x * normal1X + tMat.col2.y * normal1Y)
         normal1X = tX
         '// Find the incident edge on poly2.0
-        Local index :int = 0
+        Local index :Int = 0
         Local minDot :Float = Constants.FMAX
         
         For Local i:Int = 0 Until count2
@@ -292,8 +292,8 @@ Class b2Collision
         End
         Local tClip :ClipVertex
         '// Build the clip vertices for the incident edge.
-        Local i1 :int = index
-        Local i2 :int =  0
+        Local i1 :Int = index
+        Local i2 :Int =  0
         
         If( i1 + 1 < count2  )
             i2 =  i1 + 1
@@ -369,7 +369,7 @@ Class b2Collision
         '// incident poly
         Local xf1 :b2Transform
         Local xf2 :b2Transform
-        Local edge1 :int
+        Local edge1 :Int
         '// reference edge
         Local flip :Int
         const k_relativeTol:Float = 0.98
@@ -395,7 +395,7 @@ Class b2Collision
         
         Local incidentEdge:ClipVertex[] = s_incidentEdge
         FindIncidentEdge(incidentEdge, poly1, xf1, edge1, poly2, xf2)
-        Local count1 :int = poly1.m_vertexCount
+        Local count1 :Int = poly1.m_vertexCount
         Local vertices1:b2Vec2[] = poly1.m_vertices
         Local local_v11 :b2Vec2 = vertices1[edge1]
         Local local_v12 :b2Vec2
@@ -443,7 +443,7 @@ Class b2Collision
         '// Clip incident edge against extruded edge1 side edges.
         Local clipPoints1:ClipVertex[] = s_clipPoints1
         Local clipPoints2:ClipVertex[] = s_clipPoints2
-        Local np :int
+        Local np :Int
         '// Clip to box side 1
         '//np = ClipSegmentToLine(clipPoints1, incidentEdge, -tangent, sideOffset1)
         np = ClipSegmentToLine(clipPoints1, incidentEdge, tangent2, sideOffset1)
@@ -543,10 +543,10 @@ Class b2Collision
         Local cLocalY :Float = (dX * tMat.col2.x + dY * tMat.col2.y)
         Local dist :Float
         '// Find the min separating edge.
-        Local normalIndex :int = 0
+        Local normalIndex :Int = 0
         Local separation :Float = -Constants.FMAX
         Local radius :Float = polygon.m_radius + circle.m_radius
-        Local vertexCount :int = polygon.m_vertexCount
+        Local vertexCount :Int = polygon.m_vertexCount
         Local vertices:b2Vec2[] = polygon.m_vertices
         Local normals:b2Vec2[] = polygon.m_normals
         
@@ -570,8 +570,8 @@ Class b2Collision
         End
         
         '// Vertices that subtend the incident face
-        Local vertIndex1 :int = normalIndex
-        Local vertIndex2 :int = 0
+        Local vertIndex1 :Int = normalIndex
+        Local vertIndex2 :Int = 0
         
         If( vertIndex1 + 1 < vertexCount )
             vertIndex2 = vertIndex1 + 1

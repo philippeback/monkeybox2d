@@ -196,7 +196,7 @@ Class b2DebugDraw
     '* Draw a closed polygon provided in CCW order.
     '*/
     #end
-    Method DrawPolygon : void (vertices:b2Vec2[], vertexCount:int, color:b2Color)
+    Method DrawPolygon : void (vertices:b2Vec2[], vertexCount:Int, color:b2Color)
         'm_sprite.graphics.lineStyle(m_lineThickness, color.color, m_alpha)
         SetAlpha(m_alpha)
         SetColor(color._r,color._g,color._b)
@@ -214,7 +214,7 @@ Class b2DebugDraw
     '* Draw a solid closed polygon provided in CCW order.
     '*/
     #end
-    Method DrawSolidPolygon : void (vertices:b2Vec2[], vertexCount:int, color:b2Color)
+    Method DrawSolidPolygon : void (vertices:b2Vec2[], vertexCount:Int, color:b2Color)
         'punt on the fill
         DrawPolygon(vertices, vertexCount, color)
     End

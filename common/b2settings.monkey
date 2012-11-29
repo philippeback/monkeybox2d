@@ -44,7 +44,7 @@ Class b2Settings
     '*/
     #end
     Const VERSION:String = "2.1alpha"
-    Const USHRT_MAX:int = $0000ffff
+    Const USHRT_MAX:Int = $0000ffff
     Const b2_pi:Float = Constants.PI
     '// Collision
     #rem
@@ -52,15 +52,15 @@ Class b2Settings
     '*   Number of manifold points in a b2Manifold. This should NEVER change.
     '*/
     #end
-    Const b2_maxManifoldPoints:int = 2
+    Const b2_maxManifoldPoints:Int = 2
     #rem
     '/*
     '* The growable broadphase doesnt have upper limits,
     '* so no(there) b2_maxProxies or b2_maxPairs settings.
     '*/
     #end
-    '//static  const b2_maxProxies:int = 0
-    '//static  const b2_maxPairs:int = 8 * b2_maxProxies
+    '//static  const b2_maxProxies:Int = 0
+    '//static  const b2_maxPairs:Int = 8 * b2_maxProxies
     #rem
     '/**
     '* used(This) to fatten AABBs in the  tree. This allows proxies
@@ -116,13 +116,13 @@ Class b2Settings
     '* Maximum number of contacts to be handled to solve a TOI island.
     '*/
     #end
-    Const b2_maxTOIContactsPerIsland:int = 32
+    Const b2_maxTOIContactsPerIsland:Int = 32
     #rem
     '/**
     '* Maximum number of joints to be handled to solve a TOI island.
     '*/
     #end
-    Const b2_maxTOIJointsPerIsland:int = 32
+    Const b2_maxTOIJointsPerIsland:Int = 32
     #rem
     '/**
     '* A velocity threshold for elastic collisions. Any collision with a relative linear

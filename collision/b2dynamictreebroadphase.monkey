@@ -40,7 +40,7 @@ Import box2d.common.math
 Class DTQueryCallback Extends TreeQueryCallback
     
     Field queryProxy:b2DynamicTreeNode
-    Field m_pairCount:int = 0
+    Field m_pairCount:Int = 0
     Field m_pairBuffer:FlashArray<b2DynamicTreePair> = New FlashArray<b2DynamicTreePair>()
     
     Method Callback:Bool(a:Object)
@@ -150,7 +150,7 @@ Class b2DynamicTreeBroadPhase Extends IBroadPhase
     '* Get the number of proxies.
     '*/
     #end
-    Method GetProxyCount : int ()
+    Method GetProxyCount : Int ()
         
         Return m_proxyCount
     End
@@ -222,7 +222,7 @@ Class b2DynamicTreeBroadPhase Extends IBroadPhase
         
         '//TODO_BORIS
     End
-    Method Rebalance : void (iterations:int)
+    Method Rebalance : void (iterations:Int)
         
         m_tree.Rebalance(iterations)
     End
@@ -233,10 +233,10 @@ Class b2DynamicTreeBroadPhase Extends IBroadPhase
     End
     Method UnBufferMove : void (proxy:b2DynamicTreeNode)
         
-        Local i :int = m_moveBuffer.IndexOf(proxy)
+        Local i :Int = m_moveBuffer.IndexOf(proxy)
         m_moveBuffer.Splice(i, 1)
     End
-    Method ComparePairs : int (pair1:b2DynamicTreePair, pair2:b2DynamicTreePair)
+    Method ComparePairs : Int (pair1:b2DynamicTreePair, pair2:b2DynamicTreePair)
         
         '//TODO_BORIS:
         '// We cannot consistently sort objects easily in AS3
@@ -245,7 +245,7 @@ Class b2DynamicTreeBroadPhase Extends IBroadPhase
     End
     
     Field m_tree:b2DynamicTree = New b2DynamicTree()
-    Field m_proxyCount:int
+    Field m_proxyCount:Int
     Field m_moveBuffer:FlashArray<b2DynamicTreeNode> = New FlashArray<b2DynamicTreeNode>()
     Field dtQueryCallBack:DTQueryCallback = New DTQueryCallback()
 End

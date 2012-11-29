@@ -280,7 +280,7 @@ Class b2ContactManager
     Field m_contactList:b2Contact
     
     
-    Field m_contactCount:int
+    Field m_contactCount:Int
     
     
     Field m_contactFilter:b2ContactFilter

@@ -120,12 +120,12 @@ Class b2PolyAndEdgeContact Extends b2Contact
         'Local nLocalX :Float = (nX * tMat.col1.x + nY * tMat.col1.y )
         'Local nLocalY :Float = (nX * tMat.col2.x + nY * tMat.col2.y )
         'Local separation1 :Float
-        'Local separationIndex1 : int = -1
+        'Local separationIndex1 : Int = -1
         '// which normal on the poly found the shallowest depth?
         'Local separationMax1 :Float = -Constants.FMAX
         '// the shallowest depth of edge in poly
         'Local separation2 :Float
-        'Local separationIndex2 : int = -1
+        'Local separationIndex2 : Int = -1
         '// which normal on the poly found the shallowest depth?
         'Local separationMax2 :Float = -Constants.FMAX
         '// the shallowest depth of edge in poly
@@ -133,18 +133,18 @@ Class b2PolyAndEdgeContact Extends b2Contact
         '// the shallowest depth of edge in poly
         'Local separationV1 : Bool = False
         '// is the shallowest depth from edges v1 or v2 vertex?
-        'Local separationIndex : int = -1
+        'Local separationIndex : Int = -1
         '// which normal on the poly found the shallowest depth?
-        'Local vertexCount : int = polygon.m_vertexCount
+        'Local vertexCount : Int = polygon.m_vertexCount
         'Local vertices : Array = polygon.m_vertices
         'Local normals : Array = polygon.m_normals
-        'Local enterStartIndex : int = -1
+        'Local enterStartIndex : Int = -1
         '// the last poly vertex above the edge
-        'Local enterEndIndex : int = -1
+        'Local enterEndIndex : Int = -1
         '// the first poly vertex below the edge
-        'Local exitStartIndex : int = -1
+        'Local exitStartIndex : Int = -1
         '// the last poly vertex below the edge
-        'Local exitEndIndex : int = -1
+        'Local exitEndIndex : Int = -1
         '// the first poly vertex above the edge
         '// the "N" in the following variables refers to the edges normal.
         '// these are projections of poly vertices along the edges normal,

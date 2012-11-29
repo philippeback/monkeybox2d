@@ -87,7 +87,7 @@ Class IBroadPhase Abstract
     '* Get the number of proxies.
     '*/
     #end
-    Method GetProxyCount : int () Abstract
+    Method GetProxyCount : Int () Abstract
     #rem
     '/**
     '* Update the pairs. This results in pair callbacks. This can only add pairs.
@@ -127,7 +127,7 @@ Class IBroadPhase Abstract
     '* Give the broadphase a chance for structural optimizations
     '*/
     #end
-    Method Rebalance : void (iterations:int) Abstract
+    Method Rebalance : void (iterations:Int) Abstract
 End
 
 

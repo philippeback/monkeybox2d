@@ -621,13 +621,13 @@ Class b2PulleyJoint Extends b2Joint
     
     Field m_limitImpulse2:Float
     
-    Field m_state:int
+    Field m_state:Int
     
     
-    Field m_limitState1:int
+    Field m_limitState1:Int
     
     
-    Field m_limitState2:int
+    Field m_limitState2:Int
     
     '// static
     'static b2internal

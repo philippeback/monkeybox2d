@@ -44,9 +44,9 @@ Import box2d.collision
 #end
 Class b2Distance
     '// GJK using Voronoi regions (Christer Ericson) and Barycentric coordinates.
-    Global b2_gjkCalls:int
-    Global b2_gjkIters:int
-    Global b2_gjkMaxIters:int
+    Global b2_gjkCalls:Int
+    Global b2_gjkIters:Int
+    Global b2_gjkMaxIters:Int
     Global s_simplex:b2Simplex = New b2Simplex()
     Global s_saveA:Int[] = New Int[3]
     Global s_saveB:Int[] = New Int[3]
@@ -67,18 +67,18 @@ Class b2Distance
         simplex.ReadCache(cache, proxyA, transformA, proxyB, transformB)
         '// Get simplex an(vertices) vector.
         Local vertices:b2SimplexVertex[] = simplex.m_vertices
-        const k_maxIters:int = 20
+        const k_maxIters:Int = 20
         '// These store the vertices of the last simplex so that we
         '// can check for duplicates and preven cycling
         Local saveA:Int[] = s_saveA
         Local saveB:Int[] = s_saveB
-        Local saveCount :int = 0
+        Local saveCount :Int = 0
         simplex.GetClosestPoint(tmpVec1)
         Local distanceSqr1 :Float = tmpVec1.LengthSquared()
         Local distanceSqr2 :Float = distanceSqr1
-        Local i :int
+        Local i :Int
         '// Main iteration loop
-        Local iter :int = 0
+        Local iter :Int = 0
         While (iter < k_maxIters)
             
             '// Copy the simplex so that we can identify duplicates

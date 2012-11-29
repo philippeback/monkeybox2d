@@ -57,7 +57,7 @@ Class TestStack Extends Test
         fd.friction = 0.5
         fd.restitution = 0.1
         fd.shape = sd
-        Local i :int
+        Local i :Int
         '// Create 3 stacks
         For Local i:Int = 0 Until 10
             

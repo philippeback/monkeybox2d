@@ -62,7 +62,7 @@ Class b2PositionSolverManifold
 #If CONFIG = "debug"
         b2Settings.B2Assert(cc.pointCount > 0)
 #End
-        Local i :int
+        Local i :Int
         Local pointCount:Int = cc.pointCount
         Local clipPointX :Float
         Local clipPointY :Float

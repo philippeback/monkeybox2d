@@ -68,7 +68,7 @@ Class b2ContactConstraint
     
     Field bodyB:b2Body
     
-    Field type:int
+    Field type:Int
     
     '//b2Manifold::Type
     
@@ -78,7 +78,7 @@ Class b2ContactConstraint
     
     Field restitution:Float
     
-    Field pointCount:int
+    Field pointCount:Int
     
     Field manifold:b2Manifold
     

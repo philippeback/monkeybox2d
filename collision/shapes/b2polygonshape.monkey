@@ -89,7 +89,7 @@ Class b2PolygonShape Extends b2Shape
         b2Settings.B2Assert(2 <= vertexCount)
         m_vertexCount = vertexCount
         Reserve(vertexCount)
-        Local i :int
+        Local i :Int
         '// Copy vertices
         For Local i:Int = 0 Until m_vertexCount
             m_vertices[i].SetV(vertices[i])
@@ -97,8 +97,8 @@ Class b2PolygonShape Extends b2Shape
         
         '// Compute normals. Ensure the edges have non-zero length.
         For Local i:Int = 0 Until m_vertexCount
-            Local i1 :int = i
-            Local i2 :int =  0
+            Local i1 :Int = i
+            Local i2 :Int =  0
             
             If( i + 1 < m_vertexCount  )
                 i2 =  i + 1
@@ -135,7 +135,7 @@ Class b2PolygonShape Extends b2Shape
 '        b2Settings.B2Assert(2 <= vertexCount)
 '        m_vertexCount = vertexCount
 '        Reserve(vertexCount)
-'        Local i :int
+'        Local i :Int
 '        '// Copy vertices
 '        For Local i:Int = 0 Until m_vertexCount
 '            m_vertices[i].SetV(vertices.Get(i))
@@ -143,8 +143,8 @@ Class b2PolygonShape Extends b2Shape
 '        '// Compute normals. Ensure the edges have non-zero length.
 '        For Local i:Int = 0 Until m_vertexCount
 '            
-'            Local i1 :int = i
-'            Local i2 :int =  0
+'            Local i1 :Int = i
+'            Local i2 :Int =  0
 '            
 '            If( i + 1 < m_vertexCount  )
 '                i2 =  i + 1
@@ -318,7 +318,7 @@ Class b2PolygonShape Extends b2Shape
         '//b2Vec2 d = p2 - p1
         Local dX :Float = p2X - p1X
         Local dY :Float = p2Y - p1Y
-        Local index :int = -1
+        Local index :Int = -1
         For Local i:Int = 0 Until m_vertexCount
             
             '// p = p1 + a * d
@@ -428,10 +428,10 @@ Class b2PolygonShape Extends b2Shape
         '// Polygon mass, centroid, and inertia.
         '// Let rho be the polygon density in mass per unit area.
         '// Then:
-        '// mass = rho * int(dA)
-        '// centroid.x = (1/mass) * rho * int(x * dA)
-        '// centroid.y = (1/mass) * rho * int(y * dA)
-        '// I = rho * int((x*x + y*y) * dA)
+        '// mass = rho * Int(dA)
+        '// centroid.x = (1/mass) * rho * Int(x * dA)
+        '// centroid.y = (1/mass) * rho * Int(y * dA)
+        '// I = rho * Int((x*x + y*y) * dA)
         '//
         '// We can compute these integrals by summing all the integrals
         '// for each triangle of the polygon. To evaluate the integral
@@ -554,9 +554,9 @@ Class b2PolygonShape Extends b2Shape
         b2Math.MulTMV(xf.R, normal, normalL)
         
         Local offsetL :Float = offset - b2Math.Dot(normal, xf.position)
-        Local diveCount :int = 0
-        Local intoIndex :int = -1
-        Local outoIndex :int = -1
+        Local diveCount :Int = 0
+        Local intoIndex :Int = -1
+        Local outoIndex :Int = -1
         Local lastSubmerged :Bool = False
         
         For Local i:Int = 0 Until m_vertexCount
@@ -649,7 +649,7 @@ Class b2PolygonShape Extends b2Shape
         '* Get the vertex count.
         '*/
         #end
-        Method GetVertexCount : int ()
+        Method GetVertexCount : Int ()
             
             Return m_vertexCount
         End
@@ -676,9 +676,9 @@ Class b2PolygonShape Extends b2Shape
         '* Get the supporting vertex index in the given direction.
         '*/
         #end
-        Method GetSupport : int (d:b2Vec2)
+        Method GetSupport : Int (d:b2Vec2)
             
-            Local bestIndex :int = 0
+            Local bestIndex :Int = 0
             Local bestValue :Float = m_vertices[0].x * d.x + m_vertices[0].y * d.y
             For Local i:Int = 1 Until m_vertexCount
                 
@@ -694,7 +694,7 @@ Class b2PolygonShape Extends b2Shape
         End
         Method GetSupportVertex : b2Vec2 (d:b2Vec2)
             
-            Local bestIndex :int = 0
+            Local bestIndex :Int = 0
             Local bestValue :Float = m_vertices[0].x * d.x + m_vertices[0].y * d.y
             For Local i:Int = 1 Until m_vertexCount
                 
@@ -737,7 +737,7 @@ Class b2PolygonShape Extends b2Shape
             '// Ensure the counter(polygon)-clockwise.
             'For Local i:Int = 1 Until m_vertexCount
             '
-            'Local cross :Float = b2Math.b2CrossVV(m_normals.Get(int(i-1)), m_normals.Get(i))
+            'Local cross :Float = b2Math.b2CrossVV(m_normals.Get(Int(i-1)), m_normals.Get(i))
             '// Keep ASinf happy.
             'cross = b2Math.b2Clamp(cross, -1.0, 1.0)
             '// You have consecutive edges that are almost parallel on your polygon.
@@ -765,7 +765,7 @@ Class b2PolygonShape Extends b2Shape
             Reserve(4)
         End
         
-        Method Reserve : void (count:int)
+        Method Reserve : void (count:Int)
             If m_vertices.Length = 0
                 m_depths = New Float[count]
             End    
@@ -858,8 +858,8 @@ Class b2PolygonShape Extends b2Shape
         '* @see http://www.geometrictools.com/Documentation/MinimumAreaRectangle.pdf
         '*/
         #end
-        Function ComputeOBB : void (obb:b2OBB, vs:b2Vec2[], count:int)
-            Local i :int
+        Function ComputeOBB : void (obb:b2OBB, vs:b2Vec2[], count:Int)
+            Local i :Int
             Local p :b2Vec2[] = New b2Vec2[count + 1]
             For Local i:Int = 0 Until count
                 p[i] = vs[i]

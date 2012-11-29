@@ -66,7 +66,7 @@ Class b2BroadPhase Extends IBroadPhase
     Method New(worldAABB:b2AABB)
         
         '//b2Settings.B2Assert(worldAABB.IsValid())
-        Local i :int
+        Local i :Int
         m_pairManager.Initialize(Self)
         m_worldAABB = worldAABB
         m_proxyCount = 0
@@ -112,8 +112,8 @@ Class b2BroadPhase Extends IBroadPhase
         
         Local index :Int
         Local proxy :b2Proxy
-        Local i :int
-        Local j :int
+        Local i :Int
+        Local j :Int
         '//b2Settings.B2Assert(m_proxyCount < b2_maxProxies)
         '//b2Settings.B2Assert(m_freeProxy <> b2Pair.b2_nullProxy)
         If (Not(m_freeProxy))
@@ -171,7 +171,7 @@ Class b2BroadPhase Extends IBroadPhase
             tBound1.proxy = proxy
             tBound2.value = upperValues.Get(axis)
             tBound2.proxy = proxy
-            Local tBoundAS3 :b2Bound = bounds.Get(int(lowerIndex-1))
+            Local tBoundAS3 :b2Bound = bounds.Get(Int(lowerIndex-1))
             If( lowerIndex = 0  )
                 tBound1.stabbingCount = 0
             Else
@@ -181,7 +181,7 @@ Class b2BroadPhase Extends IBroadPhase
                 
             End
             
-            tBoundAS3 = bounds.Get(int(upperIndex-1))
+            tBoundAS3 = bounds.Get(Int(upperIndex-1))
             tBound2.stabbingCount = tBoundAS3.stabbingCount
             '// Adjust the stabbing count between the New bounds.
             For Local index:Int = lowerIndex Until upperIndex
@@ -226,7 +226,7 @@ Class b2BroadPhase Extends IBroadPhase
         Local tBound1 :b2Bound
         Local tBound2 :b2Bound
         '//b2Settings.B2Assert(proxy.IsValid())
-        Local boundCount :int = 2 * m_proxyCount
+        Local boundCount :Int = 2 * m_proxyCount
         For Local axis:Int = 0 Until 2
             
             Local bounds :FlashArray<b2Bound> = m_bounds.Get(axis)
@@ -241,7 +241,7 @@ Class b2BroadPhase Extends IBroadPhase
             bounds.Push(tBound1)
             bounds.Push(tBound2)
             '// Fix bound indices.
-            Local tEnd :int = boundCount - 2
+            Local tEnd :Int = boundCount - 2
             For Local index:Int = lowerIndex Until tEnd
                 
                 tBound1 = bounds.Get(index)
@@ -295,7 +295,7 @@ Class b2BroadPhase Extends IBroadPhase
         
         Local proxy :b2Proxy = b2Proxy(proxy_)
         Local as3arr :FlashArray<IntObject>
-        Local as3int :int
+        Local as3int :Int
         Local axis :Int
         Local index :Int
         Local bound :b2Bound
@@ -334,10 +334,10 @@ Class b2BroadPhase Extends IBroadPhase
             Local lowerValue :Int = newValues.lowerValues.Get(axis)
             Local upperValue :Int = newValues.upperValues.Get(axis)
             bound = bounds.Get(lowerIndex)
-            Local deltaLower :int = lowerValue - bound.value
+            Local deltaLower :Int = lowerValue - bound.value
             bound.value = lowerValue
             bound = bounds.Get(upperIndex)
-            Local deltaUpper :int = upperValue - bound.value
+            Local deltaUpper :Int = upperValue - bound.value
             bound.value = upperValue
             '//
             '// Expanding adds overlaps
@@ -349,7 +349,7 @@ Class b2BroadPhase Extends IBroadPhase
                 
                 While (index > 0 And lowerValue < (bounds.Get(Int(index-1))).value)
                     bound = bounds.Get(index)
-                    prevBound = bounds.Get(int(index - 1))
+                    prevBound = bounds.Get(Int(index - 1))
                     Local prevProxy :b2Proxy = prevBound.proxy
                     prevBound.stabbingCount += 1
                     
@@ -399,7 +399,7 @@ Class b2BroadPhase Extends IBroadPhase
                 While (index < boundCount-1 And (bounds.Get(Int(index+1))).value <= upperValue)
                     
                     bound = bounds.Get( index )
-                    nextBound = bounds.Get( int(index + 1) )
+                    nextBound = bounds.Get( Int(index + 1) )
                     nextProxy = nextBound.proxy
                     nextBound.stabbingCount += 1
                     
@@ -452,7 +452,7 @@ Class b2BroadPhase Extends IBroadPhase
                 While (index < boundCount-1 And (bounds.Get(Int(index+1))).value <= lowerValue)
                     
                     bound = bounds.Get( index )
-                    nextBound = bounds.Get( int(index + 1) )
+                    nextBound = bounds.Get( Int(index + 1) )
                     nextProxy = nextBound.proxy
                     nextBound.stabbingCount -= 1
                     
@@ -502,7 +502,7 @@ Class b2BroadPhase Extends IBroadPhase
                 While (index > 0 And upperValue < (bounds.Get(Int(index-1))).value)
                     
                     bound = bounds.Get(index)
-                    prevBound = bounds.Get(int(index - 1))
+                    prevBound = bounds.Get(Int(index - 1))
                     Local prevProxy :b2Proxy = prevBound.proxy
                     
                     prevBound.stabbingCount -= 1
@@ -601,7 +601,7 @@ Class b2BroadPhase Extends IBroadPhase
     '* Get the number of proxies.
     '*/
     #end
-    Method GetProxyCount : int ()
+    Method GetProxyCount : Int ()
         
         Return m_proxyCount
     End
@@ -673,7 +673,7 @@ Class b2BroadPhase Extends IBroadPhase
             End
         End
     End
-    Method Rebalance : void (iterations:int)
+    Method Rebalance : void (iterations:Int)
         
         '// Do nothing
     End
@@ -690,7 +690,7 @@ Class b2BroadPhase Extends IBroadPhase
         subInput.maxFraction = input.maxFraction
         Local dx :Float = (input.p2.x-input.p1.x)*m_quantizationFactor.x
         Local dy :Float = (input.p2.y-input.p1.y)*m_quantizationFactor.y
-        Local sx :int = 0
+        Local sx :Int = 0
         
         If( dx<-Constants.EPSILON  )
             sx = -1
@@ -698,7 +698,7 @@ Class b2BroadPhase Extends IBroadPhase
             sx = 1
         End
         
-        Local sy :int = 0
+        Local sy :Int = 0
         
         If( dy<-Constants.EPSILON  )
             sy = -1
@@ -715,8 +715,8 @@ Class b2BroadPhase Extends IBroadPhase
         startValues2.Set( 0, startValues.Get(0)+1 )
         startValues2.Set( 1, startValues.Get(1)+1 )
         'Local startIndices:Array = New Array()
-        Local xIndex :int
-        Local yIndex :int
+        Local xIndex :Int
+        Local yIndex :Int
         Local proxy :b2Proxy
         '//First deal with all the proxies that contain segment.p1
         Local lowerIndex :Int
@@ -956,7 +956,7 @@ Class b2BroadPhase Extends IBroadPhase
         End
         Return True
     End
-    Method QueryAxis : void (lowerQueryOut:FlashArray<IntObject>, upperQueryOut:FlashArray<IntObject>, lowerValue:Int, upperValue:Int, bounds:FlashArray<b2Bound>, boundCount:Int, axis:int)
+    Method QueryAxis : void (lowerQueryOut:FlashArray<IntObject>, upperQueryOut:FlashArray<IntObject>, lowerValue:Int, upperValue:Int, bounds:FlashArray<b2Bound>, boundCount:Int, axis:Int)
         Local lowerQuery :Int = BinarySearch(bounds, boundCount, lowerValue)
         Local upperQuery :Int = BinarySearch(bounds, boundCount, upperValue)
         Local bound : b2Bound
@@ -974,9 +974,9 @@ Class b2BroadPhase Extends IBroadPhase
         '// Solution: use the stabbing count to search down the bound array.
         If (lowerQuery > 0)
             
-            Local i :int = lowerQuery - 1
+            Local i :Int = lowerQuery - 1
             bound = bounds.Get(i)
-            Local s :int = bound.stabbingCount
+            Local s :Int = bound.stabbingCount
             '// Find the s overlaps.
             While (s)
                 
@@ -1041,23 +1041,23 @@ Class b2BroadPhase Extends IBroadPhase
     Field m_bounds:FlashArray<FlashArray<b2Bound> >
     Field m_querySortKeys:FlashArray<b2Proxy> = New FlashArray<b2Proxy>()
     Field m_queryResults:FlashArray<b2Proxy> = New FlashArray<b2Proxy>()
-    Field m_queryResultCount:int
+    Field m_queryResultCount:Int
     Field m_worldAABB:b2AABB
     Field m_quantizationFactor:b2Vec2 = New b2Vec2()
-    Field m_proxyCount:int
+    Field m_proxyCount:Int
     Field m_timeStamp:Int
     
     Global s_validate:Bool = False
     Const b2_invalid:Int = b2Settings.USHRT_MAX
     Const b2_nullEdge:Int = b2Settings.USHRT_MAX
     
-    Function BinarySearch : Int (bounds:FlashArray<b2Bound>, count:int, value:Int)
+    Function BinarySearch : Int (bounds:FlashArray<b2Bound>, count:Int, value:Int)
         
-        Local low :int = 0
-        Local high :int = count - 1
+        Local low :Int = 0
+        Local high :Int = count - 1
         While (low <= high)
             
-            Local mid :int = ((low + high) / 2)
+            Local mid :Int = ((low + high) / 2)
             Local bound :b2Bound = bounds.Get(mid)
             If (bound.value > value)
                 

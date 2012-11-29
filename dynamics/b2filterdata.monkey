@@ -69,6 +69,6 @@ Class b2FilterData
     '* filtering always wins against the mask bits.
     '*/
     #end
-    Field groupIndex: int = 0
+    Field groupIndex: Int = 0
     
 End

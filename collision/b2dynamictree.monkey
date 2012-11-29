@@ -74,7 +74,7 @@ Class b2DynamicTree
     End
     #rem
     '/*
-    'Method Dump : void (node:b2DynamicTreeNode=null, depth:int=0)
+    'Method Dump : void (node:b2DynamicTreeNode=null, depth:Int=0)
     '
     'if (Not(node))
     '
@@ -181,7 +181,7 @@ Class b2DynamicTree
     '* Perform some iterations to re-balance the tree.
     '*/
     #end
-    Method Rebalance : void (iterations:int)
+    Method Rebalance : void (iterations:Int)
         
         If (m_root = null)
             Return
@@ -242,7 +242,7 @@ Class b2DynamicTree
         If (m_root = null)
             Return
         End
-        Local count:int = 0
+        Local count:Int = 0
 		Local nodeStackLength:Int = nodeStack.Length()
         nodeStack[count] = m_root
 		count += 1
@@ -336,7 +336,7 @@ Class b2DynamicTree
         segmentAABB.upperBound.y = b2Math.Max(p1.y, tY)
         
         Local stack :FlashArray<b2DynamicTreeNode> = New FlashArray<b2DynamicTreeNode>()
-        Local count :int = 0
+        Local count :Int = 0
         
         stack.Set( count,  m_root )
         count += 1
@@ -565,7 +565,7 @@ Class b2DynamicTree
     '* used(This) for incrementally traverse the tree for rebalancing
     Field m_path:Int
     
-    Field m_insertionCount:int
+    Field m_insertionCount:Int
     
     
 End

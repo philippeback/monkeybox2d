@@ -56,7 +56,7 @@ Class b2Fixture
     '* @return the shape type.
     '*/
     #end
-    Method GetType : int ()
+    Method GetType : Int ()
         
         Return m_shape.GetType()
     End

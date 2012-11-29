@@ -81,7 +81,7 @@ Class b2DistanceProxy
     #end
     Method GetSupport : Float (d:b2Vec2)
         
-        Local bestIndex :int = 0
+        Local bestIndex :Int = 0
         Local bestValue :Float = m_vertices[0].x * d.x + m_vertices[0].y * d.y
         
         For Local i:Int = 1 Until m_count
@@ -102,7 +102,7 @@ Class b2DistanceProxy
     #end
     Method GetSupportVertex : b2Vec2 (d:b2Vec2)
         
-        Local bestIndex :int = 0
+        Local bestIndex :Int = 0
         Local bestValue :Float = m_vertices[0].x * d.x + m_vertices[0].y * d.y
         For Local i:Int = 1 Until m_count
             
@@ -121,7 +121,7 @@ Class b2DistanceProxy
     '* Get the vertex count.
     '*/
     #end
-    Method GetVertexCount : int ()
+    Method GetVertexCount : Int ()
         
         Return m_count
     End
@@ -130,7 +130,7 @@ Class b2DistanceProxy
     '* Get a vertex by index. Used by b2Distance.
     '*/
     #end
-    Method GetVertex : b2Vec2 (index:int)
+    Method GetVertex : b2Vec2 (index:Int)
         
         b2Settings.B2Assert(0 <= index And index < m_count)
         Return m_vertices[index]

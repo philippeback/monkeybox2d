@@ -761,7 +761,7 @@ Class b2PrismaticJoint Extends b2Joint
     Field m_enableMotor:Bool
     
     
-    Field m_limitState:int
+    Field m_limitState:Int
     
     
 End

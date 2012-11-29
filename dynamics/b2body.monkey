@@ -102,7 +102,7 @@ Class b2Body
         'Local edgeDef : b2EdgeChainDef = b2EdgeChainDef(def)
         'Local v1 : b2Vec2
         'Local v2 : b2Vec2
-        'Local i : int
+        'Local i : Int
         'if (edgeDef.isALoop)
         '
         'v1 = edgeDef.vertices.Get(edgeDef.vertexCount-1)
@@ -1364,8 +1364,8 @@ Class b2Body
     End
     
     Field m_flags :Int
-    Field m_type :int
-    Field m_islandIndex :int
+    Field m_type :Int
+    Field m_islandIndex :Int
     Field m_xf :b2Transform = New b2Transform()
     '// the body origin transform
     Field m_sweep :b2Sweep = New b2Sweep()
@@ -1378,9 +1378,9 @@ Class b2Body
     Field m_prev :b2Body
     Field m_next :b2Body
     Field m_fixtureList :b2Fixture
-    Field m_fixtureCount :int
+    Field m_fixtureCount :Int
     Field m_controllerList :b2ControllerEdge
-    Field m_controllerCount :int
+    Field m_controllerCount :Int
     Field m_jointList :b2JointEdge
     Field m_contactList :b2ContactEdge
     Field m_mass :Float, m_invMass:Float

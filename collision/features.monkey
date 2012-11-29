@@ -50,72 +50,72 @@ Class Features
     '* The edge that defines the outward contact normal.
     '*/
     #end
-    Method ReferenceEdge : int () Property
+    Method ReferenceEdge : Int () Property
         
         Return _referenceEdge
     End
     
-    Method ReferenceEdge : void (value:int) Property
+    Method ReferenceEdge : void (value:Int) Property
         
         _referenceEdge = value
         _m_id._key = (_m_id._key & $ffffff00) | (_referenceEdge & $000000ff)
     End
     
-    Field _referenceEdge:int
+    Field _referenceEdge:Int
     
     #rem
     '/**
     '* The edge most anti-parallel to the reference edge.
     '*/
     #end
-    Method IncidentEdge : int () Property
+    Method IncidentEdge : Int () Property
         
         Return _incidentEdge
     End
     
-    Method IncidentEdge : void (value:int) Property
+    Method IncidentEdge : void (value:Int) Property
         
         _incidentEdge = value
         _m_id._key = (_m_id._key & $ffff00ff) | ((_incidentEdge Shl 8) & $0000ff00)
     End
     
-    Field _incidentEdge:int
+    Field _incidentEdge:Int
     
     #rem
     '/**
     '* The vertex (0 or 1) on the incident edge that was clipped.
     '*/
     #end
-    Method IncidentVertex : int () Property
+    Method IncidentVertex : Int () Property
         
         Return _incidentVertex
     End
     
-    Method IncidentVertex : void (value:int) Property
+    Method IncidentVertex : void (value:Int) Property
         
         _incidentVertex = value
         _m_id._key = (_m_id._key & $ff00ffff) | ((_incidentVertex Shl 16) & $00ff0000)
     End
     
-    Field _incidentVertex:int
+    Field _incidentVertex:Int
     
     #rem
     '/**
     '* A value of 1 indicates that the reference on(edge) shape2.0
     '*/
     #end
-    Method Flip : int () Property
+    Method Flip : Int () Property
         
         Return _flip
     End
     
-    Method Flip : void (value:int) Property
+    Method Flip : void (value:Int) Property
         
         _flip = value
         _m_id._key = (_m_id._key & $00ffffff) | ((_flip Shl 24) & $ff000000)
     End
     
-    Field _flip:int
+    Field _flip:Int
     
     
     Field _m_id:b2ContactID

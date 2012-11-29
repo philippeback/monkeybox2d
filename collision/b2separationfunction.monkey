@@ -39,15 +39,15 @@ Import box2d.common.math
 Class b2SeparationFunction
     
     '//enum Type
-    Const e_points:int = $01
-    Const e_faceA:int = $02
-    Const e_faceB:int = $04
+    Const e_points:Int = $01
+    Const e_faceA:Int = $02
+    Const e_faceB:Int = $04
 
     Field m_proxyA:b2DistanceProxy        
     Field m_proxyB:b2DistanceProxy
     Field m_sweepA:b2Sweep        
     Field m_sweepB:b2Sweep
-    Field m_type:int
+    Field m_type:Int
     Field m_localPoint:b2Vec2 = New b2Vec2()
     Field m_axis:b2Vec2 = New b2Vec2()
 
@@ -65,7 +65,7 @@ Class b2SeparationFunction
         
         m_proxyA = proxyA
         m_proxyB = proxyB
-        Local count :int = cache.count
+        Local count :Int = cache.count
         b2Settings.B2Assert(0 < count And count < 3)
         
         m_sweepA = sweepA
