@@ -211,37 +211,37 @@ Class b2Contact
     '// This contact should not participate in Solve
     '// The contact equivalent of sensors
     'static b2internal
-    Global e_sensorFlag:Int		= $0001
+    Const e_sensorFlag:Int		= $0001
     
     
     '// Generate TOI events.
     'static b2internal
-    Global e_continuousFlag:Int	= $0002
+    Const e_continuousFlag:Int	= $0002
     
     
     '// Used when crawling contact graph when forming islands.
     'static b2internal
-    Global e_islandFlag:Int		= $0004
+    Const e_islandFlag:Int		= $0004
     
     
     '// Used in SolveTOI to indicate the cached toi still(value) valid.
     'static b2internal
-    Global e_toiFlag:Int		= $0008
+    Const e_toiFlag:Int		= $0008
     
     
     '// Set when shapes are touching
     'static b2internal
-    Global e_touchingFlag:Int	= $0010
+    Const e_touchingFlag:Int	= $0010
     
     
     '// This contact can be disabled (by user)
     'static b2internal
-    Global e_enabledFlag:Int	= $0020
+    Const e_enabledFlag:Int	= $0020
     
     
     '// This contact needs filtering because a fixture filter was changed.
     'static b2internal
-    Global e_filterFlag:Int		= $0040
+    Const e_filterFlag:Int		= $0040
     
     Method New()
         

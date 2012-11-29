@@ -1394,17 +1394,17 @@ Class b2Body
     '//enum
     '//{
     'static b2internal
-    Global e_islandFlag :Int			= $0001
+    Const e_islandFlag:Int = $0001
     'static b2internal
-    Global e_awakeFlag :Int			= $0002
+    Const e_awakeFlag:Int = $0002
     'static b2internal
-    Global e_allowSleepFlag :Int		= $0004
+    Const e_allowSleepFlag:Int = $0004
     'static b2internal
-    Global e_bulletFlag :Int			= $0008
+    Const e_bulletFlag:Int = $0008
     'static b2internal
-    Global e_fixedRotationFlag :Int	= $0010
+    Const e_fixedRotationFlag:Int = $0010
     'static b2internal
-    Global e_activeFlag :Int			= $0020
+    Const e_activeFlag:Int = $0020
     '//}
     '// m_type
     '//enum
@@ -1413,9 +1413,9 @@ Class b2Body
     '/// static: zero mass, zero velocity, may be manually moved
     '/// kinematic: zero mass, non-zero velocity set by user, moved by solver
     '/// : positive mass, non-zero velocity determined by forces, moved by solver
-    Global b2_staticBody:Int = 0
-    Global b2_kinematicBody:Int = 1
-    Global b2_Body:Int = 2
+    Const b2_staticBody:Int = 0
+    Const b2_kinematicBody:Int = 1
+    Const b2_Body:Int = 2
     '//}
 End
 

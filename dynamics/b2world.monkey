@@ -913,7 +913,8 @@ Class b2World
     '//--------------- Internals Below -------------------
     '// Internal yet  to make life easier.
     '// Find islands, integrate and solve constraints, solve position constraints
-    Field s_stack:FlashArray<b2Body> = New FlashArray<b2Body>()
+    Field stackCapacity:Int = 1000
+    Field s_stack:b2Body[] = New b2Body[1000]
     
     
     Method Solve : void (timeStep:b2TimeStep)
@@ -947,9 +948,13 @@ Class b2World
             j = j.m_next
         End
         '// Build and simulate all awake islands.
-        Local stackSize :int = m_bodyCount
+        Local stackSize:Int = m_bodyCount
+        If stackSize > stackCapacity
+            s_stack = s_stack.Resize(stackSize)
+            stackCapacity = stackSize
+        End
         '//b2Body** stack = (b2Body**)m_stackAllocator.Allocate(stackSize * sizeof(b2Body*))
-        Local stack :FlashArray<b2Body> = s_stack
+        Local stack:b2Body[] = s_stack
         Local seed:b2Body = m_bodyList
         Local seedStart := True
         While( seed <> Null)
@@ -957,38 +962,36 @@ Class b2World
                 seed = seed.m_next
                 Continue
             End
-            If (seed.IsAwake() = False Or seed.IsActive() = False)
+            If (seed.m_flags & (b2Body.e_awakeFlag|b2Body.e_activeFlag) <> (b2Body.e_awakeFlag|b2Body.e_activeFlag) )'  .IsAwake() = False Or seed.IsActive() = False)
                 seed = seed.m_next
                 Continue
             End
             '// The seed can be  or kinematic.
-            If (seed.GetType() = b2Body.b2_staticBody)
+            If (seed.m_type = b2Body.b2_staticBody)
                 seed = seed.m_next
                 Continue
             End
             '// Reset island and stack.
             island.Clear()
-            Local stackCount :int = 0
-            stack.Set( stackCount,  seed )
+            Local stackCount:Int = 0
+            stack[stackCount] = seed
             stackCount += 1
             seed.m_flags |= b2Body.e_islandFlag
+            
             '// Perform a depth first search (DFS) on the constraint graph.
             While (stackCount > 0)
-                
                 '// Grab the nextItem body off the stack and add it to the island.
                 stackCount -= 1
-                b = stack.Get(stackCount)
+                b = stack[stackCount]
                 '//b2Assert(b.IsActive() = True)
                 island.AddBody(b)
                 '// Make sure the awake(body).
-                If (b.IsAwake() = False)
-                    
+                If (Not (b.m_flags & b2Body.e_awakeFlag))
                     b.SetAwake(True)
                 End
                 '// To keep small(islands) as possible, we dont
                 '// propagate islands across static bodies.
-                If (b.GetType() = b2Body.b2_staticBody)
-                    
+                If (b.m_type = b2Body.b2_staticBody)
                     Continue
                 End
                 Local other :b2Body
@@ -1001,9 +1004,12 @@ Class b2World
                         Continue
                     End
                     '// Is this contact solid and touching?
-                    If (ce.contact.IsSensor() = True Or
-                        ce.contact.IsEnabled() = False Or
-                        ce.contact.IsTouching() = False)
+                    If( ce.contact.m_flags & (b2Contact.e_enabledFlag|b2Contact.e_touchingFlag) <> 
+                        (b2Contact.e_enabledFlag|b2Contact.e_touchingFlag) Or
+                        ce.contact.m_flags & b2Contact.e_sensorFlag ) 
+                    'If (ce.contact.m_flags & b2Contact.e_sensorFlag = True Or
+                    '    ce.contact.m_flags & b2Contact.e_enabledFlag = False Or
+                    '    ce.contact.m_flags & b2Contact.e_touchingFlag = False)
                         ce = ce.nextItem
                         Continue
                     End
@@ -1017,7 +1023,7 @@ Class b2World
                         Continue
                     End
                     '//b2Settings.B2Assert(stackCount < stackSize)
-                    stack.Set( stackCount,  other )
+                    stack[stackCount] = other
                     stackCount += 1
                     other.m_flags |= b2Body.e_islandFlag
                     ce = ce.nextItem
@@ -1031,7 +1037,7 @@ Class b2World
                     End
                     other = jn.other
                     '// Dont simulate joints connected to inactive bodies.
-                    If (other.IsActive() = False)
+                    If (Not (other.m_flags & b2Body.e_activeFlag))
                         jn = jn.nextItem
                         Continue
                     End
@@ -1042,43 +1048,43 @@ Class b2World
                         Continue
                     End
                     '//b2Settings.B2Assert(stackCount < stackSize)
-                    stack.Set( stackCount,  other )
+                    stack[stackCount] = other
                     stackCount += 1
                     other.m_flags |= b2Body.e_islandFlag
                     jn = jn.nextItem
                 End
-                
             End
             
             island.Solve(timeStep, m_gravity, m_allowSleep)
+            
             '// Post solve cleanup.
             For Local i:Int = 0 Until island.m_bodyCount
-                
                 '// Allow static bodies to participate in other islands.
                 b = island.m_bodies.Get(i)
-                If (b.GetType() = b2Body.b2_staticBody)
-                    
+                If (b.m_type = b2Body.b2_staticBody)                    
                     b.m_flags &= ~b2Body.e_islandFlag
                 End
             End
+            
             seed = seed.m_next
         End
+        
         '//m_stackAllocator.Free(stack)
         For Local i:Int = 0 Until stack.Length
-            
-            If (Not(stack.Get(i)))
+            If( stack[i] = Null )
                 Exit
             End
-            stack.Set( i,  null )
+            stack[i] = Null
         End
+        
         '// Synchronize fixutres, check for out of range bodies.
         b = m_bodyList
         While( b <> Null )
-            If (b.IsAwake() = False Or b.IsActive() = False)
+            If (b.m_flags & (b2Body.e_awakeFlag|b2Body.e_activeFlag) <> (b2Body.e_awakeFlag|b2Body.e_activeFlag))
                 b = b.m_next
                 Continue
             End
-            If (b.GetType() = b2Body.b2_staticBody)
+            If (b.m_type = b2Body.b2_staticBody)
                 b = b.m_next
                 Continue
             End
