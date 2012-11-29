@@ -349,8 +349,10 @@ Class b2DynamicTree
             End
             '// Separating axis for segment (Gino, p80)
             '// |dot(v, p1 - c)| > dot(|v|,h)
-            Local c :b2Vec2 = node.aabb.GetCenter()
-            Local h :b2Vec2 = node.aabb.GetExtents()
+            Local c :b2Vec2 = New b2Vec2()
+            node.aabb.GetCenter(c)
+            Local h :b2Vec2 = New b2Vec2()
+            node.aabb.GetExtents(h)
             Local separation :Float = Abs(v.x * (p1.x - c.x) + v.y * (p1.y - c.y))	- abs_v.x * h.x - abs_v.y * h.y
             
             If (separation > 0.0)
@@ -406,6 +408,9 @@ Class b2DynamicTree
         node.parent = m_freeList
         m_freeList = node
     End
+    
+    Global shared_aabbCenter:b2Vec2 = New b2Vec2()
+    
     Method InsertLeaf : void (leaf:b2DynamicTreeNode)
         
         m_insertionCount += 1
@@ -416,9 +421,9 @@ Class b2DynamicTree
             m_root.parent = null
             Return
         End
-        Local center :b2Vec2 = leaf.aabb.GetCenter()
-        Local centerX:Float = center.x
-	    Local centerY:Float = center.y
+        leaf.aabb.GetCenter(shared_aabbCenter)
+        Local centerX:Float = shared_aabbCenter.x
+	    Local centerY:Float = shared_aabbCenter.y
 	            
 		Local sibling :b2DynamicTreeNode = m_root
         If (sibling.child1 <> Null) 'sibling.IsLeaf() = False)

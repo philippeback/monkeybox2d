@@ -1581,8 +1581,10 @@ Class b2World
                 If b2PolyAndCircleContact(contact)
                     Local fixtureA :b2Fixture = contact.GetFixtureA()
                     Local fixtureB :b2Fixture = contact.GetFixtureB()
-                    Local cA :b2Vec2 = fixtureA.GetAABB().GetCenter()
-                    Local cB :b2Vec2 = fixtureB.GetAABB().GetCenter()
+                    Local cA:b2Vec2 = New b2Vec2()
+                    fixtureA.GetAABB().GetCenter(cA)
+                    Local cB:b2Vec2 = New b2Vec2()
+                    fixtureB.GetAABB().GetCenter(cB)
                     m_debugDraw.DrawSegment(cA, cB, color)
                 End
                 contact = contact.GetNext()
