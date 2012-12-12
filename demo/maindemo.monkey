@@ -40,7 +40,7 @@ Import box2d.flash.flashtypes
 Import box2d.demo
 
 Class MainDemo Extends App
-    Const VersionString:String = "1.0.10"
+    Const VersionString:String = "1.0.11"
 
     Const frameRate:Int = 30
     Const physicsRate:Int = 60
