@@ -102,7 +102,7 @@ Class b2Body
         'Local edgeDef : b2EdgeChainDef = b2EdgeChainDef(def)
         'Local v1 : b2Vec2
         'Local v2 : b2Vec2
-        'Local i : int
+        'Local i : Int
         'if (edgeDef.isALoop)
         '
         'v1 = edgeDef.vertices.Get(edgeDef.vertexCount-1)
@@ -694,7 +694,9 @@ Class b2Body
     #end
     Method SetMassData : void (massData:b2MassData)
         
+#If CONFIG = "debug"
         b2Settings.B2Assert(m_world.IsLocked() = False)
+#End
         If (m_world.IsLocked() = True)
             
             Return
@@ -783,7 +785,9 @@ Class b2Body
             '// Center the inertia about the center of mass
             m_I -= m_mass * (center.x * center.x + center.y * center.y)
             m_I *= m_inertiaScale
+#If CONFIG = "debug"
             b2Settings.B2Assert(m_I > 0)
+#End
             m_invI = 1.0 / m_I
         Else
             m_I = 0.0
@@ -1325,9 +1329,10 @@ Class b2Body
     End
     
     Method SynchronizeTransform : void ()
-        m_xf.R.Set(m_sweep.a)
         '//m_xf.position = m_sweep.c - b2Mul(m_xf.R, m_sweep.localCenter)
         Local tMat :b2Mat22 = m_xf.R
+        tMat.Set(m_sweep.a)
+        
         Local tVec :b2Vec2 = m_sweep.localCenter
         m_xf.position.x = m_sweep.c.x - (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y)
         m_xf.position.y = m_sweep.c.y - (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y)
@@ -1363,8 +1368,8 @@ Class b2Body
     End
     
     Field m_flags :Int
-    Field m_type :int
-    Field m_islandIndex :int
+    Field m_type :Int
+    Field m_islandIndex :Int
     Field m_xf :b2Transform = New b2Transform()
     '// the body origin transform
     Field m_sweep :b2Sweep = New b2Sweep()
@@ -1377,9 +1382,9 @@ Class b2Body
     Field m_prev :b2Body
     Field m_next :b2Body
     Field m_fixtureList :b2Fixture
-    Field m_fixtureCount :int
+    Field m_fixtureCount :Int
     Field m_controllerList :b2ControllerEdge
-    Field m_controllerCount :int
+    Field m_controllerCount :Int
     Field m_jointList :b2JointEdge
     Field m_contactList :b2ContactEdge
     Field m_mass :Float, m_invMass:Float
@@ -1393,17 +1398,17 @@ Class b2Body
     '//enum
     '//{
     'static b2internal
-    Global e_islandFlag :Int			= $0001
+    Const e_islandFlag:Int = $0001
     'static b2internal
-    Global e_awakeFlag :Int			= $0002
+    Const e_awakeFlag:Int = $0002
     'static b2internal
-    Global e_allowSleepFlag :Int		= $0004
+    Const e_allowSleepFlag:Int = $0004
     'static b2internal
-    Global e_bulletFlag :Int			= $0008
+    Const e_bulletFlag:Int = $0008
     'static b2internal
-    Global e_fixedRotationFlag :Int	= $0010
+    Const e_fixedRotationFlag:Int = $0010
     'static b2internal
-    Global e_activeFlag :Int			= $0020
+    Const e_activeFlag:Int = $0020
     '//}
     '// m_type
     '//enum
@@ -1412,9 +1417,9 @@ Class b2Body
     '/// static: zero mass, zero velocity, may be manually moved
     '/// kinematic: zero mass, non-zero velocity set by user, moved by solver
     '/// : positive mass, non-zero velocity determined by forces, moved by solver
-    Global b2_staticBody:Int = 0
-    Global b2_kinematicBody:Int = 1
-    Global b2_Body:Int = 2
+    Const b2_staticBody:Int = 0
+    Const b2_kinematicBody:Int = 1
+    Const b2_Body:Int = 2
     '//}
 End
 

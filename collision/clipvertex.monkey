@@ -42,13 +42,12 @@ Import box2d.collision
 #end
 Class ClipVertex
     
-    Method Set : void (other:ClipVertex)
-        
-        v.SetV(other.v)
+    Method Set : void (other:ClipVertex)        
+        v.x = other.v.x
+        v.y = other.v.y
         id.Set(other.id)
     End
+    
     Field v:b2Vec2 = New b2Vec2()
-    
     Field id:b2ContactID = New b2ContactID()
-    
 End

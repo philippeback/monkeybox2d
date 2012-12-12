@@ -56,17 +56,17 @@ Class b2AABB
         valid = valid And lowerBound.IsValid() And upperBound.IsValid()
         Return valid
     End
+    
     '* Get the center of the AABB.
-    Method GetCenter : b2Vec2 ()
-        
-        Return New b2Vec2( (lowerBound.x + upperBound.x) / 2,
-        (lowerBound.y + upperBound.y) / 2)
+    Method GetCenter:Void(out:b2Vec2)
+        out.x = (lowerBound.x + upperBound.x) * 0.5
+        out.y = (lowerBound.y + upperBound.y) * 0.5
     End
+    
     '* Get the extents of the AABB (half-widths).
-    Method GetExtents : b2Vec2 ()
-        
-        Return New b2Vec2( (upperBound.x - lowerBound.x) / 2,
-        (upperBound.y - lowerBound.y) / 2)
+    Method GetExtents:Void(out:b2Vec2)
+        out.x = (upperBound.x - lowerBound.x) * 0.5
+        out.y = (upperBound.y - lowerBound.y) * 0.5
     End
     #rem
     '/**
@@ -189,17 +189,23 @@ Class b2AABB
     #end
     Method TestOverlap : Bool (other:b2AABB)
         
-        Local d1X :Float = other.lowerBound.x - upperBound.x
-        Local d1Y :Float = other.lowerBound.y - upperBound.y
-        Local d2X :Float = lowerBound.x - other.upperBound.x
-        Local d2Y :Float = lowerBound.y - other.upperBound.y
-        If (d1X > 0.0 Or d1Y > 0.0)
-            Return False
-        End
-        If (d2X > 0.0 Or d2Y > 0.0)
-            Return False
-        End
-        Return True
+        If (other.lowerBound.x > upperBound.x)
+			Return False
+		End
+		
+ 		If (lowerBound.x > other.upperBound.x)
+			Return False
+		End
+               
+		If (other.lowerBound.y > upperBound.y)
+			Return False
+		End
+
+		If (lowerBound.y > other.upperBound.y)
+			Return False
+		End
+        
+		Return True
     End
     
     '* Combine two AABBs into one.

@@ -56,7 +56,7 @@ Class b2Fixture
     '* @return the shape type.
     '*/
     #end
-    Method GetType : int ()
+    Method GetType : Int ()
         
         Return m_shape.GetType()
     End
@@ -372,18 +372,19 @@ Class b2Fixture
         m_proxy = null
     End
     
-    Field tmpVec:b2Vec2 = New b2Vec2()
+    Global tmpVec:b2Vec2 = New b2Vec2()
+    Global tmpAABB1:b2AABB = New b2AABB()
+    Global tmpAABB2:b2AABB = New b2AABB()
+    
     Method Synchronize : void (broadPhase:IBroadPhase, transform1:b2Transform, transform2:b2Transform)
         
         If (Not(m_proxy))
             Return
         End
         '// Compute an AABB that ocvers the swept shape (may miss some rotation effect)
-        Local aabb1 :b2AABB = New b2AABB()
-        Local aabb2 :b2AABB = New b2AABB()
-        m_shape.ComputeAABB(aabb1, transform1)
-        m_shape.ComputeAABB(aabb2, transform2)
-        m_aabb.Combine(aabb1, aabb2)
+        m_shape.ComputeAABB(tmpAABB1, transform1)
+        m_shape.ComputeAABB(tmpAABB2, transform2)
+        m_aabb.Combine(tmpAABB1, tmpAABB2)
         b2Math.SubtractVV(transform2.position, transform1.position, tmpVec)
         broadPhase.MoveProxy(m_proxy, m_aabb, tmpVec)
     End

@@ -46,8 +46,9 @@ Class b2SimplexCache
     Field metric:Float
     Field count:Int
     '* Vertices on shape a
-    Field indexA:FlashArray<IntObject> = New FlashArray<IntObject>(3)
+    Field indexA:Int[] = New Int[3]
     '* Vertices on shape b
-    Field indexB:FlashArray<IntObject> = New FlashArray<IntObject>(3)
+    Field indexB:Int[] = New Int[3]
+    
 End
 

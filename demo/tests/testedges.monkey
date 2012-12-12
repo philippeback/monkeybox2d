@@ -49,7 +49,7 @@ Class TestEdges Extends Test
         
         
         Local ground :b2Body = m_world.GetGroundBody()
-        Local i :int
+        Local i :Int
         Local body :b2Body
         '// edge
         
@@ -103,14 +103,14 @@ Class TestEdges Extends Test
             body.CreateFixture(fixtureDef)
         End
         
-        Local j :int
+        Local j :Int
         For Local i:Int = 0 Until 15
             
             Local bodyDefP :b2BodyDef = New b2BodyDef()
             bodyDefP.type = b2Body.b2_Body
             Local polyShape :b2PolygonShape = New b2PolygonShape()
             Local vertices : b2Vec2[]
-            Local vertexCount :int
+            Local vertexCount :Int
             If (Rnd() > 0.66)
                 
                 vertexCount = 4

@@ -766,7 +766,7 @@ Class b2LineJoint Extends b2Joint
     Field m_enableMotor:Bool
     
     
-    Field m_limitState:int
+    Field m_limitState:Int
     
     
 End

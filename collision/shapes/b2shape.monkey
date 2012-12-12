@@ -75,7 +75,7 @@ Class b2Shape
     '* @return the shape type.
     '*/
     #end
-    Method GetType : int ()
+    Method GetType : Int ()
         
         Return m_type
     End
@@ -164,7 +164,7 @@ Class b2Shape
         m_radius = b2Settings.b2_linearSlop
     End
     '// ~b2Shape()
-    Field m_type :int
+    Field m_type :Int
     Field m_radius :Float
     #rem
     '/**
@@ -174,15 +174,15 @@ Class b2Shape
     '//enum b2ShapeType
     '//{
     'static b2internal
-    const e_unknownShape:int = 	-1
+    const e_unknownShape:Int = 	-1
     'static b2internal
-    const e_circleShape:int = 	0
+    const e_circleShape:Int = 	0
     'static b2internal
-    const e_polygonShape:int = 	1
+    const e_polygonShape:Int = 	1
     'static b2internal
-    const e_edgeShape:int =       2
+    const e_edgeShape:Int =       2
     'static b2internal
-    const e_shapeTypeCount:int = 	3
+    const e_shapeTypeCount:Int = 	3
     '//}
     #rem
     '/**
@@ -190,10 +190,10 @@ Class b2Shape
     '*/
     #end
     '* Return value for TestSegment indicating a hit.
-    Const e_hitCollide:int = 1
+    Const e_hitCollide:Int = 1
     '* Return value for TestSegment indicating a miss.
-    Const e_missCollide:int = 0
+    Const e_missCollide:Int = 0
     '* Return value for TestSegment indicating that the segment starting point, p1, is already inside the shape.
-    Const e_startsInsideCollide:int = -1
+    Const e_startsInsideCollide:Int = -1
 End
 

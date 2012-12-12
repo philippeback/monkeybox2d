@@ -43,11 +43,11 @@ Import box2d.collision
 '*/
 #end
 Class b2TimeOfImpact
-    Global b2_toiCalls:int = 0
-    Global b2_toiIters:int = 0
-    Global b2_toiMaxIters:int = 0
-    Global b2_toiRootIters:int = 0
-    Global b2_toiMaxRootIters:int = 0
+    Global b2_toiCalls:Int = 0
+    Global b2_toiIters:Int = 0
+    Global b2_toiMaxIters:Int = 0
+    Global b2_toiRootIters:Int = 0
+    Global b2_toiMaxRootIters:Int = 0
     Global s_cache:b2SimplexCache = New b2SimplexCache()
     Global s_distanceInput:b2DistanceInput = New b2DistanceInput()
     Global s_xfA:b2Transform = New b2Transform()
@@ -62,14 +62,16 @@ Class b2TimeOfImpact
         Local proxyB :b2DistanceProxy = input.proxyB
         Local sweepA :b2Sweep = input.sweepA
         Local sweepB :b2Sweep = input.sweepB
+#If CONFIG = "debug"
         b2Settings.B2Assert(sweepA.t0 = sweepB.t0)
         b2Settings.B2Assert(1.0 - sweepA.t0 > Constants.EPSILON)
+#End
         Local radius :Float = proxyA.m_radius + proxyB.m_radius
         Local tolerance :Float = input.tolerance
         Local alpha :Float = 0.0
-        const k_maxIterations:int = 1000
+        const k_maxIterations:Int = 1000
         '//TODO_ERIN b2Settings
-        Local iter :int = 0
+        Local iter :Int = 0
         Local target :Float = 0.0
         '// Prepare input for distance query.
         s_cache.count = 0
@@ -123,7 +125,7 @@ Class b2TimeOfImpact
             '//#if 0
             '// Dump the curve seen by the root finder
             '//{
-            '//const N:int = 100
+            '//const N:Int = 100
             '//var dx:Float = 1.0 / N
             '//var xs:FlashArray<FloatObject> = New Array(N + 1)
             '//var fs:FlashArray<FloatObject> = New Array(N + 1)
@@ -159,7 +161,7 @@ Class b2TimeOfImpact
                 Exit
             End
             '// Determine when intervals intersect
-            Local rootIterCount :int = 0
+            Local rootIterCount :Int = 0
             While True
                 
                 '// Use a mis of the secand rule and bisection

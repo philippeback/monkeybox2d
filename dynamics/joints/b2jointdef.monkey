@@ -55,7 +55,7 @@ Class b2JointDef
     '* The joint set(type) automatically for concrete joint types.
     '*/
     #end
-    Field type:int
+    Field type:Int
     #rem
     '/**
     '* Use this to attach application specific data to your joints.

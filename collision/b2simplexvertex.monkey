@@ -60,10 +60,10 @@ Class b2SimplexVertex
     Field a:Float
     
     '// barycentric coordinate for closest point
-    Field indexA:int
+    Field indexA:Int
     
     '// wA index
-    Field indexB:int
+    Field indexB:Int
     
     '// wB index
     

@@ -45,7 +45,7 @@ Class TestBridge Extends Test
         '// Set Text field
         name = "Bridge"
         Local ground :b2Body = m_world.GetGroundBody()
-        Local i :int
+        Local i :Int
         Local anchor :b2Vec2 = New b2Vec2()
         Local body :b2Body
         '// Bridge
@@ -59,7 +59,7 @@ Class TestBridge Extends Test
         Local bd :b2BodyDef = New b2BodyDef()
         bd.type = b2Body.b2_Body
         Local jd :b2RevoluteJointDef = New b2RevoluteJointDef()
-        const numPlanks:int = 10
+        const numPlanks:Int = 10
         jd.lowerAngle = -15 / (180/Constants.PI)
         jd.upperAngle = 15 / (180/Constants.PI)
         jd.enableLimit = True
@@ -112,14 +112,14 @@ Class TestBridge Extends Test
             body.CreateFixture(fixtureDef)
         End
         
-        Local j :int
+        Local j :Int
         For Local i:Int = 0 Until 15
             
             Local bodyDefP :b2BodyDef = New b2BodyDef()
             bodyDefP.type = b2Body.b2_Body
             Local polyShape :b2PolygonShape = New b2PolygonShape()
             Local vertices : b2Vec2[]
-            Local vertexCount :int
+            Local vertexCount :Int
             If (Rnd() > 0.66)
                 
                 vertexCount = 4

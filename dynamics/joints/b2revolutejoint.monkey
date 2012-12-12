@@ -668,7 +668,7 @@ Class b2RevoluteJoint Extends b2Joint
     Field m_upperAngle:Float
     
     
-    Field m_limitState:int
+    Field m_limitState:Int
     
     
 End

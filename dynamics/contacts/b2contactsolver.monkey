@@ -49,30 +49,44 @@ Class b2ContactSolver
     Field m_step:b2TimeStep = New b2TimeStep()
     Field m_allocator: Object
     Field m_constraints:b2ContactConstraint[]
-    Field m_constraintCount:int
+    Field m_constraintCount:Int
+    Field constraintCapacity:Int = 1000
     
     Method New()
+        '// fill vector to hold enough constraints
+        m_constraints = New b2ContactConstraint[constraintCapacity]
+        
+        For Local i:Int = 0 Until constraintCapacity
+            m_constraints[i] =  New b2ContactConstraint()
+        End
+            
     End
     
     Global s_worldManifold:b2WorldManifold = New b2WorldManifold()
-    Method Initialize : void (timeStep:b2TimeStep, contacts:FlashArray<b2Contact>, contactCount:int, allocator: Object)
+    Method Initialize : void (timeStep:b2TimeStep, contacts:b2Contact[], contactCount:Int, allocator: Object)
         
         Local contact :b2Contact
+       
         m_step.Set(timeStep)
         m_allocator = allocator
-        Local i :int
+        
+        Local i :Int
         Local tVec :b2Vec2
         Local tMat :b2Mat22
-        m_constraintCount = contactCount
-        '// fill vector to hold enough constraints
-        m_constraints = New b2ContactConstraint[m_constraintCount]
         
-        For Local i:Int = 0 Until m_constraintCount
-            m_constraints[i] =  New b2ContactConstraint()
+        m_constraintCount = contactCount
+        
+        '// fill vector to hold enough constraints
+        If m_constraintCount > constraintCapacity
+            m_constraints = m_constraints.Resize(m_constraintCount)
+            For Local i:Int = constraintCapacity Until m_constraintCount
+                m_constraints[i] = New b2ContactConstraint()
+            End
+            constraintCapacity = m_constraintCount
         End
+        
         For Local i:Int = 0 Until contactCount
-            
-            contact = contacts.Get(i)
+            contact = contacts[i]
             Local fixtureA :b2Fixture = contact.m_fixtureA
             Local fixtureB :b2Fixture = contact.m_fixtureB
             Local shapeA :b2Shape = fixtureA.m_shape
@@ -92,7 +106,9 @@ Class b2ContactSolver
             Local vBY :Float = bodyB.m_linearVelocity.y
             Local wA :Float = bodyA.m_angularVelocity
             Local wB :Float = bodyB.m_angularVelocity
+#If CONFIG = "debug"
             b2Settings.B2Assert(manifold.m_pointCount > 0)
+#End
             s_worldManifold.Initialize(manifold, bodyA.m_xf, radiusA, bodyB.m_xf, radiusB)
             Local normalX :Float = s_worldManifold.m_normal.x
             Local normalY :Float = s_worldManifold.m_normal.y
@@ -115,13 +131,14 @@ Class b2ContactSolver
             cc.localPoint.y = manifold.m_localPoint.y
             cc.radius = radiusA + radiusB
             cc.type = manifold.m_type
+           
             For Local k:Int = 0 Until cc.pointCount
-                
                 Local cp :b2ManifoldPoint = manifold.m_points[k]
                 Local ccp :b2ContactConstraintPoint = cc.points[k]
                 ccp.normalImpulse = cp.m_normalImpulse
                 ccp.tangentImpulse = cp.m_tangentImpulse
-                ccp.localPoint.SetV(cp.m_localPoint)
+                ccp.localPoint.x = cp.m_localPoint.x
+                ccp.localPoint.y = cp.m_localPoint.y
                 ccp.rA.x = s_worldManifold.m_points[k].x - bodyA.m_sweep.c.x
                 Local rAX :Float = ccp.rA.x
                 ccp.rA.y = s_worldManifold.m_points[k].y - bodyA.m_sweep.c.y
@@ -190,8 +207,10 @@ Class b2ContactSolver
                 Local k_maxConditionNumber :Float = 100.0
                 If ( k11 * k11 < k_maxConditionNumber * (k11 * k22 - k12 * k12))
                     '// safe(K) to invert.
-                    cc.K.col1.Set(k11, k12)
-                    cc.K.col2.Set(k12, k22)
+                    cc.K.col1.x = k11
+                    cc.K.col1.y = k12
+                    cc.K.col2.x = k12
+                    cc.K.col2.y = k22
                     cc.K.GetInverse(cc.normalMass)
                 Else
                     '// The constraints are redundant, just use one.
@@ -226,8 +245,8 @@ Class b2ContactSolver
             Local tangentX :Float = normalY
             Local tangentY :Float = -normalX
             Local tX :Float
-            Local j :int
-            Local tCount :int
+            Local j :Int
+            Local tCount :Int
             If (timeStep.warmStarting)
                 
                 tCount = c.pointCount
@@ -267,7 +286,7 @@ Class b2ContactSolver
     
     Method SolveVelocityConstraints : void ()
         
-        Local j :int
+        Local j :Int
         Local ccp :b2ContactConstraintPoint
         Local rAX :Float
         Local rAY :Float
@@ -325,8 +344,14 @@ Class b2ContactSolver
                 lambda = ccp.tangentMass * -vt
                 '// b2Clamp the accumulated force
                 maxFriction = friction * ccp.normalImpulse
-                newImpulse = b2Math.Clamp(ccp.tangentImpulse + lambda, -maxFriction, maxFriction)
-                lambda = newImpulse-ccp.tangentImpulse
+                newImpulse = ccp.tangentImpulse + lambda
+                If (newImpulse < -maxFriction)
+                    newImpulse = -maxFriction
+                ElseIf(newImpulse > maxFriction)
+                    newImpulse = maxFriction
+                End
+                'newImpulse = b2Math.Clamp(ccp.tangentImpulse + lambda, -maxFriction, maxFriction)
+                lambda = newImpulse - ccp.tangentImpulse
                 '// Apply contact impulse
                 PX = lambda * tangentX
                 PY = lambda * tangentY
@@ -339,14 +364,17 @@ Class b2ContactSolver
                 ccp.tangentImpulse = newImpulse
             End
             '// Solve the normal constraints
-            Local tCount :int = c.pointCount
+            Local tCount :Int = c.pointCount
             If (c.pointCount = 1)
                 
                 ccp = c.points[0]
+                Local ccpRa:b2Vec2 = ccp.rA
+                Local ccpRb:b2Vec2 = ccp.rB
+                
                 '// Relative velocity at contact
                 '//b2Vec2 dv = vB + b2Cross(wB, ccp->rB) - vA - b2Cross(wA, ccp->rA)
-                dvX = vB.x + (wB * -ccp.rB.y) - vA.x - (wA * -ccp.rA.y)
-                dvY = vB.y + (wB * ccp.rB.x) - vA.y - (wA * ccp.rA.x)
+                dvX = vB.x + (wB * - ccpRb.y) - vA.x - (wA * - ccpRa.y)
+                dvY = vB.y + (wB * ccpRb.x) - vA.y - (wA * ccpRa.x)
                 '// Compute normal impulse
                 '//var vn:Float = b2Math.b2Dot(dv, normal)
                 vn = dvX * normalX + dvY * normalY
@@ -354,9 +382,7 @@ Class b2ContactSolver
                 '// b2Clamp the accumulated impulse
                 '//newImpulse = b2Math.b2Max(ccp.normalImpulse + lambda, 0.0)
                 newImpulse = ccp.normalImpulse + lambda
-                If( newImpulse > 0  )
-                    newImpulse = newImpulse
-                Else
+                If( newImpulse < 0.0  )
                     newImpulse = 0.0
                 End
                 
@@ -368,12 +394,12 @@ Class b2ContactSolver
                 '//vA.Subtract( b2Math.MulFV( invMassA, P ) )
                 vA.x -= invMassA * PX
                 vA.y -= invMassA * PY
-                wA -= invIA * (ccp.rA.x * PY - ccp.rA.y * PX)
+                wA -= invIA * (ccpRa.x * PY - ccpRa.y * PX)
                 '//invIA * b2Math.b2CrossVV(ccp.rA, P)
                 '//vB.Add( b2Math.MulFV( invMass2, P ) )
                 vB.x += invMassB * PX
                 vB.y += invMassB * PY
-                wB += invIB * (ccp.rB.x * PY - ccp.rB.y * PX)
+                wB += invIB * (ccpRb.x * PY - ccpRb.y * PX)
                 '//invIB * b2Math.b2CrossVV(ccp.rB, P)
                 ccp.normalImpulse = newImpulse
             Else
@@ -406,18 +432,24 @@ Class b2ContactSolver
                 '//    = A * x + b - A * a
                 '//    = A * x + b
                 '// b = b - A * a
-                Local cp1 :b2ContactConstraintPoint = c.points[0]
-                Local cp2 :b2ContactConstraintPoint = c.points[1]
+                Local cp1:b2ContactConstraintPoint = c.points[0]
+                Local cp1rA:b2Vec2 = cp1.rA
+                Local cp1rB:b2Vec2 = cp1.rB
+                
+                Local cp2:b2ContactConstraintPoint = c.points[1]
+                Local cp2rA:b2Vec2 = cp2.rA
+                Local cp2rB:b2Vec2 = cp2.rB
+                
                 Local aX :Float = cp1.normalImpulse
                 Local aY :Float = cp2.normalImpulse
                 '//b2Settings.B2Assert( aX >= 0.0f And aY >= 0.0f )
                 '// Relative velocity at contact
                 '//var dv1:b2Vec2 = vB + b2Cross(wB, cp1.rB) - vA - b2Cross(wA, cp1.rA)
-                Local dv1X :Float = vB.x - wB * cp1.rB.y - vA.x + wA * cp1.rA.y
-                Local dv1Y :Float = vB.y + wB * cp1.rB.x - vA.y - wA * cp1.rA.x
+                Local dv1X:Float = vB.x - wB * cp1rB.y - vA.x + wA * cp1rA.y
+                Local dv1Y:Float = vB.y + wB * cp1rB.x - vA.y - wA * cp1rA.x
                 '//var dv2:b2Vec2 = vB + b2Cross(wB, cpB.r2) - vA - b2Cross(wA, cp2.rA)
-                Local dv2X :Float = vB.x - wB * cp2.rB.y - vA.x + wA * cp2.rA.y
-                Local dv2Y :Float = vB.y + wB * cp2.rB.x - vA.y - wA * cp2.rA.x
+                Local dv2X:Float = vB.x - wB * cp2rB.y - vA.x + wA * cp2rA.y
+                Local dv2Y:Float = vB.y + wB * cp2rB.x - vA.y - wA * cp2rA.x
                 '// Compute normal velocity
                 '//var vn1:Float = b2Dot(dv1, normal)
                 Local vn1 :Float = dv1X * normalX + dv1Y * normalY
@@ -461,12 +493,12 @@ Class b2ContactSolver
                         vA.x -= invMassA * (P1X + P2X)
                         vA.y -= invMassA * (P1Y + P2Y)
                         '//wA -= invIA * (b2Cross(cp1.rA, P1) + b2Cross(cp2.rA, P2))
-                        wA -= invIA * ( cp1.rA.x * P1Y - cp1.rA.y * P1X + cp2.rA.x * P2Y - cp2.rA.y * P2X)
+                        wA -= invIA * (cp1rA.x * P1Y - cp1rA.y * P1X + cp2rA.x * P2Y - cp2rA.y * P2X)
                         '//vB += invMassB * (P1 + P2)
                         vB.x += invMassB * (P1X + P2X)
                         vB.y += invMassB * (P1Y + P2Y)
                         '//wB += invIB * (b2Cross(cp1.rB, P1) + b2Cross(cp2.rB, P2))
-                        wB   += invIB * ( cp1.rB.x * P1Y - cp1.rB.y * P1X + cp2.rB.x * P2Y - cp2.rB.y * P2X)
+                        wB += invIB * (cp1rB.x * P1Y - cp1rB.y * P1X + cp2rB.x * P2Y - cp2rB.y * P2X)
                         '// Accumulate
                         cp1.normalImpulse = xX
                         cp2.normalImpulse = xY
@@ -516,12 +548,12 @@ Class b2ContactSolver
                         vA.x -= invMassA * (P1X + P2X)
                         vA.y -= invMassA * (P1Y + P2Y)
                         '//wA -= invIA * (b2Cross(cp1.rA, P1) + b2Cross(cp2.rA, P2))
-                        wA -= invIA * ( cp1.rA.x * P1Y - cp1.rA.y * P1X + cp2.rA.x * P2Y - cp2.rA.y * P2X)
+                        wA -= invIA * (cp1rA.x * P1Y - cp1rA.y * P1X + cp2rA.x * P2Y - cp2rA.y * P2X)
                         '//vB += invMassB * (P1 + P2)
                         vB.x += invMassB * (P1X + P2X)
                         vB.y += invMassB * (P1Y + P2Y)
                         '//wB += invIB * (b2Cross(cp1.rB, P1) + b2Cross(cp2.rB, P2))
-                        wB   += invIB * ( cp1.rB.x * P1Y - cp1.rB.y * P1X + cp2.rB.x * P2Y - cp2.rB.y * P2X)
+                        wB += invIB * (cp1rB.x * P1Y - cp1rB.y * P1X + cp2rB.x * P2Y - cp2rB.y * P2X)
                         '// Accumulate
                         cp1.normalImpulse = xX
                         cp2.normalImpulse = xY
@@ -571,12 +603,12 @@ Class b2ContactSolver
                         vA.x -= invMassA * (P1X + P2X)
                         vA.y -= invMassA * (P1Y + P2Y)
                         '//wA -= invIA * (b2Cross(cp1.rA, P1) + b2Cross(cp2.rA, P2))
-                        wA -= invIA * ( cp1.rA.x * P1Y - cp1.rA.y * P1X + cp2.rA.x * P2Y - cp2.rA.y * P2X)
+                        wA -= invIA * (cp1rA.x * P1Y - cp1rA.y * P1X + cp2rA.x * P2Y - cp2rA.y * P2X)
                         '//vB += invMassB * (P1 + P2)
                         vB.x += invMassB * (P1X + P2X)
                         vB.y += invMassB * (P1Y + P2Y)
                         '//wB += invIB * (b2Cross(cp1.rB, P1) + b2Cross(cp2.rB, P2))
-                        wB   += invIB * ( cp1.rB.x * P1Y - cp1.rB.y * P1X + cp2.rB.x * P2Y - cp2.rB.y * P2X)
+                        wB += invIB * (cp1rB.x * P1Y - cp1rB.y * P1X + cp2rB.x * P2Y - cp2rB.y * P2X)
                         '// Accumulate
                         cp1.normalImpulse = xX
                         cp2.normalImpulse = xY
@@ -625,12 +657,12 @@ Class b2ContactSolver
                         vA.x -= invMassA * (P1X + P2X)
                         vA.y -= invMassA * (P1Y + P2Y)
                         '//wA -= invIA * (b2Cross(cp1.rA, P1) + b2Cross(cp2.rA, P2))
-                        wA -= invIA * ( cp1.rA.x * P1Y - cp1.rA.y * P1X + cp2.rA.x * P2Y - cp2.rA.y * P2X)
+                        wA -= invIA * (cp1rA.x * P1Y - cp1rA.y * P1X + cp2rA.x * P2Y - cp2rA.y * P2X)
                         '//vB += invMassB * (P1 + P2)
                         vB.x += invMassB * (P1X + P2X)
                         vB.y += invMassB * (P1Y + P2Y)
                         '//wB += invIB * (b2Cross(cp1.rB, P1) + b2Cross(cp2.rB, P2))
-                        wB   += invIB * ( cp1.rB.x * P1Y - cp1.rB.y * P1X + cp2.rB.x * P2Y - cp2.rB.y * P2X)
+                        wB += invIB * (cp1rB.x * P1Y - cp1rB.y * P1X + cp2rB.x * P2Y - cp2rB.y * P2X)
                         '// Accumulate
                         cp1.normalImpulse = xX
                         cp2.normalImpulse = xY
@@ -670,6 +702,9 @@ Class b2ContactSolver
             bodyB.m_angularVelocity = wB
         End
     End
+    
+    
+    
     Method FinalizeVelocityConstraints : void ()
         
         For Local i:Int = 0 Until m_constraintCount
@@ -712,7 +747,7 @@ Class b2ContactSolver
     '//			var normalY:Float = c.normal.y
     '//
     '//			// Solver normal constraints
-    '//			var tCount:int = c.pointCount
+    '//			var tCount:Int = c.pointCount
     '//			For Local j:Int = 0 Until tCount
     '//			{
     '//				var ccp:b2ContactConstraintPoint = c.points.Get( j )
@@ -804,16 +839,35 @@ Class b2ContactSolver
             Local invIB :Float = bodyB.m_mass * bodyB.m_invI
             s_psm.Initialize(c)
             Local normal :b2Vec2 = s_psm.m_normal
+            
+            Local ba_sweep:b2Sweep = bodyA.m_sweep
+            Local ba_sweepc:b2Vec2 = ba_sweep.c
+            Local ba_xf:b2Transform = bodyA.m_xf
+            Local ba_xfPos:b2Vec2 = ba_xf.position
+            Local ba_tMat:b2Mat22 = ba_xf.R
+            Local ba_tMat_col1:b2Vec2 = ba_tMat.col1
+            Local ba_tMat_col2:b2Vec2 = ba_tMat.col2
+            Local ba_tVec:b2Vec2 = ba_sweep.localCenter
+            
+            Local bb_sweep:b2Sweep = bodyB.m_sweep
+            Local bb_sweepc:b2Vec2 = bb_sweep.c
+            Local bb_xf:b2Transform = bodyB.m_xf
+            Local bb_xfPos:b2Vec2 = bb_xf.position
+            Local bb_tMat:b2Mat22 = bb_xf.R
+            Local bb_tMat_col1:b2Vec2 = bb_tMat.col1
+            Local bb_tMat_col2:b2Vec2 = bb_tMat.col2
+            Local bb_tVec:b2Vec2 = bb_sweep.localCenter
+                    
             '// Solve normal constraints
             For Local j:Int = 0 Until c.pointCount
                 
                 Local ccp :b2ContactConstraintPoint = c.points[j]
                 Local point :b2Vec2 = s_psm.m_points[j]
                 Local separation :Float = s_psm.m_separations[j]
-                Local rAX :Float = point.x - bodyA.m_sweep.c.x
-                Local rAY :Float = point.y - bodyA.m_sweep.c.y
-                Local rBX :Float = point.x - bodyB.m_sweep.c.x
-                Local rBY :Float = point.y - bodyB.m_sweep.c.y
+                Local rAX :Float = point.x - ba_sweepc.x
+                Local rAY :Float = point.y - ba_sweepc.y
+                Local rBX :Float = point.x - bb_sweepc.x
+                Local rBY :Float = point.y - bb_sweepc.y
                 '// Track max constraint error.
                 If( minSeparation < separation )
                     minSeparation = minSeparation
@@ -821,23 +875,57 @@ Class b2ContactSolver
                     minSeparation = separation
                 End
                 '// Prevent large corrections and allow slop.
-                Local C :Float = b2Math.Clamp(baumgarte * (separation + b2Settings.b2_linearSlop), -b2Settings.b2_maxLinearCorrection, 0.0)
+                
+                Local C:Float = baumgarte * (separation + b2Settings.b2_linearSlop)
+                
+                If C < -b2Settings.b2_maxLinearCorrection
+                    C = -b2Settings.b2_maxLinearCorrection
+                ElseIf C > 0.0
+                    C = 0.0
+                End
                 '// Compute normal impulse
                 Local impulse :Float = -ccp.equalizedMass * C
                 Local PX :Float = impulse * normal.x
                 Local PY :Float = impulse * normal.y
+                
                 '//bodyA.m_sweep.c -= invMassA * P
-                bodyA.m_sweep.c.x -= invMassA * PX
-                bodyA.m_sweep.c.y -= invMassA * PY
+                ba_sweepc.x -= invMassA * PX
+                ba_sweepc.y -= invMassA * PY
                 '//bodyA.m_sweep.a -= invIA * b2Cross(rA, P)
-                bodyA.m_sweep.a -= invIA * (rAX * PY - rAY * PX)
-                bodyA.SynchronizeTransform()
+                ba_sweep.a -= invIA * (rAX * PY - rAY * PX)
+                
+                'bodyA.SynchronizeTransform()
+                '**** THE FOLLOWING IS THE ABOVE LINE MANUALLY INLINED!
+                'ba_tMat.Set(ba_sweep.a)
+                Local c :Float = Cosr(ba_sweep.a)
+                Local s :Float = Sinr(ba_sweep.a)
+                ba_tMat_col1.x = c
+                ba_tMat_col2.x = -s
+                ba_tMat_col1.y = s
+                ba_tMat_col2.y = c
+                
+                ba_xfPos.x = ba_sweepc.x - (ba_tMat_col1.x * ba_tVec.x + ba_tMat_col2.x * ba_tVec.y)
+                ba_xfPos.y = ba_sweepc.y - (ba_tMat_col1.y * ba_tVec.x + ba_tMat_col2.y * ba_tVec.y)
+                
                 '//bodyB.m_sweep.c += invMassB * P
-                bodyB.m_sweep.c.x += invMassB * PX
-                bodyB.m_sweep.c.y += invMassB * PY
-                '//bodyB.m_sweep.a += invIB * b2Cross(rB, P)
-                bodyB.m_sweep.a += invIB * (rBX * PY - rBY * PX)
-                bodyB.SynchronizeTransform()
+                bb_sweepc.x += invMassB * PX
+                bb_sweepc.y += invMassB * PY
+                 '//bodyB.m_sweep.a += invIB * b2Cross(rB, P)
+                bb_sweep.a += invIB * (rBX * PY - rBY * PX)
+                
+                'bodyB.SynchronizeTransform()
+                '**** THE FOLLOWING IS THE ABOVE LINE MANUALLY INLINED!
+                'bb_tMat.Set(bb_sweep.a)
+                c = Cosr(bb_sweep.a)
+                s = Sinr(bb_sweep.a)
+                bb_tMat_col1.x = c
+                bb_tMat_col2.x = -s
+                bb_tMat_col1.y = s
+                bb_tMat_col2.y = c
+                
+                bb_xfPos.x = bb_sweepc.x - (bb_tMat_col1.x * bb_tVec.x + bb_tMat_col2.x * bb_tVec.y)
+                bb_xfPos.y = bb_sweepc.y - (bb_tMat_col1.y * bb_tVec.x + bb_tMat_col2.y * bb_tVec.y)
+                
             End
         End
         '// We cant expect minSpeparation >= -b2_linearSlop because we dont
