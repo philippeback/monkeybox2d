@@ -68,31 +68,35 @@ Class b2Math
     '
     #end
     Function Dot : Float (a:b2Vec2, b:b2Vec2)
-        
         Return a.x * b.x + a.y * b.y
     End
+    
     Function CrossVV : Float (a:b2Vec2, b:b2Vec2)
         Return a.x * b.y - a.y * b.x
     End
     
     Function CrossVF:Void (a:b2Vec2, s:Float, out:b2Vec2)
         Local tmp:Float = a.x
-        out.Set(s * a.y, -s * tmp)
+        out.x = s * a.y
+        out.y = -s * tmp
     End
     
     Function CrossFV:Void (s:Float, a:b2Vec2, out:b2Vec2)
         Local tmp:Float = a.x
-        out.Set(-s * a.y, s * tmp)
+        out.x = -s * a.y
+        out.y = s * tmp
     End
     
     Function MulMV:Void (A:b2Mat22, v:b2Vec2, out:b2Vec2)
         Local tmp:Float =  A.col1.y * v.x + A.col2.y * v.y
-        out.Set(A.col1.x * v.x + A.col2.x * v.y, tmp)
+        out.x = A.col1.x * v.x + A.col2.x * v.y
+        out.y = tmp
     End
     
     Function MulTMV:Void (A:b2Mat22, v:b2Vec2, out:b2Vec2)
         Local tmp:Float = Dot(v, A.col2)
-        out.Set(Dot(v, A.col1), tmp)
+        out.x = Dot(v, A.col1)
+        out.y = tmp
     End
     
     Function MulX:Void (T:b2Transform, v:b2Vec2, out:b2Vec2)
@@ -110,11 +114,13 @@ Class b2Math
     End
     
     Function AddVV:Void(a:b2Vec2, b:b2Vec2,out:b2Vec2)
-        out.Set(a.x + b.x, a.y + b.y)
+        out.x = a.x + b.x
+        out.y = a.y + b.y
     End
     
     Function SubtractVV:Void(a:b2Vec2, b:b2Vec2,out:b2Vec2)
-        out.Set(a.x - b.x, a.y - b.y)
+        out.x = a.x - b.x
+        out.y = a.y - b.y
     End
     
     Function Distance : Float (a:b2Vec2, b:b2Vec2)
@@ -140,6 +146,7 @@ Class b2Math
         Local C:b2Mat22 = b2Mat22.FromVV(tempVec,tempVec2)
         Return C
     End
+    
     '// A * B
     Function MulMM : b2Mat22 (A:b2Mat22, B:b2Mat22)
         MulMV(A, B.col1, tempVec) 
@@ -147,9 +154,9 @@ Class b2Math
         Local C:b2Mat22 = b2Mat22.FromVV(tempVec,tempVec2)
         Return C
     End
+    
     '// A^T * B
     Function MulTMM : b2Mat22 (A:b2Mat22, B:b2Mat22)
-        
         Local c1 :b2Vec2 = New b2Vec2(Dot(A.col1, B.col1), Dot(A.col2, B.col1))
         Local c2 :b2Vec2 = New b2Vec2(Dot(A.col1, B.col2), Dot(A.col2, B.col2))
         Local C :b2Mat22 = b2Mat22.FromVV(c1, c2)
@@ -165,7 +172,8 @@ Class b2Math
     End
     
     Function AbsV:Void (a:b2Vec2, out:b2Vec2)
-        out.Set(Abs(a.x), Abs(a.y))
+        out.x = Abs(a.x)
+        out.y = Abs(a.y)
     End
     
     Function AbsM : b2Mat22 (A:b2Mat22)

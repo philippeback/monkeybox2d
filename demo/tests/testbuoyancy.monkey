@@ -55,7 +55,7 @@ Class TestBuoyancy Extends Test
         bc.linearDrag = 5
         bc.angularDrag = 2
         Local ground :b2Body = m_world.GetGroundBody()
-        Local i :int
+        Local i :Int
         Local anchor :b2Vec2 = New b2Vec2()
         Local body :b2Body
         Local fd :b2FixtureDef

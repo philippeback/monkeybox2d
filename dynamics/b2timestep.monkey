@@ -62,9 +62,9 @@ Class b2TimeStep
     
     '// dt * inv_dt0
     
-    Field velocityIterations:int
+    Field velocityIterations:Int
     
-    Field positionIterations:int
+    Field positionIterations:Int
     
     Field warmStarting:Bool
     

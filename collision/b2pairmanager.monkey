@@ -138,8 +138,8 @@ Class b2PairManager
     
     Method Commit : void (callback:UpdatePairsCallback)
         
-        Local i :int
-        Local removeCount :int = 0
+        Local i :Int
+        Local removeCount :Int = 0
         For Local i:Int = 0 Until m_pairBufferCount
             
             Local pair :b2Pair = m_pairBuffer.Get(i)

@@ -45,7 +45,7 @@ Class b2ContactRegister
     Field contactTypeFactory:ContactTypeFactory
     Field primary:Bool
     Field pool:b2Contact
-    Field poolCount:int
+    Field poolCount:Int
 End
 
 

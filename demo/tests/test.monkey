@@ -90,8 +90,8 @@ Class Test
     Field m_world:b2World
     Field m_bomb:b2Body
     Field m_mouseJoint:b2MouseJoint
-    Field m_velocityIterations:int = 10
-    Field m_positionIterations:int = 10
+    Field m_velocityIterations:Int = 10
+    Field m_positionIterations:Int = 10
     Field m_timeStep:Float = 1.0/MainDemo.physicsRate
     Field m_physScale:Float = 30
     

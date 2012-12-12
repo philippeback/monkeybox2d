@@ -126,7 +126,7 @@ Class b2Controller
     Field m_prev:b2Controller
     
     Field m_bodyList:b2ControllerEdge
-    Field m_bodyCount:int
+    Field m_bodyCount:Int
     Field m_world:b2World
     
     

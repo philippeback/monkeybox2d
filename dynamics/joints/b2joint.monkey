@@ -49,7 +49,7 @@ Class b2Joint
     '* Get the type of the concrete joint.
     '*/
     #end
-    Method GetType : int ()
+    Method GetType : Int ()
         
         Return m_type
     End
@@ -232,7 +232,9 @@ Class b2Joint
         '* @
         Method New(def:b2JointDef)
             
+#If CONFIG = "debug"
             b2Settings.B2Assert(def.bodyA <> def.bodyB)
+#End
             m_type = def.type
             m_prev = null
             m_next = null
@@ -260,7 +262,7 @@ Class b2Joint
         End
         
         
-        Field m_type:int
+        Field m_type:Int
         
         
         Field m_prev:b2Joint
@@ -307,37 +309,23 @@ Class b2Joint
         Field m_invIB:Float
         
         '// ENUMS
-        '// enum b2JointType
-        'static b2internal
-        const e_unknownJoint:int = 0
-        'static b2internal
-        const e_revoluteJoint:int = 1
-        'static b2internal
-        const e_prismaticJoint:int = 2
-        'static b2internal
-        const e_distanceJoint:int = 3
-        'static b2internal
-        const e_pulleyJoint:int = 4
-        'static b2internal
-        const e_mouseJoint:int = 5
-        'static b2internal
-        const e_gearJoint:int = 6
-        'static b2internal
-        const e_lineJoint:int = 7
-        'static b2internal
-        const e_weldJoint:int = 8
-        'static b2internal
-        Const e_frictionJoint:int = 9
-		Const e_ropeJoint:Int = 10
+        
+        Const e_unknownJoint:Int = 0
+        Const e_revoluteJoint:Int = 1
+        Const e_prismaticJoint:Int = 2
+        Const e_distanceJoint:Int = 3
+        Const e_pulleyJoint:Int = 4
+        Const e_mouseJoint:Int = 5
+        Const e_gearJoint:Int = 6
+        Const e_lineJoint:Int = 7
+        Const e_weldJoint:Int = 8
+        Const e_frictionJoint:Int = 9
+	Const e_ropeJoint:Int = 10
         '// enum b2LimitState
-        'static b2internal
-        const e_inactiveLimit:int = 0
-        'static b2internal
-        const e_atLowerLimit:int = 1
-        'static b2internal
-        const e_atUpperLimit:int = 2
-        'static b2internal
-        const e_equalLimits:int = 3
+        Const e_inactiveLimit:Int = 0
+        Const e_atLowerLimit:Int = 1
+        Const e_atUpperLimit:Int = 2
+        Const e_equalLimits:Int = 3
     End
     
     

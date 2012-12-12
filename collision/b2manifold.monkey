@@ -67,14 +67,14 @@ Class b2Manifold
     '* Usage depends on manifold type
     Field m_localPoint:b2Vec2
     
-    Field m_type:int
+    Field m_type:Int
     
     '* The number of manifold points
-    Field m_pointCount:int = 0
+    Field m_pointCount:Int = 0
     '//enum Type
-    Const e_circles:int = $0001
-    Const e_faceA:int = $0002
-    Const e_faceB:int = $0004
+    Const e_circles:Int = $0001
+    Const e_faceA:Int = $0002
+    Const e_faceB:Int = $0004
         
     Method New()
         

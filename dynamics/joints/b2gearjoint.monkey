@@ -115,8 +115,8 @@ Class b2GearJoint Extends b2Joint
         
         '// parent constructor
         Super.New(def)
-        Local type1 :int = def.joint1.m_type
-        Local type2 :int = def.joint2.m_type
+        Local type1 :Int = def.joint1.m_type
+        Local type2 :Int = def.joint2.m_type
         '//b2Settings.B2Assert(type1 = b2Joint.e_revoluteJoint Or type1 = b2Joint.e_prismaticJoint)
         '//b2Settings.B2Assert(type2 = b2Joint.e_revoluteJoint Or type2 = b2Joint.e_prismaticJoint)
         '//b2Settings.B2Assert(def.joint1.GetBodyA().GetType() = b2Body.b2_staticBody)

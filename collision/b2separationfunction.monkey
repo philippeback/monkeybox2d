@@ -39,21 +39,24 @@ Import box2d.common.math
 Class b2SeparationFunction
     
     '//enum Type
-    Const e_points:int = $01
-    Const e_faceA:int = $02
-    Const e_faceB:int = $04
+    Const e_points:Int = $01
+    Const e_faceA:Int = $02
+    Const e_faceB:Int = $04
 
     Field m_proxyA:b2DistanceProxy        
     Field m_proxyB:b2DistanceProxy
     Field m_sweepA:b2Sweep        
     Field m_sweepB:b2Sweep
-    Field m_type:int
+    Field m_type:Int
     Field m_localPoint:b2Vec2 = New b2Vec2()
     Field m_axis:b2Vec2 = New b2Vec2()
 
     Global tmpVec1:b2Vec2 = New b2Vec2()
     Global tmpVec2:b2Vec2 = New b2Vec2()
     Global tmpVec3:b2Vec2 = New b2Vec2()
+    Global tmpTransA:b2Transform = New b2Transform()
+    Global tmpTransB:b2Transform = New b2Transform()
+    
     
     Method Initialize : void (cache:b2SimplexCache,
         proxyA:b2DistanceProxy, sweepA:b2Sweep,
@@ -62,29 +65,31 @@ Class b2SeparationFunction
         
         m_proxyA = proxyA
         m_proxyB = proxyB
-        Local count :int = cache.count
+        Local count :Int = cache.count
+#If CONFIG = "debug"
         b2Settings.B2Assert(0 < count And count < 3)
+#End
         
         m_sweepA = sweepA
         m_sweepB = sweepB
-        Local xfA := New b2Transform()
-        Local xfB := New b2Transform()
+        Local xfA:b2Transform = tmpTransA
+        Local xfB:b2Transform = tmpTransB
         m_sweepA.GetTransform(xfA, alpha)
         m_sweepB.GetTransform(xfB, alpha)
 
         If (count = 1)
             m_type = e_points
-            Local localPointA := m_proxyA.GetVertex(cache.indexA.Get(0))
-            Local localPointB := m_proxyB.GetVertex(cache.indexB.Get(0))
+            Local localPointA := m_proxyA.GetVertex(cache.indexA[0])
+            Local localPointB := m_proxyB.GetVertex(cache.indexB[0])
             b2Math.MulX(xfA, localPointA, tmpVec1)
             b2Math.MulX(xfB, localPointB, tmpVec2)
             b2Math.SubtractVV(tmpVec2,tmpVec1,m_axis)
             m_axis.Normalize()
-        Else  If (cache.indexA.Get(0).ToInt() = cache.indexA.Get(1).ToInt())
+        Else  If (cache.indexA[0] = cache.indexA[1])
             '// Two points on B and one on A.
             m_type = e_faceB
-            Local localPointB1 := proxyB.GetVertex(cache.indexB.Get(0))
-            Local localPointB2 := proxyB.GetVertex(cache.indexB.Get(1))
+            Local localPointB1 := proxyB.GetVertex(cache.indexB[0])
+            Local localPointB2 := proxyB.GetVertex(cache.indexB[1])
             b2Math.SubtractVV(localPointB2, localPointB1, m_axis)
             b2Math.CrossVF(m_axis, 1.0, m_axis)
             m_axis.Normalize()
@@ -95,7 +100,7 @@ Class b2SeparationFunction
             m_localPoint.Multiply(0.5)
             b2Math.MulX(xfB, m_localPoint, tmpVec2)
 
-            Local localPointA := proxyA.GetVertex(cache.indexA.Get(0))
+            Local localPointA := proxyA.GetVertex(cache.indexA[0])
             b2Math.MulX(xfA, localPointA, tmpVec3)
             b2Math.SubtractVV(tmpVec3, tmpVec2, tmpVec3)
             Local s:Float = b2Math.Dot(tmpVec3, normal)
@@ -107,8 +112,8 @@ Class b2SeparationFunction
         Else
             '// Two points on A and one or two points on B.
             m_type = e_faceA
-            Local localPointA1 := m_proxyA.GetVertex(cache.indexA.Get(0))
-            Local localPointA2 := m_proxyA.GetVertex(cache.indexA.Get(1))
+            Local localPointA1 := m_proxyA.GetVertex(cache.indexA[0])
+            Local localPointA2 := m_proxyA.GetVertex(cache.indexA[1])
             
             b2Math.SubtractVV(localPointA2, localPointA1, m_axis)
             b2Math.CrossVF(m_axis, 1.0, m_axis)
@@ -120,7 +125,7 @@ Class b2SeparationFunction
             m_localPoint.Multiply(0.5)
             b2Math.MulX(xfA, m_localPoint, tmpVec1)
 
-            Local localPointB := m_proxyB.GetVertex(cache.indexB.Get(0))
+            Local localPointB := m_proxyB.GetVertex(cache.indexB[0])
             b2Math.MulX(xfB, localPointB, tmpVec2)
             b2Math.SubtractVV(tmpVec2, tmpVec1, tmpVec1)
             Local s:Float = b2Math.Dot(tmpVec1, normal)

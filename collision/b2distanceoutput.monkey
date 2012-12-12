@@ -47,6 +47,6 @@ Class b2DistanceOutput
     
     Field distance:Float
     '* Number of gjk iterations used
-    Field iterations:int
+    Field iterations:Int
 End
 

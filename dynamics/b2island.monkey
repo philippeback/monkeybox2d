@@ -110,24 +110,29 @@ Import box2d.collision
 #end
 Class b2Island
     Method New()
-        
-        m_bodies = New FlashArray<b2Body>()
-        m_contacts = New FlashArray<b2Contact>()
-        m_joints = New FlashArray<b2Joint>()
     End
     
     Method Initialize : void (
-        bodyCapacity:int,
-        contactCapacity:int,
-        jointCapacity:int,
+        bodyCapacity:Int,
+        contactCapacity:Int,
+        jointCapacity:Int,
         allocator: Object,
         listener:b2ContactListenerInterface,
         contactSolver:b2ContactSolver)
         
-        Local i :int
+        Local i :Int
         m_bodyCapacity = bodyCapacity
+        If m_bodies.Length < m_bodyCapacity
+            m_bodies = m_bodies.Resize(m_bodyCapacity)
+        End
         m_contactCapacity = contactCapacity
+        If m_contacts.Length < m_contactCapacity
+            m_contacts = m_contacts.Resize(m_contactCapacity)
+        End
         m_jointCapacity	 = jointCapacity
+        If m_joints.Length < m_jointCapacity
+            m_joints = m_joints.Resize(m_jointCapacity)
+        End
         m_bodyCount = 0
         m_contactCount = 0
         m_jointCount = 0
@@ -135,34 +140,34 @@ Class b2Island
         m_listener = listener
         m_contactSolver = contactSolver
         For Local i:Int = m_bodies.Length Until bodyCapacity
-            m_bodies.Set( i,  null )
+            m_bodies[i] = Null
         End
         For Local i:Int = m_contacts.Length Until contactCapacity
-            m_contacts.Set( i,  null )
+            m_contacts[i] = Null
         End
         For Local i:Int = m_joints.Length Until jointCapacity
-            m_joints.Set( i,  null )
+            m_joints[i] = Null
         End
     End
     
     '//~b2Island()
-    Method Clear : void ()
-        
+    Method Clear : void ()        
         m_bodyCount = 0
         m_contactCount = 0
         m_jointCount = 0
     End
+    
     Method Solve : void (timeStep:b2TimeStep, gravity:b2Vec2, allowSleep:Bool)
         
-        Local i :int
-        Local j :int
+        Local i :Int
+        Local j :Int
         Local b :b2Body
         Local joint :b2Joint
+        
         '// Integrate velocities and apply damping.
         For Local i:Int = 0 Until m_bodyCount
-            
-            b = m_bodies.Get(i)
-            If (b.GetType() <> b2Body.b2_Body)
+            b = m_bodies[i]
+            If (b.m_type <> b2Body.b2_Body)
                 Continue
             End
             '// Integrate velocities.
@@ -180,47 +185,49 @@ Class b2Island
             b.m_linearVelocity.Multiply( b2Math.Clamp(1.0 - timeStep.dt * b.m_linearDamping, 0.0, 1.0) )
             b.m_angularVelocity *= b2Math.Clamp(1.0 - timeStep.dt * b.m_angularDamping, 0.0, 1.0)
         End
+        
         m_contactSolver.Initialize(timeStep, m_contacts, m_contactCount, m_allocator)
+       
         Local contactSolver :b2ContactSolver = m_contactSolver
+        
         '// Initialize velocity constraints.
         contactSolver.InitVelocityConstraints(timeStep)
+        
         For Local i:Int = 0 Until m_jointCount
-            
-            joint = m_joints.Get(i)
+            joint = m_joints[i]
             joint.InitVelocityConstraints(timeStep)
         End
+        
         '// Solve velocity constraints.
         For Local i:Int = 0 Until timeStep.velocityIterations
-            
             For Local j:Int = 0 Until m_jointCount
-                
-                joint = m_joints.Get(j)
+                joint = m_joints[j]
                 joint.SolveVelocityConstraints(timeStep)
             End
             contactSolver.SolveVelocityConstraints()
         End
+        
         '// Post-solve (store impulses for warm starting).
         For Local i:Int = 0 Until m_jointCount
-            
-            joint = m_joints.Get(i)
+            joint = m_joints[i]
             joint.FinalizeVelocityConstraints()
         End
         
         contactSolver.FinalizeVelocityConstraints()
+        
         '// Integrate positions.
         For Local i:Int = 0 Until m_bodyCount
-            
-            b = m_bodies.Get(i)
-            If (b.GetType() = b2Body.b2_staticBody)
+            b = m_bodies[i]
+            If (b.m_type = b2Body.b2_staticBody)
                 Continue
             End
             '// Check for large velocities.
             '// b2Vec2 translation = timeStep.dt * b.m_linearVelocity
             Local translationX :Float = timeStep.dt * b.m_linearVelocity.x
             Local translationY :Float = timeStep.dt * b.m_linearVelocity.y
+            
             '//if (b2Dot(translation, translation) > b2_maxTranslationSquared)
             If ((translationX*translationX+translationY*translationY) > b2Settings.b2_maxTranslationSquared)
-                
                 b.m_linearVelocity.Normalize()
                 b.m_linearVelocity.x *= b2Settings.b2_maxTranslation * timeStep.inv_dt
                 b.m_linearVelocity.y *= b2Settings.b2_maxTranslation * timeStep.inv_dt
@@ -228,13 +235,9 @@ Class b2Island
             
             Local rotation :Float = timeStep.dt * b.m_angularVelocity
             If (rotation * rotation > b2Settings.b2_maxRotationSquared)
-                
                 If (b.m_angularVelocity < 0.0)
-                    
-                    b.m_angularVelocity = -b2Settings.b2_maxRotation * timeStep.inv_dt
+                   b.m_angularVelocity = -b2Settings.b2_maxRotation * timeStep.inv_dt
                 Else
-                    
-                    
                     b.m_angularVelocity = b2Settings.b2_maxRotation * timeStep.inv_dt
                 End
             End
@@ -250,70 +253,66 @@ Class b2Island
             b.SynchronizeTransform()
             '// Note: shapes are synchronized later.
         End
+        
         '// Iterate over constraints.
         For Local i:Int = 0 Until timeStep.positionIterations
-            
             Local contactsOkay :Bool = contactSolver.SolvePositionConstraints(b2Settings.b2_contactBaumgarte)
             Local jointsOkay :Bool = True
+       
             For Local j:Int = 0 Until m_jointCount
-                
-                joint = m_joints.Get(j)
+                joint = m_joints[j]
                 Local jointOkay :Bool = joint.SolvePositionConstraints(b2Settings.b2_contactBaumgarte)
                 jointsOkay = jointsOkay And jointOkay
             End
+            
             If (contactsOkay And jointsOkay)
-                
                 Exit
             End
         End
+        
         Report(contactSolver.m_constraints)
+        
         If (allowSleep)
             Local minSleepTime :Float = Constants.FMAX
             Local linTolSqr :Float = b2Settings.b2_linearSleepTolerance * b2Settings.b2_linearSleepTolerance
             Local angTolSqr :Float = b2Settings.b2_angularSleepTolerance * b2Settings.b2_angularSleepTolerance
+        
             For Local i:Int = 0 Until m_bodyCount
-                
-                b = m_bodies.Get(i)
-                If (b.GetType() = b2Body.b2_staticBody)
-                    
+                b = m_bodies[i]
+                If (b.m_type = b2Body.b2_staticBody)
                     Continue
                 End
+                
                 If ((b.m_flags & b2Body.e_allowSleepFlag) = 0)
-                    
                     b.m_sleepTime = 0.0
                     minSleepTime = 0.0
                 End
+                
                 If ((b.m_flags & b2Body.e_allowSleepFlag) = 0 Or
                     b.m_angularVelocity * b.m_angularVelocity > angTolSqr Or
                     b2Math.Dot(b.m_linearVelocity, b.m_linearVelocity) > linTolSqr)
-                    
                     b.m_sleepTime = 0.0
                     minSleepTime = 0.0
                 Else
-                    
-                    
                     b.m_sleepTime += timeStep.dt
                     minSleepTime = b2Math.Min(minSleepTime, b.m_sleepTime)
                 End
             End
+            
             If (minSleepTime >= b2Settings.b2_timeToSleep)
-                
                 For Local i:Int = 0 Until m_bodyCount
-                    
-                    b = m_bodies.Get(i)
+                    b = m_bodies[i]
                     b.SetAwake(False)
                 End
             End
         End
     End
+    
     Method SolveTOI : void (subStep:b2TimeStep)
         
-        Local i:int
-        
-        
-        Local j:int
-        
-        
+        Local i:Int
+        Local j:Int
+            
         m_contactSolver.Initialize(subStep, m_contacts, m_contactCount, m_allocator)
         Local contactSolver:b2ContactSolver = m_contactSolver
         
@@ -322,47 +321,42 @@ Class b2Island
         '// Warm starting for off(joints) for now, but we need to
         '// call this Method to compute Jacobians.
         For Local i:Int = 0 Until m_jointCount
-            
-            m_joints.Get(i).InitVelocityConstraints(subStep)
+            m_joints[i].InitVelocityConstraints(subStep)
         End
+        
         '// Solve velocity constraints.
         For Local i:Int = 0 Until subStep.velocityIterations
-            
             contactSolver.SolveVelocityConstraints()
             For Local j:Int = 0 Until m_jointCount
-                
-                m_joints.Get(j).SolveVelocityConstraints(subStep)
+                m_joints[j].SolveVelocityConstraints(subStep)
             End
         End
+        
         '// Dont store the TOI contact forces for warm starting
         '// because they can be quite large.
         '// Integrate positions.
         For Local i:Int = 0 Until m_bodyCount
-            
-            Local b :b2Body = m_bodies.Get(i)
-            If (b.GetType() = b2Body.b2_staticBody)
+            Local b :b2Body = m_bodies[i]
+            If (b.m_type = b2Body.b2_staticBody)
                 Continue
             End
             '// Check for large velocities.
             '// b2Vec2 translation = subStep.dt * b.m_linearVelocity
             Local translationX :Float = subStep.dt * b.m_linearVelocity.x
             Local translationY :Float = subStep.dt * b.m_linearVelocity.y
+            
             '//if (b2Dot(translation, translation) > b2_maxTranslationSquared)
             If ((translationX*translationX+translationY*translationY) > b2Settings.b2_maxTranslationSquared)
-                
                 b.m_linearVelocity.Normalize()
                 b.m_linearVelocity.x *= b2Settings.b2_maxTranslation * subStep.inv_dt
                 b.m_linearVelocity.y *= b2Settings.b2_maxTranslation * subStep.inv_dt
             End
+            
             Local rotation :Float = subStep.dt * b.m_angularVelocity
             If (rotation * rotation > b2Settings.b2_maxRotationSquared)
-                
                 If (b.m_angularVelocity < 0.0)
-                    
                     b.m_angularVelocity = -b2Settings.b2_maxRotation * subStep.inv_dt
                 Else
-                    
-                    
                     b.m_angularVelocity = b2Settings.b2_maxRotation * subStep.inv_dt
                 End
             End
@@ -377,19 +371,18 @@ Class b2Island
             b.SynchronizeTransform()
             '// Note: shapes are synchronized later.
         End
+        
         '// Solve position constraints.
         Local k_toiBaumgarte :Float = 0.75
+        
         For Local i:Int = 0 Until subStep.positionIterations
-            
             Local contactsOkay :Bool = contactSolver.SolvePositionConstraints(k_toiBaumgarte)
-            Local jointsOkay :Bool = True
+            Local jointsOkay:Bool = True
             For Local j:Int = 0 Until m_jointCount
-                
-                Local jointOkay :Bool = m_joints.Get(j).SolvePositionConstraints(b2Settings.b2_contactBaumgarte)
+                Local jointOkay :Bool = m_joints[j].SolvePositionConstraints(b2Settings.b2_contactBaumgarte)
                 jointsOkay = jointsOkay And jointOkay
             End
             If (contactsOkay And jointsOkay)
-                
                 Exit
             End
         End
@@ -406,7 +399,7 @@ Class b2Island
         End
         
         For Local i:Int = 0 Until m_contactCount
-            Local c :b2Contact = m_contacts.Get(i)
+            Local c :b2Contact = m_contacts[i]
             Local cc :b2ContactConstraint = constraints[i]
  
             For Local j:Int = 0 Until cc.pointCount                
@@ -419,59 +412,37 @@ Class b2Island
     End
     
     Method AddBody : void (body:b2Body)
-        
         '//b2Settings.B2Assert(m_bodyCount < m_bodyCapacity)
         body.m_islandIndex = m_bodyCount
         
-        m_bodies.Set( m_bodyCount,  body )
+        m_bodies[m_bodyCount] = body
         m_bodyCount += 1
     End
+    
     Method AddContact : void (contact:b2Contact)
-        
         '//b2Settings.B2Assert(m_contactCount < m_contactCapacity)
-        m_contacts.Set( m_contactCount,  contact )
+        m_contacts[m_contactCount] = contact
         m_contactCount += 1
     End
+    
     Method AddJoint : void (joint:b2Joint)
-        
         '//b2Settings.B2Assert(m_jointCount < m_jointCapacity)
-        m_joints.Set( m_jointCount,  joint )
+        m_joints[m_jointCount] = joint
         m_jointCount += 1
     End
+    
     Field m_allocator: Object
-    
-    
     Field m_listener:b2ContactListenerInterface
-    
-    
     Field m_contactSolver:b2ContactSolver
-    
-    
-    Field m_bodies:FlashArray<b2Body>
-    
-    
-    Field m_contacts:FlashArray<b2Contact>
-    
-    
-    Field m_joints:FlashArray<b2Joint>
-    
-    
-    Field m_bodyCount:int
-    
-    
-    Field m_jointCount:int
-    
-    
-    Field m_contactCount:int
-    
-    Field m_bodyCapacity:int
-    
-    
-    Field m_contactCapacity:int
-    
-    
-    Field m_jointCapacity:int
-    
+    Field m_bodies:b2Body[]
+    Field m_contacts:b2Contact[]
+    Field m_joints:b2Joint[]
+    Field m_bodyCount:Int
+    Field m_jointCount:Int
+    Field m_contactCount:Int
+    Field m_bodyCapacity:Int
+    Field m_contactCapacity:Int
+    Field m_jointCapacity:Int    
 End
 
 

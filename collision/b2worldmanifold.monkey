@@ -65,7 +65,7 @@ Class b2WorldManifold
             Return
         End
         
-        Local i :int
+        Local i :Int
         Local tVec :b2Vec2
         Local tMat :b2Mat22
         Local normalX :Float

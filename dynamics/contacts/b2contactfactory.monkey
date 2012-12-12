@@ -54,7 +54,7 @@ Class b2ContactFactory
         InitializeRegisters()
     End
     
-    Method AddType : void (contactTypeFactory:ContactTypeFactory, type1:int, type2:int)
+    Method AddType : void (contactTypeFactory:ContactTypeFactory, type1:Int, type2:Int)
         
         '//b2Settings.B2Assert(b2Shape.e_unknownShape < type1 And type1 < b2Shape.e_shapeTypeCount)
         '//b2Settings.B2Assert(b2Shape.e_unknownShape < type2 And type2 < b2Shape.e_shapeTypeCount)
@@ -87,8 +87,8 @@ Class b2ContactFactory
     
     Method Create : b2Contact (fixtureA:b2Fixture, fixtureB:b2Fixture)
         
-        Local type1 :int = fixtureA.GetType()
-        Local type2 :int = fixtureB.GetType()
+        Local type1 :Int = fixtureA.GetType()
+        Local type2 :Int = fixtureB.GetType()
         '//b2Settings.B2Assert(b2Shape.e_unknownShape < type1 And type1 < b2Shape.e_shapeTypeCount)
         '//b2Settings.B2Assert(b2Shape.e_unknownShape < type2 And type2 < b2Shape.e_shapeTypeCount)
         Local reg :b2ContactRegister = m_registers.Get(type1).Get(type2)
@@ -127,8 +127,8 @@ Class b2ContactFactory
             contact.m_fixtureA.m_body.SetAwake(True)
             contact.m_fixtureB.m_body.SetAwake(True)
         End
-        Local type1 :int = contact.m_fixtureA.GetType()
-        Local type2 :int = contact.m_fixtureB.GetType()
+        Local type1 :Int = contact.m_fixtureA.GetType()
+        Local type2 :Int = contact.m_fixtureB.GetType()
         '//b2Settings.B2Assert(b2Shape.e_unknownShape < type1 And type1 < b2Shape.e_shapeTypeCount)
         '//b2Settings.B2Assert(b2Shape.e_unknownShape < type2 And type2 < b2Shape.e_shapeTypeCount)
         Local reg :b2ContactRegister = m_registers.Get(type1).Get(type2)

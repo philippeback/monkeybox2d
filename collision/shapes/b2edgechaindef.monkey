@@ -45,7 +45,7 @@ Class b2EdgeChainDef
 	'* The vertices in local coordinates.
 	Field vertices: FlashArray<b2Vec2>
 	'* The number of vertices in the chain.
-	Field vertexCount: int
+	Field vertexCount: Int
 	'* Whether to create an extra edge between the first and last vertices.
 	Field isALoop: Bool
 

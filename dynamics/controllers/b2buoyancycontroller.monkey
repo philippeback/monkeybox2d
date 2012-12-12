@@ -95,15 +95,22 @@ Class b2BuoyancyController Extends b2Controller
     '* Gravity vector, if the worlds not(gravity) used
     '*/
     #end
-    Field gravity:b2Vec2 = null
+    Field gravity:b2Vec2 = New b2Vec2()
+    Field areac :b2Vec2 = New b2Vec2()
+    Field massc :b2Vec2 = New b2Vec2()
+    Field sc:b2Vec2 = New b2Vec2()
+    Field buoyancyForce:b2Vec2 = New b2Vec2()
+    Field dragForce:b2Vec2 = New b2Vec2()
+                                
     Method TimeStep : void (timeStep:b2TimeStep)
         
         If(Not(m_bodyList))
             Return
         End
         If(useWorldGravity)
-            
-            gravity = GetWorld().GetGravity().Copy()
+            Local worldGravity:b2Vec2 = GetWorld().GetGravity()
+            gravity.x = worldGravity.x
+            gravity.y = worldGravity.y
         End
         
         Local i:b2ControllerEdge=m_bodyList
@@ -118,14 +125,14 @@ Class b2BuoyancyController Extends b2Controller
                 i=i.nextBody
                 Continue
             End
-            
-            Local areac :b2Vec2 = New b2Vec2()
-            Local massc :b2Vec2 = New b2Vec2()
+            areac.x = 0.0
+            areac.y = 0.0
+            massc.x = 0.0
+            massc.y = 0.0
             Local area :Float = 0.0
             Local mass :Float = 0.0
             Local fixture:b2Fixture=body.GetFixtureList()
             While(fixture <> Null)
-                Local sc :b2Vec2 = New b2Vec2()
                 Local sarea :Float = fixture.GetShape().ComputeSubmergedArea(normal, offset, body.GetTransform(), sc)
                 area += sarea
                 areac.x += sarea * sc.x
@@ -156,12 +163,10 @@ Class b2BuoyancyController Extends b2Controller
                 Continue
             End
             '//Buoyancy
-            Local buoyancyForce:b2Vec2 = New b2Vec2()
             gravity.GetNegative(buoyancyForce)
             buoyancyForce.Multiply(density*area)
             body.ApplyForce(buoyancyForce,massc)
             '//Linear drag
-            Local dragForce:b2Vec2 = New b2Vec2()
             body.GetLinearVelocityFromWorldPoint(areac,dragForce)
             dragForce.Subtract(velocity)
             dragForce.Multiply(-linearDrag*area)

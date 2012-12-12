@@ -134,7 +134,7 @@ Class ContactListener Extends b2ContactListener
             Return
         End
         '// Should the body  Exit?
-        Local count :int = contact.GetManifold().m_pointCount
+        Local count :Int = contact.GetManifold().m_pointCount
         Local maxImpulse :Float = 0.0
         
         For Local i:Int = 0 Until count
