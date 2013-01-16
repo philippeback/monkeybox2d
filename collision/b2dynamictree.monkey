@@ -237,7 +237,7 @@ Class b2DynamicTree
     '*/
     #end
 	
-	Field nodeStack:b2DynamicTreeNode[] = New b2DynamicTreeNode[100]
+	Field nodeStack:b2DynamicTreeNode[] = New b2DynamicTreeNode[128]
     
     Method Query : void (callback:QueryCallback, aabb:b2AABB)
         
@@ -283,7 +283,7 @@ Class b2DynamicTree
                 Else
                     
                     '// No stack limit, so no assert
-                    If count >= nodeStackLength
+                    If count + 2 >= nodeStackLength
 						nodeStack = nodeStack.Resize(count * 2)
 						nodeStackLength = count * 2
 					End
