@@ -99,7 +99,11 @@ Class b2ContactFactory
             c = reg.pool
             reg.pool = c.m_next
             reg.poolCount -= 1
-            c.Reset(fixtureA, fixtureB)
+            If c.m_swapped
+                c.Reset(fixtureB, fixtureA)
+            Else
+                c.Reset(fixtureA, fixtureB)
+            End
             Return c
         End
         Local contactTypeFactory :ContactTypeFactory = reg.contactTypeFactory
@@ -108,10 +112,12 @@ Class b2ContactFactory
             If (reg.primary)
                 c = contactTypeFactory.Create(m_allocator)
                 c.Reset(fixtureA, fixtureB)
+                c.m_swapped = False
                 Return c
             Else
                 c = contactTypeFactory.Create(m_allocator)
                 c.Reset(fixtureB, fixtureA)
+                c.m_swapped = True
                 Return c
             End
             
@@ -131,7 +137,14 @@ Class b2ContactFactory
         Local type2 :Int = contact.m_fixtureB.GetType()
         '//b2Settings.B2Assert(b2Shape.e_unknownShape < type1 And type1 < b2Shape.e_shapeTypeCount)
         '//b2Settings.B2Assert(b2Shape.e_unknownShape < type2 And type2 < b2Shape.e_shapeTypeCount)
-        Local reg :b2ContactRegister = m_registers.Get(type1).Get(type2)
+        Local reg:b2ContactRegister
+        
+        If contact.m_swapped
+            reg = m_registers.Get(type2).Get(type1)
+        Else
+            reg = m_registers.Get(type1).Get(type2)
+        End
+        
         If (True)
             
             reg.poolCount += 1

@@ -57,6 +57,8 @@ End
 Class b2Contact
     Global s_input:b2TOIInput = New b2TOIInput()
     
+    Field m_swapped:Bool = False
+    
     Field m_flags:Int
     
     '// World pool and list pointers.
