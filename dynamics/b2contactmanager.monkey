@@ -210,7 +210,7 @@ Class b2ContactManager
         End
         '// Call the factory.
         m_contactFactory.Destroy(c)
-        m_contactCount -= 1
+        m_world.m_contactCount -= 1
         
     End
     '// the(This) top level collision call for the time timeStep. Here
