@@ -88,6 +88,7 @@ End
 Class FlashArray<T>
     
     Private
+	Global nullT:T
     Const LengthInc : Int = 100
     Field arr : T[] = New T[LengthInc]
     Field arrLength:Int = LengthInc
@@ -95,7 +96,7 @@ Class FlashArray<T>
     
     Public
     Field length : Int = 0
-    
+	
 	Method Length:Int() Property
         Return length
     End
@@ -107,7 +108,8 @@ Class FlashArray<T>
             arr = arr.Resize(length)
         End
     End
-    
+        
+	
     Method New( length:Int )
         Length = length
     End
@@ -122,6 +124,13 @@ Class FlashArray<T>
     Method BackingArray:T[]()
         Return arr     
     End
+		
+	Method Clear:Void()
+		For Local i:Int = 0 Until length
+			arr[i] = nullT
+		End
+		length = 0
+	End
     
     Method Get:T( index:Int)
         If( index >=0 And length > index )
@@ -240,7 +249,9 @@ Class FAEnumerator<T>
         index += 1
         Return data
     End
-    
+    Method Discard:Void()
+        
+    End
     Private
     
     Field _arr:FlashArray<T>
@@ -482,6 +493,9 @@ Class Enumerator<T>
         Return data
     End
     
+    Method Discard:Void()
+        
+    End
     Private
     
     Field _list:HaxeFastList<T>
