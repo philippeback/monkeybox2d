@@ -43,6 +43,7 @@ Import box2d.common.math
 '*/
 #end
 Class b2DistanceProxy
+	Field m_circleVerts:b2Vec2[] = New b2Vec2[1]
     Field m_vertices:b2Vec2[]
     Field m_count:Int
     Field m_radius:Float
@@ -60,7 +61,7 @@ Class b2DistanceProxy
             Case b2Shape.e_circleShape
                 
                 Local circle :b2CircleShape = b2CircleShape(shape)
-                m_vertices = New b2Vec2[1]
+                m_vertices = m_circleVerts
                 m_vertices[0] = circle.m_p
                 m_count = 1
                 m_radius = circle.m_radius
