@@ -72,7 +72,7 @@ Class InnerRayCastAllCallback Extends InnerRayCastCallback
     Field result:FlashArray<b2Fixture> = New FlashArray<b2Fixture>()
     
     Method Callback : Float (fixture:b2Fixture, point:b2Vec2, normal:b2Vec2, fraction:Float)
-        result.Set( result.Length,  fixture )
+        result.Push(fixture )
         Return 1
     End
 End
@@ -879,14 +879,17 @@ Class b2World
 	Field rc1_callback:InnerRayCastOneCallback = new InnerRayCastOneCallback()
     
 	Method RayCastOne : b2Fixture (point1:b2Vec2, point2:b2Vec2)
-        RayCast(rc1_callback, point1, point2)
+        rc1_callback.result = Null
+		rc1_callback.bestFraction = 1.0
+		RayCast(rc1_callback, point1, point2)
         Return rc1_callback.result
     End
     
     Field rca_callback:InnerRayCastAllCallback = new InnerRayCastAllCallback()
     
 	Method RayCastAll : FlashArray<b2Fixture> (point1:b2Vec2, point2:b2Vec2)
-        RayCast(rca_callback, point1, point2)
+        rca_callback.result.Clear()
+		RayCast(rca_callback, point1, point2)
         Return rca_callback.result
     End
     
