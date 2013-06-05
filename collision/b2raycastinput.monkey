@@ -30,9 +30,8 @@ Strict
 '* DAMAGE.
 '*/
 #end
-Import box2d.flash.flashtypes
 
-
+Import box2d.common.math.b2vec2
 
 #rem
 '/**
@@ -40,19 +39,24 @@ Import box2d.flash.flashtypes
 '*/
 #end
 
-Import box2d.common.math.b2vec2
 Class b2RayCastInput
     
-    Method New(p1:b2Vec2 = null, p2:b2Vec2 = null, maxFraction:Float = 1)
-        
+    Method New(p1:b2Vec2 = null, p2:b2Vec2 = null, maxFraction:Float = 1.0)
+        Set(p1, p2, maxFraction)
+    End
+	
+	Method Set:Void(p1:b2Vec2 = null, p2:b2Vec2 = null, maxFraction:Float = 1.0) Final
         If (p1)
             Self.p1.SetV(p1)
         End
+		
         If (p2)
             Self.p2.SetV(p2)
         End
-        Self.maxFraction = maxFraction
+        
+		Self.maxFraction = maxFraction
     End
+	
     #rem
     '/**
     '* The start point of the ray

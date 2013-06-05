@@ -86,7 +86,16 @@ Class WorldRayCastCallback Extends RayCastCallback
     Field point1:b2Vec2
     Field point2:b2Vec2
     
+	Private
+	Field callback_point:b2Vec2 = New b2Vec2()
+	
+	Public
+	
     Method New( broadPhase:IBroadPhase, point1:b2Vec2, point2:b2Vec2, callback:InnerRayCastCallback )
+        Set(broadPhase, point1, point2, callback)
+    End
+	
+	Method Set:Void( broadPhase:IBroadPhase, point1:b2Vec2, point2:b2Vec2, callback:InnerRayCastCallback ) Final
         Self.broadPhase = broadPhase
         Self.callback = callback
         Self.point1 = point1
@@ -100,9 +109,9 @@ Class WorldRayCastCallback Extends RayCastCallback
         
         If (hit)
             Local fraction :Float = output.fraction
-            Local point :b2Vec2 = New b2Vec2((1.0 - fraction) * point1.x + fraction * point2.x,
+            callback_point.Set((1.0 - fraction) * point1.x + fraction * point2.x,
             (1.0 - fraction) * point1.y + fraction * point2.y)
-            Return callback.Callback(fixture, point, output.normal, fraction)
+            Return callback.Callback(fixture, callback_point, output.normal, fraction)
         End
         
         Return input.maxFraction
@@ -365,7 +374,9 @@ Class b2World
         '//b2Settings.B2Assert(m_bodyCount > 0)
         '//b2Settings.B2Assert(m_lock = False)
         If (IsLocked() = True)
-            
+#If CONFIG = "debug"
+            Print "Can't destroy, world locked"
+#End
             Return
         End
         '// Delete the attached joints.
@@ -855,22 +866,28 @@ Class b2World
     '*/
     #end
     
-    Method RayCast : void (callback:InnerRayCastCallback, point1:b2Vec2, point2:b2Vec2)
+	Field rc_input:b2RayCastInput = New b2RayCastInput()
+    Field rc_callback:WorldRayCastCallback = New WorldRayCastCallback()
+    
+	Method RayCast : void (callback:InnerRayCastCallback, point1:b2Vec2, point2:b2Vec2)
         Local broadPhase:IBroadPhase = m_contactManager.m_broadPhase
-        Local input :b2RayCastInput = New b2RayCastInput(point1, point2)
-        broadPhase.RayCast(New WorldRayCastCallback(broadPhase, point1, point2, callback), input)
+        rc_input.Set(point1, point2)
+		rc_callback.Set(broadPhase, point1, point2, callback)
+		broadPhase.RayCast(rc_callback, rc_input)
     End
     
-    Method RayCastOne : b2Fixture (point1:b2Vec2, point2:b2Vec2)
-        Local callback:InnerRayCastOneCallback = new InnerRayCastOneCallback()
-        RayCast(callback, point1, point2)
-        Return callback.result
+	Field rc1_callback:InnerRayCastOneCallback = new InnerRayCastOneCallback()
+    
+	Method RayCastOne : b2Fixture (point1:b2Vec2, point2:b2Vec2)
+        RayCast(rc1_callback, point1, point2)
+        Return rc1_callback.result
     End
     
-    Method RayCastAll : FlashArray<b2Fixture> (point1:b2Vec2, point2:b2Vec2)
-        Local callback:InnerRayCastAllCallback = new InnerRayCastAllCallback()
-        RayCast(callback, point1, point2)
-        Return callback.result
+    Field rca_callback:InnerRayCastAllCallback = new InnerRayCastAllCallback()
+    
+	Method RayCastAll : FlashArray<b2Fixture> (point1:b2Vec2, point2:b2Vec2)
+        RayCast(rca_callback, point1, point2)
+        Return rca_callback.result
     End
     
     #rem
