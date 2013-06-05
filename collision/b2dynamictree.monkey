@@ -308,6 +308,16 @@ Class b2DynamicTree
     '* <code>Method callback:Void(input:b2RayCastInput, proxy: Object):void</code>
     '*/
     #end
+	'Extracted RayCast locals to avoid GC
+	Field rc_r:b2Vec2 = New b2Vec2()
+	Field rc_v:b2Vec2 = New b2Vec2()
+	Field rc_abs_v:b2Vec2 = New b2Vec2()
+	Field rc_segmentAABB:b2AABB = New b2AABB()
+	Field rc_c:b2Vec2 = New b2Vec2()
+	Field rc_h:b2Vec2 = New b2Vec2()
+	Field rc_stack:FlashArray<b2DynamicTreeNode> = New FlashArray<b2DynamicTreeNode>()
+    Field rc_subInput :b2RayCastInput = New b2RayCastInput()
+                
     Method RayCast : void (callback:RayCastCallback, input:b2RayCastInput)
         
         If (m_root = null)
@@ -315,18 +325,18 @@ Class b2DynamicTree
         End
         Local p1 :b2Vec2 = input.p1
         Local p2 :b2Vec2 = input.p2
-        Local r :b2Vec2 = New b2Vec2()
+        Local r :b2Vec2 = rc_r
         b2Math.SubtractVV(p1, p2, r)
         '//b2Settings.B2Assert(r.LengthSquared() > 0.0)
         r.Normalize()
         '// perpendicular(v) to the segment
-        Local v :b2Vec2 = New b2Vec2()
+        Local v :b2Vec2 = rc_v
         b2Math.CrossFV(1.0, r, v)
-        Local abs_v :b2Vec2 = New b2Vec2()
+        Local abs_v :b2Vec2 = rc_abs_v
         b2Math.AbsV(v, abs_v)
         Local maxFraction :Float = input.maxFraction
         '// Build a bounding box for the segment
-        Local segmentAABB :b2AABB = New b2AABB()
+        Local segmentAABB :b2AABB = rc_segmentAABB
         Local tX :Float
         Local tY :Float
         
@@ -337,8 +347,8 @@ Class b2DynamicTree
         segmentAABB.upperBound.x = b2Math.Max(p1.x, tX)
         segmentAABB.upperBound.y = b2Math.Max(p1.y, tY)
         
-        Local stack :FlashArray<b2DynamicTreeNode> = New FlashArray<b2DynamicTreeNode>()
-        Local count :Int = 0
+        Local stack :FlashArray<b2DynamicTreeNode> = rc_stack
+		Local count :Int = 0
         
         stack.Set( count,  m_root )
         count += 1
@@ -351,9 +361,9 @@ Class b2DynamicTree
             End
             '// Separating axis for segment (Gino, p80)
             '// |dot(v, p1 - c)| > dot(|v|,h)
-            Local c :b2Vec2 = New b2Vec2()
+            Local c :b2Vec2 = rc_c
             node.aabb.GetCenter(c)
-            Local h :b2Vec2 = New b2Vec2()
+            Local h :b2Vec2 = rc_h
             node.aabb.GetExtents(h)
             Local separation :Float = Abs(v.x * (p1.x - c.x) + v.y * (p1.y - c.y))	- abs_v.x * h.x - abs_v.y * h.y
             
@@ -362,11 +372,8 @@ Class b2DynamicTree
             End
             
             If (node.IsLeaf())
-                Local subInput :b2RayCastInput = New b2RayCastInput()
-                subInput.p1 = input.p1
-                subInput.p2 = input.p2
-                subInput.maxFraction = input.maxFraction
-                maxFraction = callback.Callback(node, subInput)
+                rc_subInput.Set(input.p1, input.p2, input.maxFraction)
+                maxFraction = callback.Callback(node, rc_subInput)
                 If (maxFraction = 0.0)
                     Return
                 End
