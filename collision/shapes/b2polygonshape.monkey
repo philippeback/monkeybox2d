@@ -202,6 +202,7 @@ Class b2PolygonShape Extends b2Shape
     '*/
     #end
     Global s_mat:b2Mat22 = New b2Mat22()
+	Field tmp_xf :b2Transform = New b2Transform()
     Method SetAsOrientedBox : void (hx:Float, hy:Float, center:b2Vec2 = null, angle:Float = 0.0)
         
         m_vertexCount = 4
@@ -214,14 +215,17 @@ Class b2PolygonShape Extends b2Shape
         m_normals[1].Set(1.0, 0.0)
         m_normals[2].Set(0.0, 1.0)
         m_normals[3].Set(-1.0, 0.0)
+		If center = Null
+			center = New b2Vec2()
+		End
         m_centroid = center
-        Local xf :b2Transform = New b2Transform()
-        xf.position = center
-        xf.R.Set(angle)
+        
+        tmp_xf.position = center
+        tmp_xf.R.Set(angle)
         '// Transform vertices and normals.
         For Local i:Int = 0 Until m_vertexCount
-            b2Math.MulX(xf, m_vertices[i], m_vertices[i])
-            b2Math.MulMV(xf.R, m_normals[i], m_normals[i])
+            b2Math.MulX(tmp_xf, m_vertices[i], m_vertices[i])
+            b2Math.MulMV(tmp_xf.R, m_normals[i], m_normals[i])
         End
     End
     
