@@ -136,21 +136,26 @@ Class b2Shape
         c:b2Vec2)
         Return 0
     End
+	
+	Global overlap_input :b2DistanceInput
+    Global overlap_simplexCache :b2SimplexCache = New b2SimplexCache()
+	Global overlap_output :b2DistanceOutput = New b2DistanceOutput()
     Function TestOverlap : Bool (shape1:b2Shape, transform1:b2Transform, shape2:b2Shape, transform2:b2Transform)
+        If overlap_input = Null
+			overlap_input = New b2DistanceInput()
+        	overlap_input.proxyA = New b2DistanceProxy()
+        	overlap_input.proxyB = New b2DistanceProxy()
+        End
+		
+		overlap_input.proxyA.Set(shape1)
+        overlap_input.proxyB.Set(shape2)
+        overlap_input.transformA = transform1
+        overlap_input.transformB = transform2
+        overlap_input.useRadii = True
         
-        Local input :b2DistanceInput = New b2DistanceInput()
-        input.proxyA = New b2DistanceProxy()
-        input.proxyA.Set(shape1)
-        input.proxyB = New b2DistanceProxy()
-        input.proxyB.Set(shape2)
-        input.transformA = transform1
-        input.transformB = transform2
-        input.useRadii = True
-        Local simplexCache :b2SimplexCache = New b2SimplexCache()
-        simplexCache.count = 0
-        Local output :b2DistanceOutput = New b2DistanceOutput()
-        b2Distance.Distance(output, simplexCache, input)
-        Return output.distance  < 10.0 * Constants.EPSILON
+        overlap_simplexCache.count = 0
+        b2Distance.Distance(overlap_output, overlap_simplexCache, overlap_input)
+        Return overlap_output.distance  < 10.0 * Constants.EPSILON
     End
     '//--------------- Internals Below -------------------
     #rem

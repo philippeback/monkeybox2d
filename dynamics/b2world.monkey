@@ -813,19 +813,42 @@ Class b2World
     '* @asonly
     '*/
     #end
-    Method QueryShape : void (callback:QueryFixtureCallback, shape:b2Shape, transform:b2Transform = null)
+	Field qs_callback:WorldQueryShapeCallback = New WorldQueryShapeCallback()
+    Field qs_recursed:Bool = False
+	Field qs_transform:b2Transform = New b2Transform()
+	Field qs_aabb:b2AABB = New b2AABB()
+	        
+	Method QueryShape : void (callback:QueryFixtureCallback, shape:b2Shape, transform:b2Transform = Null)
         
-        If (transform = null)
-            
-            transform = New b2Transform()
-            transform.SetIdentity()
-        End
-        
-        Local broadPhase:IBroadPhase = m_contactManager.m_broadPhase
-        Local aabb :b2AABB = New b2AABB()
-        shape.ComputeAABB(aabb, transform)
-        broadPhase.Query(New WorldQueryShapeCallback(broadPhase,callback,shape,transform), aabb)
-    End
+		If qs_recursed 
+    		If (transform = Null)
+	            transform = New b2Transform()
+	            transform.SetIdentity()
+	        End
+	        
+	        Local broadPhase:IBroadPhase = m_contactManager.m_broadPhase
+	        Local aabb :b2AABB = New b2AABB()
+	        shape.ComputeAABB(aabb, transform)
+	        broadPhase.Query(New WorldQueryShapeCallback(broadPhase,callback,shape,transform), aabb)
+    	Else
+			qs_recursed = True 
+		    If (transform = Null)
+	            transform = qs_transform
+	            transform.SetIdentity()
+	        End
+	        
+	        Local broadPhase:IBroadPhase = m_contactManager.m_broadPhase
+	       
+	        shape.ComputeAABB(qs_aabb, transform)
+			qs_callback.broadPhase = broadPhase
+			qs_callback.callback = callback
+			qs_callback.shape = shape
+			qs_callback.transform = transform
+			
+	        broadPhase.Query(qs_callback, qs_aabb)
+			qs_recursed = False
+	    End
+	End
     #rem
     '/**
     '* Query the world for all fixtures that contain a point.

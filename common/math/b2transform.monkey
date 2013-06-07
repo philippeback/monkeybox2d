@@ -44,15 +44,18 @@ Class b2Transform
     '* The default constructor does nothing (for performance).
     '*/
     #end
-    Method New (pos:b2Vec2=null, r:b2Mat22=null)
+    Method New (pos:b2Vec2=Null, r:b2Mat22=Null)
         
         If (pos)
-            
             position.SetV(pos)
-            R.SetM(r)
-        End
+		End
+	
+		If r <> Null
+           	R.SetM(r)
+		End
     End
-    #rem
+    
+	#rem
     '/**
     '* Initialize using a position vector and a rotation matrix.
     '*/
@@ -62,34 +65,33 @@ Class b2Transform
         position.SetV(pos)
         R.SetM(r)
     End
-    #rem
+    
+	#rem
     '/**
     '* Set this to the identity transform.
     '*/
     #end
     Method SetIdentity : void ()
-        
         position.SetZero()
         R.SetIdentity()
     End
+	
     Method Set : void (x:b2Transform)
         position.SetV(x.position)
         R.SetM(x.R)
     End
-    #rem
+    
+	#rem
     '/**
     '* Calculate the angle that the rotation matrix represents.
     '*/
     #end
     Method GetAngle : Float ()
-        
         Return ATan2r(R.col1.y, R.col1.x)
     End
-    Field position:b2Vec2 = New b2Vec2
     
-    
+	Field position:b2Vec2 = New b2Vec2
     Field R:b2Mat22 = New b2Mat22()
-    
     
 End
 
