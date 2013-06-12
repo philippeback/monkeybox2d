@@ -187,7 +187,14 @@ Class WorldQueryPointCallback Extends WorldQueryCallback
 End
 
 Class b2World
-    Field m_flags:Int
+
+    '// m_flags
+    Const e_newFixture:Int = $0001
+    Const e_locked:Int = $0002
+	Const e_clearForces:Int = $0004
+	
+    Field m_flags:Int = e_clearForces
+	
     Field m_contactManager:b2ContactManager = New b2ContactManager()
     
     '// These two are stored purely for efficiency purposes, they dont maintain
@@ -217,9 +224,6 @@ Class b2World
     '// for(This)
     'debugging the solver.
     Global m_continuousPhysics:Bool
-    '// m_flags
-    Const e_newFixture:Int = $0001
-    Const e_locked:Int = $0002
 
     '// Construct a world object.
     #rem
@@ -765,8 +769,26 @@ Class b2World
             m_inv_dt0 = timeStep.inv_dt
         End
         
+		If (m_flags & e_clearForces)
+        	ClearForces();
+        End
+		
         m_flags &= ~e_locked
     End
+	
+	Field clearCapacity:Int = 100
+	Field bodiesToClear:b2Body[] = New b2Body[100]
+	Field clearIndex:Int = 0
+	
+	Method MarkToClearForces:Void( body:b2Body )
+		If clearIndex = clearCapacity
+			clearCapacity += 100
+			bodiesToClear = bodiesToClear.Resize(clearCapacity)
+		End
+		bodiesToClear[clearIndex] = body
+		clearIndex += 1
+	End
+	
     #rem
     '/**
     '* Call this after you are done with time steps to clear the forces. You normally
@@ -775,15 +797,28 @@ Class b2World
     #end
     
     Method ClearForces : void ()
-        
-        Local body:b2Body = m_bodyList
-        
-        While ( body <> Null )
-            body.m_force.SetZero()
-            body.m_torque = 0.0
-            body = body.m_next
-        End
+    
+		For Local i:Int = 0 Until clearIndex
+			bodiesToClear[i].m_force.SetZero()
+			bodiesToClear[i].m_torque = 0.0
+		End
+		clearIndex = 0
     End
+	
+	'Set the flag that controls automatic clearing of forces after each time step.
+	Method SetAutoClearForces:Void(flag:Bool)		
+		If (flag)
+			m_flags |= e_clearForces
+		Else
+			m_flags &= ~e_clearForces
+        End
+	End
+
+	'Get the flag that controls automatic clearing of forces after each time step.
+	Method GetAutoClearForces:Bool()
+    	Return (m_flags & e_clearForces) = e_clearForces
+	End
+
     Global s_xf:b2Transform = New b2Transform()
     
     #rem

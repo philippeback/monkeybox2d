@@ -477,11 +477,10 @@ Class b2Body
     Method ApplyForce : void (force:b2Vec2, point:b2Vec2)
         
         If (m_type <> b2_Body)
-            
             Return
         End
-        If (IsAwake() = False)
-            
+        
+		If (IsAwake() = False)
             SetAwake(True)
         End
         '//m_force += force
@@ -489,7 +488,9 @@ Class b2Body
         m_force.y += force.y
         '//m_torque += b2Cross(point - m_sweep.c, force)
         m_torque += ((point.x - m_sweep.c.x) * force.y - (point.y - m_sweep.c.y) * force.x)
-    End
+    
+		m_world.MarkToClearForces(Self)
+	End
     #rem
     '/**
     '* Apply a torque. This affects the angular velocity
@@ -510,6 +511,7 @@ Class b2Body
         End
         
         m_torque += torque
+		m_world.MarkToClearForces(Self)
     End
     #rem
     '/**
