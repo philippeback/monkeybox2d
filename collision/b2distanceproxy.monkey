@@ -71,7 +71,7 @@ Class b2DistanceProxy
                 m_vertices = polygon.m_vertices
                 m_count = polygon.m_vertexCount
                 m_radius = polygon.m_radius
-                Default
+            Default
                 b2Settings.B2Assert(False)
         End
     End
@@ -133,7 +133,9 @@ Class b2DistanceProxy
     #end
     Method GetVertex : b2Vec2 (index:Int)
         
-        b2Settings.B2Assert(0 <= index And index < m_count)
+#If CONFIG = "debug"
+		b2Settings.B2Assert(0 <= index And index < m_count)
+#End
         Return m_vertices[index]
     End
    
