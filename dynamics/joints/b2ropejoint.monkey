@@ -70,7 +70,7 @@ Class b2RopeJoint Extends b2Joint
 		m_bodyB.GetWorldPoint(m_localAnchor2, out)
 	End
 	
-	Method GetReactionForce:b2Vec2(inv_dt:Float,out:b2Vec2)
+	Method GetReactionForce:Void(inv_dt:Float,out:b2Vec2)
 		out.Set(inv_dt * m_impulse * m_u.x, inv_dt * m_impulse * m_u.y)
 	End
 
