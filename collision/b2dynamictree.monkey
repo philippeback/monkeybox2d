@@ -326,7 +326,7 @@ Class b2DynamicTree
         Local p1 :b2Vec2 = input.p1
         Local p2 :b2Vec2 = input.p2
         Local r :b2Vec2 = rc_r
-        b2Math.SubtractVV(p1, p2, r)
+        b2Math.SubtractVV(p2, p1, r)
         '//b2Settings.B2Assert(r.LengthSquared() > 0.0)
         r.Normalize()
         '// perpendicular(v) to the segment
@@ -339,9 +339,12 @@ Class b2DynamicTree
         Local segmentAABB :b2AABB = rc_segmentAABB
         Local tX :Float
         Local tY :Float
+		Local pDiffX:Float = p2.x-p1.x
+		Local pDiffY:Float = p2.y-p1.y
+		
         
-        tX = p1.x + maxFraction * (p2.x - p1.x)
-        tY = p1.y + maxFraction * (p2.y - p1.y)
+        tX = p1.x + maxFraction * pDiffX
+        tY = p1.y + maxFraction * pDiffY
         segmentAABB.lowerBound.x = b2Math.Min(p1.x, tX)
         segmentAABB.lowerBound.y = b2Math.Min(p1.y, tY)
         segmentAABB.upperBound.x = b2Math.Max(p1.x, tX)
@@ -350,12 +353,12 @@ Class b2DynamicTree
         Local stack :FlashArray<b2DynamicTreeNode> = rc_stack
 		Local count :Int = 0
         
-        stack.Set( count,  m_root )
+        stack.Push( m_root )
         count += 1
         
         While (count > 0)
             count -= 1
-            Local node :b2DynamicTreeNode = stack.Get(count)
+            Local node :b2DynamicTreeNode = stack.Pop()'(count)
             If (node.aabb.TestOverlap(segmentAABB) = False)
                 Continue
             End
@@ -365,7 +368,7 @@ Class b2DynamicTree
             node.aabb.GetCenter(c)
             Local h :b2Vec2 = rc_h
             node.aabb.GetExtents(h)
-            Local separation :Float = Abs(v.x * (p1.x - c.x) + v.y * (p1.y - c.y))	- abs_v.x * h.x - abs_v.y * h.y
+            Local separation :Float = Abs(v.x * (p1.x - c.x) + v.y * (p1.y - c.y))	- (abs_v.x * h.x + abs_v.y * h.y)
             
             If (separation > 0.0)
                 Continue
@@ -373,23 +376,28 @@ Class b2DynamicTree
             
             If (node.IsLeaf())
                 rc_subInput.Set(input.p1, input.p2, input.maxFraction)
-                maxFraction = callback.Callback(node, rc_subInput)
-                If (maxFraction = 0.0)
+                Local value:Float =  callback.Callback(node, rc_subInput)
+                If (value = 0.0)
                     Return
                 End
                 '//Update the segment bounding box
                 
-                tX = p1.x + maxFraction * (p2.x - p1.x)
-                tY = p1.y + maxFraction * (p2.y - p1.y)
-                segmentAABB.lowerBound.x = b2Math.Min(p1.x, tX)
-                segmentAABB.lowerBound.y = b2Math.Min(p1.y, tY)
-                segmentAABB.upperBound.x = b2Math.Max(p1.x, tX)
-                segmentAABB.upperBound.y = b2Math.Max(p1.y, tY)
+                If (value > 0.0)
+	                maxFraction = value
+					tX = p1.x + maxFraction * pDiffX
+	                tY = p1.y + maxFraction * pDiffY
+	            
+					segmentAABB.lowerBound.x = b2Math.Min(p1.x, tX)
+			        segmentAABB.lowerBound.y = b2Math.Min(p1.y, tY)
+			        segmentAABB.upperBound.x = b2Math.Max(p1.x, tX)
+			        segmentAABB.upperBound.y = b2Math.Max(p1.y, tY)
+				End
+
             Else
                 '// No stack limit, so no assert
-                stack.Set( count,  node.child1 )
+                stack.Push(node.child1) 'Set( count,  node.child1 )
                 count += 1
-                stack.Set( count,  node.child2 )
+                stack.Push(node.child2) 'Set( count,  node.child2 )
                 count += 1
             End
         End
